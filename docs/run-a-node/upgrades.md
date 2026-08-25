@@ -328,13 +328,34 @@ id. `scripts/build-genesis.sh` and `networks/genesis/README.md` cover the mechan
 
 ## Rehearsing
 
+Two scripts, one per path above. Both start a throwaway chain, pass a real
+proposal and wait for a real halt — nothing is mocked. Both edit
+`app/upgrades.go` while running and restore it on exit, including on failure.
+
+**The manual path:**
+
 ```bash
 scripts/rehearse-upgrade.sh
 ```
 
-Starts a throwaway chain, passes a real proposal, waits for the halt, checks the
-old binary refuses to continue, rebuilds with a handler, and checks the chain
-resumes. It edits `app/upgrades.go` while it runs and restores it on exit,
-including on failure.
+Passes a proposal, waits for the halt, checks the old binary **refuses to
+continue**, rebuilds with a handler, and checks the chain resumes past the halt
+height. That refusal is the important assertion: a binary that continued past an
+upgrade height without a handler would be a consensus break.
 
-Run it before any upgrade that matters.
+**The cosmovisor path:**
+
+```bash
+scripts/rehearse-cosmovisor.sh
+```
+
+Serves a new binary over loopback, puts its URL and sha256 in the plan's `info`,
+and then does nothing — cosmovisor has to halt, download, verify, unpack, swap
+and restart on its own. It checks the downloaded binary matches what was served
+and differs from the old one, so a chain that simply carried on cannot pass.
+
+It needs no release to exist and works offline, and it exercises the three things
+that only fail at an upgrade height: the `info` JSON shape, the archive layout,
+and checksum enforcement.
+
+Run the one matching how you actually upgrade, before any upgrade that matters.

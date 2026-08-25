@@ -29,8 +29,19 @@ curl -LO https://github.com/zenopie/earth-network-chain/releases/download/$VERSI
 
 sha256sum -c checksums.txt --ignore-missing     # must say OK
 tar xzf earthd_${VERSION}_linux_${ARCH}.tar.gz
-sudo install earthd_${VERSION}_linux_${ARCH}/earthd /usr/local/bin/
+
+sudo install -m755 earthd_${VERSION}_linux_${ARCH}/bin/earthd /usr/local/bin/
+sudo install -m644 earthd_${VERSION}_linux_${ARCH}/lib/*     /usr/local/lib/
 ```
+
+Both lines matter. `earthd` links `libwasmvm` — the CosmWasm engine — as a shared
+library, and the two are version-locked: a node must never pair one release's
+`earthd` with another release's `libwasmvm`. The tarball ships the matching copy
+in `lib/`, along with the C++ runtime the proof verifier needs.
+
+The binary looks for them at `../lib` relative to itself, which is why installing
+to `/usr/local/bin` and `/usr/local/lib` works with no `ldconfig` and no
+`LD_LIBRARY_PATH`. Keep the pair together if you install somewhere else.
 
 Check it:
 

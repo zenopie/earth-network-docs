@@ -112,9 +112,29 @@ GOV=$(earthd query auth module-account gov -o json | jq -r .account.value.addres
 }
 ```
 
-Put the release URL and the binary's sha256 in `info`. That field is what
-cosmovisor reads to fetch the binary automatically, and what an operator reads to
-check they have the right one.
+### The `info` field
+
+`info` is not free text. Cosmovisor parses it as JSON and will refuse a plan it
+cannot read, so get this shape right:
+
+```json
+{
+  "binaries": {
+    "linux/amd64": "https://github.com/zenopie/earth-network-chain/releases/download/v0.5.0/earthd_v0.5.0_linux_amd64.tar.gz?checksum=sha256:PUT_THE_REAL_HASH_HERE",
+    "linux/arm64": "https://github.com/zenopie/earth-network-chain/releases/download/v0.5.0/earthd_v0.5.0_linux_arm64.tar.gz?checksum=sha256:PUT_THE_REAL_HASH_HERE"
+  }
+}
+```
+
+The keys are `GOOS/GOARCH`; a node that finds no key for its own platform (and no
+`any` key) fails the download. The hashes are the ones in `checksums.txt` on the
+release.
+
+**The `?checksum=` is mandatory**, not decoration. It is the only thing binding
+what a node downloads and executes to what governance actually approved, and
+nodes run with `DAEMON_DOWNLOAD_MUST_HAVE_CHECKSUM=true` will reject a plan
+without it. Operators doing a manual upgrade read the same hashes to verify by
+hand.
 
 ```bash
 earthd tx gov submit-proposal plan.json --from <key> \
@@ -128,25 +148,157 @@ is rejected with `insufficient fee` before it reaches the mempool.
 
 ## On the day
 
-Before the height:
+At the upgrade height every node stops on purpose and refuses to continue on the
+old binary. That is the chain protecting itself: continuing would mean two
+versions producing different state from the same blocks.
 
-- Publish the new binary and its checksum.
-- Confirm operators have it staged.
+Someone or something has to put the new binary in place. Two ways to do that,
+below. **Both are supported** — cosmovisor is a convenience, not a requirement,
+and a manual upgrade is not a worse upgrade.
 
-At the height, each node halts. Then:
+Whichever you use, the release tarball carries `bin/earthd` and a `lib/` holding
+`libwasmvm` and the C++ runtime. `earthd` links `libwasmvm` dynamically and the
+two are version-locked, so **never pair one release's `earthd` with another
+release's `libwasmvm`** — keep `bin/` and `lib/` together.
+
+---
+
+### Path A — manual
+
+Nothing to install ahead of time. You need to be present at the height.
+
+**Before the height**, download and verify, but do not install yet:
 
 ```bash
-# swap the binary
-sudo install earthd /usr/local/bin/earthd
-earthd version --long          # confirm it is the right one
-earthd start
+VERSION=v0.5.0
+ARCH=amd64
+
+curl -LO https://github.com/zenopie/earth-network-chain/releases/download/$VERSION/earthd_${VERSION}_linux_${ARCH}.tar.gz
+curl -LO https://github.com/zenopie/earth-network-chain/releases/download/$VERSION/checksums.txt
+sha256sum -c checksums.txt --ignore-missing        # must say OK
+
+mkdir -p ~/earthd-$VERSION
+tar -C ~/earthd-$VERSION -xzf earthd_${VERSION}_linux_${ARCH}.tar.gz
+~/earthd-$VERSION/bin/earthd version --long        # confirm it is the right build
+```
+
+Keep the current binary. If the upgrade goes wrong it is what you roll back to.
+
+**At the height** the node halts, logging `UPGRADE "<name>" NEEDED at height`.
+Then swap both halves and restart:
+
+```bash
+sudo systemctl stop earthd                          # if it has not already exited
+
+sudo install -m755 ~/earthd-$VERSION/bin/earthd /usr/local/bin/
+sudo install -m644 ~/earthd-$VERSION/lib/*      /usr/local/lib/
+
+earthd version --long                               # must report $VERSION
+sudo systemctl start earthd
 ```
 
 The log shows `applying upgrade "<name>" at height` and blocks resume.
 
-**With cosmovisor** the swap is automatic — stage the binary under
-`$DAEMON_HOME/cosmovisor/upgrades/<name>/bin/earthd` in advance and it switches
-at the halt without anyone awake.
+Installing to `/usr/local/bin` and `/usr/local/lib` works with no `ldconfig` and
+no `LD_LIBRARY_PATH`: the binary looks for its libraries at `../lib` relative to
+itself.
+
+---
+
+### Path B — cosmovisor
+
+[Cosmovisor](https://docs.cosmos.network/main/build/tooling/cosmovisor) is a
+small supervisor that runs `earthd` for you. It watches for the halt, puts the
+new binary in place and restarts the node — so an upgrade at 03:00 does not need
+you awake at 03:00.
+
+It is a separate program. It is not part of `earthd`, and running it is optional.
+
+**One-time setup:**
+
+```bash
+go install cosmossdk.io/tools/cosmovisor/cmd/cosmovisor@v1.7.1
+
+export DAEMON_NAME=earthd
+export DAEMON_HOME=$HOME/.earth        # your node home, NOT a temp directory
+
+mkdir -p $DAEMON_HOME/cosmovisor/genesis/bin
+cp $(which earthd) $DAEMON_HOME/cosmovisor/genesis/bin/
+```
+
+Then run the node through it — `cosmovisor run` takes the same arguments you
+would give `earthd`:
+
+```bash
+cosmovisor run start --home $DAEMON_HOME
+```
+
+In a systemd unit, set the environment there:
+
+```ini
+[Service]
+Environment="DAEMON_NAME=earthd"
+Environment="DAEMON_HOME=/home/earth/.earth"
+Environment="DAEMON_RESTART_AFTER_UPGRADE=true"
+Environment="DAEMON_ALLOW_DOWNLOAD_BINARIES=true"
+Environment="DAEMON_DOWNLOAD_MUST_HAVE_CHECKSUM=true"
+ExecStart=/home/earth/go/bin/cosmovisor run start --home /home/earth/.earth
+Restart=always
+```
+
+`DAEMON_HOME` must be on storage that survives a restart. Cosmovisor keeps
+downloaded binaries under `$DAEMON_HOME/cosmovisor/`, so on a host with an
+ephemeral filesystem it would fetch an upgrade, restart, and find it gone.
+
+**Then pick how it gets the binary — download it, or stage it yourself.**
+
+**B1: let it download.** With `DAEMON_ALLOW_DOWNLOAD_BINARIES=true`, cosmovisor
+reads the URL from the proposal's `info` field, verifies the `?checksum=`, unpacks
+it and restarts. Nothing to do before the height. This is the unattended option,
+and it is why `?checksum=` is mandatory: keep
+`DAEMON_DOWNLOAD_MUST_HAVE_CHECKSUM=true` so a plan without one is refused rather
+than trusted.
+
+**B2: stage it yourself.** Set `DAEMON_ALLOW_DOWNLOAD_BINARIES=false` if you would
+rather nothing be fetched from the internet at an upgrade height. Put the release
+under the upgrade name **before** the height — the name must match the plan's
+`name` exactly:
+
+```bash
+VERSION=v0.5.0
+UPGRADE_NAME=v0.5.0                     # the plan's `name`, which need not equal $VERSION
+
+mkdir -p $DAEMON_HOME/cosmovisor/upgrades/$UPGRADE_NAME
+tar -C $DAEMON_HOME/cosmovisor/upgrades/$UPGRADE_NAME \
+    -xzf earthd_${VERSION}_linux_amd64.tar.gz
+```
+
+That gives `upgrades/$UPGRADE_NAME/bin/earthd` with its own `lib/` beside it,
+which is exactly the layout cosmovisor expects and the same one it would have
+produced by downloading.
+
+**Verify the staging before the height, not during it:**
+
+```bash
+$DAEMON_HOME/cosmovisor/upgrades/$UPGRADE_NAME/bin/earthd version --long
+```
+
+If that prints the new version, the swap will work. If it errors, you have found
+out while the chain is still producing blocks.
+
+---
+
+### Which to use
+
+| | Manual | Cosmovisor |
+|---|---|---|
+| Setup beforehand | none | one-time |
+| Present at the height | **yes** | no |
+| Downloads at the height | no | B1 yes, B2 no |
+| Fewest moving parts | ✅ | |
+
+A single node you watch is fine manually. Cosmovisor earns its place when the
+height lands at an inconvenient hour, or when you run more than one node.
 
 ---
 

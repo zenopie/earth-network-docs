@@ -31,7 +31,7 @@ const cname = fs.existsSync("./static/CNAME")
   ? fs.readFileSync("./static/CNAME", "utf8").trim()
   : null;
 const siteUrl = cname ? `https://${cname}` : "https://zenopie.github.io";
-const siteBaseUrl = cname ? "/" : "/earth-network-chain/";
+const siteBaseUrl = cname ? "/" : "/earth-network-docs/";
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {

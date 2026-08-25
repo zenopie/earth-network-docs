@@ -1,14 +1,14 @@
 # Builds the documentation site and publishes it to GitHub Pages.
 #
-# Runs on any push to master that touches , and can be triggered by
-# hand. It also builds on pull requests without publishing, so a broken link is
+# Runs on any push to main — every file in this repo is the site — and can be
+# triggered by hand. It also builds on pull requests without publishing, so a broken link is
 # caught in review rather than after it is live — the site is configured to fail
 # the build on one.
 name: docs
 
 on:
   push:
-    branches: [master]
+    branches: [main]
   pull_request:
   workflow_dispatch:
 

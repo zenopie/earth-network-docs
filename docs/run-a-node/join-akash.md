@@ -191,6 +191,14 @@ Expose 26659 **to the tunnel service only** — never `global: true`:
 
 Then a TCP public hostname on the tunnel: `signer.example.com -> tcp://node:26659`.
 
+Note that this addresses the node by *name*. cloudflared resolves `node` through
+the deployment's internal DNS, so the pod address changing on every new lease
+costs nothing — which is why this and not a private network route. Routing a
+CIDR means pinning an address the provider assigns and may reissue.
+
+And note that a public hostname is public. It is not a private address, and the
+tunnel is not an authenticator; see below.
+
 ### What the privval socket does not protect
 
 Read this before you decide the port exposure is a detail.
@@ -224,18 +232,66 @@ rather than a nuisance. tmkms's double-sign guard blocks conflicting votes at or
 below heights it has already seen; it cannot tell a forged future height from a
 real one.
 
-Authentication therefore comes from the transport. That is why 26659 is exposed
-only to the tunnel service. Do not shortcut it with a `global: true` port, even
-temporarily.
+Authentication therefore has to come from the transport — and exposing 26659 to
+the tunnel service is *not* that. It removes the provider port, so there is no
+`IP:port` to scan, and it does not decide who may come down the tunnel. Do not
+shortcut it with a `global: true` port even temporarily, and do not mistake it
+for the thing keeping strangers out.
+
+### Lock the hostname
+
+This is the control. Without it, `signer.example.com` is a public TCP endpoint
+onto the privval socket and everything in the section above is live for anyone
+who guesses the name. `cloudflared access tcp` is an ordinary client; nothing
+stops a stranger running one.
+
+Because both ends are machines, this wants a Cloudflare Access **service
+token**, not an identity provider login:
+
+1. Zero Trust → Access → **Service Auth** → create a service token. The Client
+   Secret is shown **once**; it cannot be retrieved later, only replaced. Prefer
+   a non-expiring token — an expiry date is a date your validator stops signing.
+2. Zero Trust → Access → **Applications** → add a **Self-hosted** application for
+   `signer.example.com`.
+3. Give it one policy with action **Service Auth** — *not* Allow, which expects a
+   human at an IdP and will lock out a headless signer — including that token.
+
+Rotation is two-sided and ordered: issue the new token, add it to the policy,
+restart the home-side client, *then* revoke the old one. Revoking first drops the
+signer, and a dropped signer is a validator producing no blocks.
 
 ### Home side
 
 ```bash
+export CF_ACCESS_CLIENT_ID=...access
+export CF_ACCESS_CLIENT_SECRET=...
+
 cloudflared access tcp --hostname signer.example.com --url localhost:26659
 tmkms start -c tmkms.toml
 ```
 
-tmkms points at `localhost:26659`; the tunnel carries it.
+cloudflared reads those two from the environment. Passing them as flags puts the
+secret in `ps` output and your shell history.
+
+tmkms points at `localhost:26659` — the same address it would use for a local
+node, because `cloudflared access tcp` binds that port locally and forwards it.
+So start the tunnel first: started the other way round, tmkms dials a port
+nothing is listening on.
+
+### Verify the lock before you trust it
+
+From a machine with no token, this must be **refused**:
+
+```bash
+cloudflared access tcp --hostname signer.example.com --url localhost:26699
+```
+
+Do not skip it. An application that was never attached to the hostname behaves
+identically to a working one from the authenticated side, so the failure is
+invisible in exactly the direction that matters.
+
+Get this working before you set `PRIV_VALIDATOR_LADDR`. That variable fails
+closed: with it set and no signer answering, the node produces no blocks at all.
 
 ---
 

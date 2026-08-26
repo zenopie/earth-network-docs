@@ -1,13 +1,13 @@
 ---
-sidebar_position: 4
+sidebar_position: 3
 title: Protecting the consensus key
 ---
 
 # Protecting the consensus key
 
 Validating means running a node that is online constantly, which for most people
-means renting one — a VPS, a dedicated box, a cloud instance, an Akash lease.
-All of those have the same property: **someone else can read the disk.**
+means renting one — a VPS, a dedicated box, a cloud instance. All of them share
+one property: **someone else can read the disk.**
 
 By default the consensus key sits at `$EARTH_HOME/config/priv_validator_key.json`
 on that disk. Whoever operates the machine can copy it, and with it double-sign,

@@ -5,86 +5,77 @@ title: Protecting the consensus key
 
 # Protecting the consensus key
 
-Validating means running a node that is online constantly, which for most people
-means renting one — a VPS, a dedicated box, a cloud instance. All of them share
-one property: **someone else can read the disk.**
+A validator must run continuously. Most operators therefore rent the machine.
+The operator of that machine can read its disk.
 
-By default the consensus key sits at `$EARTH_HOME/config/priv_validator_key.json`
-on that disk. Whoever operates the machine can copy it, and with it double-sign,
-which on this chain costs 5% of stake and a permanent tombstone. That is not a
-hypothetical about a malicious host; a backup snapshot, a support engineer, or a
-provider compromise reaches the same file.
-
-A remote signer splits the node from its key. The node keeps running on rented
-hardware; the key lives on a machine you own. The node *asks* for signatures and
-can no longer produce them.
+By default the consensus key is a file on that disk:
 
 ```
-home (dynamic IP, no open ports)          rented host
-  tmkms ──dials──► tunnel ──────────►  earthd :26659
-   key                                    no key
+$EARTH_HOME/config/priv_validator_key.json
+```
+
+Anyone who copies this file can double-sign. On this chain, double-signing costs
+5% of stake and a permanent tombstone.
+
+A remote signer separates the node from the key. The node runs on the rented
+host. The key stays on a host you own. The node requests signatures. It cannot
+create them.
+
+```
+your host                              rented host
+  tmkms ──dials──► tunnel ─────────► earthd :26659
+   key                                  no key
 ```
 
 [tmkms](https://github.com/iqlusioninc/tmkms) is a separate program from
-Iqlusion. It is not part of this chain and not shipped with it; you install and
-run it yourself.
+Iqlusion. Install and run it yourself.
 
 ---
 
-## Your home IP does not need to be static
+## Two properties to know first
 
-tmkms is the *client*. CometBFT listens on `priv_validator_laddr` and the signer
-dials in, so the machine holding the key never has to be reachable. Both
-processes at home make outbound connections only — no port forwarding, no static
-address, nothing to configure on a router.
+**The signer host does not need a fixed address.** tmkms is the client.
+CometBFT listens on `priv_validator_laddr`. tmkms dials in. Both processes on
+your side make outbound connections only. No port forwarding is required.
 
-The stable address is needed on the validator's side, which is the side that has
-one.
+**tmkms also prevents double-signing.** It stores the last signed
+`(height, round, step)`. It refuses to sign at or below that value. If the node
+host is compromised, or if you start a second validator, tmkms does not create
+the conflicting signature.
 
-## The reason people underrate this
-
-tmkms records the last `(height, round, step)` it signed and refuses to sign at
-or below it. That is protection against **equivocation**, not just theft. If the
-node is compromised, or you accidentally run a second validator during a
-migration, the signer will not produce the conflicting signature. It cannot sign
-the thing that gets you slashed.
-
-That state file must be durable and monotonic. Losing it, or restoring it from a
-backup older than the chain's tip, is how a remote signer causes the exact fault
-it exists to prevent — which is also why anything with ephemeral storage is a
-poor place to run one. Prefer a boring always-on box with a real disk over a fast
-one.
+This state file must be durable. Do not delete it. Do not restore it from a
+backup that is older than the chain tip. Both actions cause the fault that the
+signer prevents. Do not run a signer on a host with ephemeral storage.
 
 ---
 
-## Node side
+## Node host
 
-Point CometBFT at a listener instead of a file:
+Set the listener in `config.toml`:
 
 ```toml
-# config.toml
 priv_validator_laddr = "tcp://0.0.0.0:26659"
 ```
 
-Unset, nothing changes and the node signs locally. Set, it **fails closed**: with
-no signer answering, the node produces no blocks at all. Do not set it until the
-signer is up and reachable.
+If unset, the node signs locally.
 
-Then keep 26659 off the public internet. How depends on your host — a firewall
-rule, binding it to a private interface, or exposing it only to a tunnel
-sidecar. Whatever the mechanism, it is not the thing that authenticates the
-connection. The next section is why that distinction matters more than it looks.
+If set, the node fails closed. With no signer connected, the node produces no
+blocks. Configure the signer first. Set this value last.
 
-## What the privval socket does not protect
+Then block public access to port 26659. Use a firewall rule, a private
+interface, or a tunnel. This step limits who can reach the port. It does not
+authenticate the connection. Read the next section.
 
-Read this before deciding the port exposure is a detail.
+---
 
-The connection is Secret Connection encrypted, but on this socket it is
-effectively **unauthenticated in both directions**.
+## Limits of the privval socket
 
-tmkms can pin the node's identity — `tcp://<node_id>@host:port` — but there is
-nothing stable to pin, because CometBFT mints a throwaway key for the privval
-listener on every process start:
+The connection uses Secret Connection encryption. On this socket, it is
+unauthenticated in both directions.
+
+tmkms can pin the node identity with `tcp://<node_id>@host:port`. There is no
+stable identity to pin. CometBFT creates a new key for the privval listener at
+every start:
 
 ```go
 case "tcp":
@@ -92,78 +83,84 @@ case "tcp":
   listener = NewTCPListener(ln, ed25519.GenPrivKey())
 ```
 
-Pin it anyway and the node dies on its next restart: tmkms rejects with
-`validator peer ID mismatch`, the node gets `can't get pubkey: send: EOF` and
-exits. So configure the address *without* the `<node_id>@` prefix and accept that
-tmkms logs `unverified validator peer ID!` on every connect. That warning is
-expected and cannot currently be cleared.
+If you pin the identity, the node fails at its next restart. tmkms reports
+`validator peer ID mismatch`. The node reports `can't get pubkey: send: EOF` and
+exits.
 
-The node does not authenticate the KMS either — its listener accepts whoever
-connects first.
+Configure the address without the `<node_id>@` prefix. tmkms then logs
+`unverified validator peer ID!` at every connection. This warning is expected.
+You cannot clear it.
 
-The consequence: **anyone who can reach 26659 can impersonate the node to the KMS
-and ask it to sign votes.** They cannot steal the key, but they can request
-signatures at heights the real node has not reached, which is a double-sign risk
-rather than a nuisance. The double-sign guard blocks conflicting votes at or
-below heights it has already seen; it cannot tell a forged future height from a
-real one. It stops replays, not forgeries.
+The node does not authenticate the signer either. The listener accepts the first
+client that connects.
 
-Authentication therefore has to come from the transport, because the protocol
-does not supply it.
+Result: **any client that reaches port 26659 can request signatures.** The client
+cannot read the key. It can request signatures for heights that the node has not
+reached. This is a double-signing risk.
+
+The tmkms guard does not prevent this. It compares each request against the last
+signed height. It cannot identify a forged future height. It blocks replays. It
+does not block forgeries.
+
+The transport must therefore authenticate the client.
 
 ---
 
-## Choosing a transport
+## Transport options
 
-Anything that authenticates both ends and carries a TCP stream will do. The
-common options:
+Any transport that authenticates both ends and carries TCP is acceptable.
 
-| | how it authenticates | notes |
+| Transport | Authentication | Note |
 | --- | --- | --- |
-| WireGuard / Tailscale | peer keys | simplest if you can install it on the host |
-| SSH tunnel | host + user keys | fine, but a dropped `ssh` stops signing silently |
-| Cloudflare Tunnel + Access | service token | no inbound port on either side |
+| WireGuard or Tailscale | peer keys | Simplest if you can install it on the node host |
+| SSH tunnel | host and user keys | A dropped connection stops signing without a clear error |
+| Cloudflare Tunnel and Access | service token | No inbound port on either host |
 
-The rest of this page works through the Cloudflare option, because it needs no
-open port on the node *or* at home. The security requirement is the same
-whichever you pick: **something must reject a stranger who connects to 26659.**
+The procedure below uses Cloudflare. The requirement is the same for all
+options: **the transport must reject an unauthenticated client.**
 
-### Cloudflare: publish the hostname
+### 1. Publish the hostname
 
-Add a public hostname of type **TCP** on your tunnel, pointing at the node:
+Add a public hostname of type TCP to your tunnel:
 
 ```
 signer.example.com -> tcp://node:26659
 ```
 
-Address the node by *name* where you can — the tunnel daemon resolves it on its
-own side, so a host whose address changes when it is rebuilt costs you nothing.
-Pinning a private IP means pinning an address the provider assigns and may
-reissue to someone else.
+Address the node by name. The tunnel daemon resolves the name on the node host.
+The address of the node can then change without configuration changes.
 
-### Cloudflare: lock the hostname
+### 2. Attach an Access policy
 
-**This is the control.** A public hostname is public. `cloudflared access tcp`
-is an ordinary client and anyone can point one at your name, so until a policy
-is attached, that name is a TCP endpoint onto the privval socket for whoever
-guesses it.
+A public hostname is public. `cloudflared access tcp` is a standard client. Any
+client can connect to the hostname. Until you attach a policy, the hostname
+gives public access to the privval socket.
 
-Because both ends are machines, this wants a Cloudflare Access **service
-token**, not an identity provider login:
+Both ends are machines. Use a service token. Do not use an identity provider
+login.
 
-1. Zero Trust → Access → **Service Auth** → create a service token. The Client
-   Secret is shown **once**; it cannot be retrieved later, only replaced. Prefer
-   a non-expiring token — an expiry date is a date your validator stops signing.
-2. Zero Trust → Access → **Applications** → add a **Self-hosted** application for
-   `signer.example.com`.
-3. Give it one policy with action **Service Auth** — *not* Allow, which expects a
-   human at an IdP and will lock out a headless signer — including that token.
+1. Open Zero Trust → Access → **Service Auth**. Create a service token. The
+   Client Secret is displayed once. You cannot retrieve it later. Use a
+   non-expiring token. An expiry date is a date when the validator stops
+   signing.
+2. Open Zero Trust → Access → **Applications**. Add a **Self-hosted**
+   application for `signer.example.com`.
+3. Add one policy. Set the action to **Service Auth**. Include the service
+   token.
 
-Rotation is two-sided and ordered: issue the new token, add it to the policy,
-restart the home-side client, *then* revoke the old one. Revoking first drops the
-signer, and a dropped signer is a validator producing no blocks.
+Do not use the **Allow** action. It requires an identity provider login. A
+headless signer cannot complete that login.
 
-### Cloudflare: home side
+To rotate the token, use this order:
+
+1. Create the new token.
+2. Add it to the policy.
+3. Restart the client on the signer host.
+4. Revoke the old token.
+
+Revoking first disconnects the signer. The validator then produces no blocks.
+
+### 3. Start the client and the signer
 
 ```bash
 export CF_ACCESS_CLIENT_ID=...access
@@ -173,31 +170,30 @@ cloudflared access tcp --hostname signer.example.com --url localhost:26659
 tmkms start -c tmkms.toml
 ```
 
-cloudflared reads those two from the environment. Passing them as flags puts the
-secret into `ps` output and your shell history.
+cloudflared reads both values from the environment. Do not pass them as
+command-line flags. Flags expose the secret in `ps` output and in shell history.
 
-Start the tunnel **first**. `cloudflared access tcp` binds `localhost:26659` and
-forwards it, so tmkms dials the same address it would use for a local node —
-which also means `tmkms.toml` is identical either way. Started in the other
-order, tmkms dials a port nothing is listening on.
+Start the tunnel first. `cloudflared access tcp` binds `localhost:26659` and
+forwards the connection. tmkms then dials the same address that it uses for a
+local node, so `tmkms.toml` does not change. If you start tmkms first, it dials
+a closed port.
 
-### Verify the lock before you trust it
+### 4. Verify the policy
 
-From a machine with no token, this must be **refused**:
+Run this command on a host that has no token. The connection must fail:
 
 ```bash
 cloudflared access tcp --hostname signer.example.com --url localhost:26699
 ```
 
-Do not skip it. An application that was never attached to the hostname behaves
-identically to a working one from the authenticated side, so the failure is
-invisible in exactly the direction that matters.
+Do this test. An application that is not attached to the hostname behaves the
+same as a correct one when you test it with a token.
 
 ---
 
 ## tmkms configuration
 
-The parts that are specific to this chain:
+Chain-specific values:
 
 ```toml
 [[chain]]
@@ -218,17 +214,16 @@ protocol_version = "v0.38"
 reconnect = true
 ```
 
-Three things that cost people an evening:
+Three common errors:
 
-- **`protocol_version` must be `v0.38`** for CometBFT 0.38 / Cosmos SDK v0.53.
-  `v0.34` is deprecated and becomes a hard error in a coming tmkms release.
-- **The state file needs `round` as a *string*** and an explicit `block_id` key.
-  Omit either and tmkms will not start.
-- **Wrong bech32 prefixes do not stop signing.** The signature is over bytes, so
-  it works — but every log line and every key you print comes out addressed to
-  another chain, which is a bad way to audit a key.
+- `protocol_version` must be `v0.38` for CometBFT 0.38 and Cosmos SDK v0.53.
+  Version `v0.34` is deprecated. It becomes an error in a later tmkms release.
+- The state file requires `round` as a string. It also requires an explicit
+  `block_id` key. If either is missing, tmkms does not start.
+- Incorrect bech32 prefixes do not stop signing. The signature covers bytes. But
+  all log output and all printed keys then show addresses for a different chain.
 
-Healthy output is a line per vote:
+Normal output is one line per vote:
 
 ```
 signed Proposal:8E3026E331 at h/r/s 6/0/0 (0 ms)
@@ -236,23 +231,20 @@ signed Prevote:8E3026E331  at h/r/s 6/0/1 (0 ms)
 signed Precommit:8E3026E331 at h/r/s 6/0/2 (0 ms)
 ```
 
-`Connection refused` in the seconds before the node is up is normal — tmkms
-retries.
+`Connection refused` before the node starts is normal. tmkms retries.
 
 ---
 
-## Migrating a validator that is already running
+## Migration of a running validator
 
-Do this before anyone else bonds stake behind you. Moving a consensus key on a
-live validator is the operation most likely to cause an accidental double-sign:
-the window where both the old node and the new signer believe they may sign is
-precisely the fault being guarded against.
+Do this before other accounts delegate to you. This procedure has a risk of
+double-signing. The risk exists while both the node and the signer can sign.
 
-1. Stop the validator. Confirm it is not producing blocks.
-2. Copy `priv_validator_key.json` to the signer host and import it into tmkms.
-3. Seed tmkms's state from `priv_validator_state.json`, so it does not start
-   believing it has signed nothing.
-4. Start tmkms, then the node with `priv_validator_laddr` set.
-5. Confirm blocks are being signed again.
-6. **Delete the key from the rented host.** Skipping this leaves the key on the
-   machine the whole exercise was about getting it off.
+1. Stop the validator. Confirm that it produces no blocks.
+2. Copy `priv_validator_key.json` to the signer host. Import it into tmkms.
+3. Set the tmkms state from `priv_validator_state.json`. Without this step,
+   tmkms starts with no record of signed heights.
+4. Start tmkms. Then start the node with `priv_validator_laddr` set.
+5. Confirm that the node signs blocks again.
+6. Delete the key from the rented host. If you skip this step, the key stays on
+   the host that you do not control.

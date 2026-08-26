@@ -127,60 +127,16 @@ behind a tunnel, or do not publish them at all.
 
 ## Validators: get the key off the host
 
-Everything above is ordinary operations. This is the part that is specific to
-renting hardware.
-
 By default the consensus key sits at `$EARTH_HOME/config/priv_validator_key.json`
-on the provider's machine. Whoever operates that machine can read it, and with it
-double-sign — which on this chain costs 5% of stake and a permanent tombstone.
-Not a theoretical risk: it is someone else's disk.
+— on the provider's disk. Whoever operates that machine can read it, and with it
+double-sign, which on this chain costs 5% of stake and a permanent tombstone.
 
-A remote signer splits the node from its key. The node keeps running on rented
-hardware; the key lives on a machine you own. The node *asks* for signatures and
-can no longer produce them.
+This is not an Akash problem; it is true of any host you rent. The fix is a
+remote signer, and it has its own page: **[Protecting the consensus
+key](./remote-signer.md)**.
 
-```
-home (dynamic IP, no open ports)              Akash
-  tmkms ──dials──► cloudflared ──tunnel──►  earthd :26659
-   key                                       no key
-```
-
-[tmkms](https://github.com/iqlusioninc/tmkms) is a separate program from
-Iqlusion. It is not part of this chain and not shipped with it; you install and
-run it yourself.
-
-### A dynamic home IP is fine
-
-tmkms is the *client*. CometBFT listens on `priv_validator_laddr` and the signer
-dials in, so the machine holding the key never has to be reachable. Both
-processes at home make outbound connections only — no port forwarding, no static
-address, nothing to configure on a router.
-
-The stable hostname is needed on the validator's side, which is the side that has
-one.
-
-### The reason people underrate it
-
-tmkms keeps the last `(height, round, step)` it signed and refuses to sign at or
-below it. That is protection against **equivocation**, not just theft. If the
-node is compromised, or you accidentally run a second validator during a
-migration, the signer will not produce the conflicting signature. It cannot sign
-the thing that gets you slashed.
-
-That state file must be durable and monotonic. Losing it is how a remote signer
-causes the exact fault it exists to prevent — which is also why an enclave with
-ephemeral storage is a poor place to run one.
-
-### Node side
-
-```yaml
-    env:
-      - PRIV_VALIDATOR_LADDR=tcp://0.0.0.0:26659
-```
-
-Unset, nothing changes and the node signs locally.
-
-Expose 26659 **to the tunnel service only** — never `global: true`:
+The one Akash-specific part is exposing the signer port to the tunnel service
+rather than to the internet:
 
 ```yaml
     expose:
@@ -189,127 +145,8 @@ Expose 26659 **to the tunnel service only** — never `global: true`:
           - service: cloudflared
 ```
 
-Then a TCP public hostname on the tunnel: `signer.example.com -> tcp://node:26659`.
-
-Note that this addresses the node by *name*. cloudflared resolves `node` through
-the deployment's internal DNS, so the pod address changing on every new lease
-costs nothing — which is why this and not a private network route. Routing a
-CIDR means pinning an address the provider assigns and may reissue.
-
-And note that a public hostname is public. It is not a private address, and the
-tunnel is not an authenticator; see below.
-
-### What the privval socket does not protect
-
-Read this before you decide the port exposure is a detail.
-
-The connection is Secret Connection encrypted, but on this socket it is
-effectively **unauthenticated in both directions**.
-
-tmkms can pin the node's identity — `tcp://<node_id>@host:port` — but there is
-nothing stable to pin, because CometBFT mints a throwaway key for the privval
-listener on every process start:
-
-```go
-case "tcp":
-  // TODO: persist this key so external signer can actually authenticate us
-  listener = NewTCPListener(ln, ed25519.GenPrivKey())
-```
-
-Pin it anyway and the node dies on its next restart: tmkms rejects with
-`validator peer ID mismatch`, the node gets `can't get pubkey: send: EOF` and
-exits. So configure the address *without* the `<node_id>@` prefix and accept that
-tmkms logs `unverified validator peer ID!` on every connect. That warning is
-expected and cannot currently be cleared.
-
-The node does not authenticate the KMS either — its listener accepts whoever
-connects first.
-
-The consequence: **anyone who can reach 26659 can impersonate the node to the KMS
-and ask it to sign votes.** They cannot steal the key, but they can request
-signatures at heights the real node has not reached, which is a double-sign risk
-rather than a nuisance. tmkms's double-sign guard blocks conflicting votes at or
-below heights it has already seen; it cannot tell a forged future height from a
-real one.
-
-Authentication therefore has to come from the transport — and exposing 26659 to
-the tunnel service is *not* that. It removes the provider port, so there is no
-`IP:port` to scan, and it does not decide who may come down the tunnel. Do not
-shortcut it with a `global: true` port even temporarily, and do not mistake it
-for the thing keeping strangers out.
-
-### Lock the hostname
-
-This is the control. Without it, `signer.example.com` is a public TCP endpoint
-onto the privval socket and everything in the section above is live for anyone
-who guesses the name. `cloudflared access tcp` is an ordinary client; nothing
-stops a stranger running one.
-
-Because both ends are machines, this wants a Cloudflare Access **service
-token**, not an identity provider login:
-
-1. Zero Trust → Access → **Service Auth** → create a service token. The Client
-   Secret is shown **once**; it cannot be retrieved later, only replaced. Prefer
-   a non-expiring token — an expiry date is a date your validator stops signing.
-2. Zero Trust → Access → **Applications** → add a **Self-hosted** application for
-   `signer.example.com`.
-3. Give it one policy with action **Service Auth** — *not* Allow, which expects a
-   human at an IdP and will lock out a headless signer — including that token.
-
-Rotation is two-sided and ordered: issue the new token, add it to the policy,
-restart the home-side client, *then* revoke the old one. Revoking first drops the
-signer, and a dropped signer is a validator producing no blocks.
-
-### Home side
-
-```bash
-export CF_ACCESS_CLIENT_ID=...access
-export CF_ACCESS_CLIENT_SECRET=...
-
-cloudflared access tcp --hostname signer.example.com --url localhost:26659
-tmkms start -c tmkms.toml
-```
-
-cloudflared reads those two from the environment. Passing them as flags puts the
-secret in `ps` output and your shell history.
-
-tmkms points at `localhost:26659` — the same address it would use for a local
-node, because `cloudflared access tcp` binds that port locally and forwards it.
-So start the tunnel first: started the other way round, tmkms dials a port
-nothing is listening on.
-
-### Verify the lock before you trust it
-
-From a machine with no token, this must be **refused**:
-
-```bash
-cloudflared access tcp --hostname signer.example.com --url localhost:26699
-```
-
-Do not skip it. An application that was never attached to the hostname behaves
-identically to a working one from the authenticated side, so the failure is
-invisible in exactly the direction that matters.
-
-Get this working before you set `PRIV_VALIDATOR_LADDR`. That variable fails
-closed: with it set and no signer answering, the node produces no blocks at all.
-
----
-
-## Migrating a validator that is already running
-
-Do this before anyone else bonds stake behind you. Moving a consensus key on a
-live validator is the operation most likely to cause an accidental double-sign:
-the window where both the old node and the new signer believe they may sign is
-precisely the fault being guarded against.
-
-1. Stop the validator. Confirm it is not producing blocks.
-2. Copy `priv_validator_key.json` to the signer host and import it into tmkms.
-3. Seed tmkms's state from `priv_validator_state.json`, so it does not start
-   believing it has signed nothing.
-4. Start tmkms, then the node with `PRIV_VALIDATOR_LADDR` set.
-5. Confirm blocks are being signed again.
-6. **Delete the key from the Akash host.** Skipping this leaves the key on the
-   machine the whole exercise was about getting it off.
+That removes the provider port. It is not what authenticates the connection —
+see the signer page, which is emphatic about the difference.
 
 ---
 

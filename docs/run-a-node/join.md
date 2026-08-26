@@ -269,7 +269,7 @@ earthd tx staking create-validator validator.json \
 ```
 
 **Your consensus key should not live on the node.** Use a remote signer — see
-[deploy/akash/REMOTE_SIGNER.md](./join-akash.md). It fails closed: with
+[Protecting the consensus key](./remote-signer.md). It fails closed: with
 a signer configured and none answering, your node signs nothing rather than
 signing with a key it shouldn't have.
 

@@ -6,41 +6,43 @@ sidebar_position: 4
 
 ## Swap
 
-Every pool pairs a token with **ERTH**, so a swap between two other tokens routes
-through ERTH as two hops. That keeps liquidity in one place instead of splitting
-it across every possible pair.
+Each pool pairs one token with **ERTH**. A swap between two other tokens
+therefore uses two hops through ERTH. This keeps liquidity in one place. It does
+not divide liquidity between all possible pairs.
 
-The fee is **0.3% per hop**, charged in ERTH. Half stays in the pool for the
-people who provided the liquidity; **the other half is destroyed**.
+The fee is **0.3% for each hop**. The chain charges it in ERTH. Half of the fee
+stays in the pool for the liquidity providers. It destroys the other half.
 
 ## Provide liquidity
 
-Deposit both sides of a pool and receive LP shares. You earn a share of the fees,
-plus a share of the Groundworks fund if voters have pointed it at LP rewards.
+Deposit both sides of a pool. You receive LP shares. You then earn a part of the
+fees. If voters direct the Groundworks fund to LP rewards, you also earn a part
+of that fund.
 
-Withdrawing takes **7 days**. Your liquidity keeps working and keeps earning for
-the whole period, so the only cost of leaving is the wait.
+A withdrawal takes **7 days**. Your liquidity continues to work and to earn for
+this period. The only cost of a withdrawal is the delay.
 
 ## Stake
 
-Delegate ERTH to a validator to earn staking rewards and a vote in the
-Groundworks fund and in governance.
+Delegate ERTH to a validator. You then earn staking rewards, a vote in the
+Groundworks fund, and a vote in governance.
 
-Unbonding takes **21 days**, during which you earn nothing and cannot transfer.
-That delay is what makes attacking the chain expensive.
+Unbonding takes **21 days**. During this period you earn nothing and you cannot
+transfer the tokens. This delay makes an attack on the chain expensive.
 
-Choose a validator on commission, uptime, and whether they run their own
-infrastructure — not on who is largest. Concentrated stake is a risk to everyone,
-including the people delegating to the largest validator.
+Select a validator by commission, by uptime, and by whether the validator
+operates its own infrastructure. Do not select a validator because it is the
+largest. Concentrated stake is a risk to all users, including the delegators of
+the largest validator.
 
 ## Claim ANML
 
-One per day, once registered. Unclaimed days do not accumulate.
+Claim one ANML each day after registration. Unclaimed days do not accumulate.
 
 ## Vote a fund
 
-Open the Caretaker or Groundworks fund, split your vote across options by
-percentage, and confirm. You can change it at any time.
+Open the Caretaker fund or the Groundworks fund. Divide your vote between the
+options by percentage. Confirm the vote. You can change it at any time.
 
-Rewards follow your current vote and accrue continuously, so moving a vote does
-not reset what you have already earned.
+Rewards follow the current vote and accrue continuously. A change of vote does
+not reset the rewards that you have already earned.

@@ -4,55 +4,59 @@ sidebar_position: 5
 
 # Governance
 
-Anything that changes the rules goes through a vote. There is no admin key: the
-authority for every privileged action is a module account **with no private
-key**, and the only thing that can make it act is a proposal that passes.
+A vote controls every change to the rules. There is no admin key. The authority
+for each privileged action is a module account **with no private key**. Only a
+passed proposal can make that account act.
 
-## What governance controls
+## Scope of governance
 
-- Which countries' passport certificates the chain accepts, and revoking one that
-  is compromised.
+- The passport certificates that the chain accepts, and the revocation of a
+  compromised certificate.
 - The proof verifying keys.
-- Every module's parameters — fees, unbonding times, emission destinations.
-- Opening the liquidity auction.
+- The parameters of each module: fees, unbonding times, and emission
+  destinations.
+- The start of the liquidity auction.
 
-## How a vote works
+## Vote parameters
 
-| | Deposit | Voting period | Yes needed |
+| | Deposit | Voting period | Yes votes required |
 | --- | --- | --- | --- |
-| Normal | 1 ERTH | 7 days | two thirds |
-| Expedited | 5 ERTH | 1 day | three quarters |
+| Normal | 1 ERTH | 7 days | Two thirds |
+| Expedited | 5 ERTH | 1 day | Three quarters |
 
-Both need **33.4% quorum**, and a **33.4% veto** defeats a proposal outright.
-Voting power is bonded stake.
+Both tracks require a **33.4% quorum**. A **33.4% veto** defeats a proposal.
+Bonded stake determines voting power.
 
-A two-thirds bar rather than a simple majority is deliberate. A rule that changes
-on 50.1% is a rule that changes whenever the vote is close, and a chain whose
-parameters can flip back and forth is not one anyone can build on. The expedited
-track asks for more, not less: it trades a week of deliberation for one day, so
-it should need broader agreement to make up for it.
+The threshold is two thirds and not a simple majority. A rule that changes at
+50.1% changes at each close vote. Users cannot build on parameters that change
+frequently.
 
-The full deposit must be present when the proposal is submitted, or it waits in
-the deposit period and the clock never starts.
+The expedited track requires more agreement, not less. It reduces deliberation
+from seven days to one day. The higher threshold compensates for the shorter
+period.
 
-## Revoking a compromised certificate
+Submit the proposal with the full deposit. A proposal with a partial deposit
+stays in the deposit period and the voting period does not start.
 
-Governments sign passports with Document Signer certificates. If one is
-compromised, someone could forge registrations with it, so revocation goes on the
-**expedited** track — one day rather than seven.
+## Revocation of a compromised certificate
 
-Revocation is **not retroactive**. Registrations already made with that
-certificate stay valid and are dealt with separately. Every registration names
-its certificate publicly, so they can be found; wiping them all on a single vote
-would punish people who did nothing wrong.
+Governments sign passports with Document Signer certificates. A compromised
+certificate permits forged registrations. Revocation therefore uses the
+**expedited** track: one day instead of seven.
+
+Revocation is **not retroactive**. Registrations that used the certificate stay
+valid. Handle them separately. Each registration names its certificate publicly,
+so you can identify them. A single vote that removed all of them would also
+remove valid registrations.
 
 The [procedure](https://github.com/zenopie/earth-network-chain/blob/master/docs/TRUST_STORE_RUNBOOK.md)
-is written down in advance, because an emergency is a bad time to be drafting.
+exists in advance. Do not write a procedure during an emergency.
 
-## Where the chain is today
+## Current state of the chain
 
-Earth launches with **one validator**. One party can therefore pass any proposal
-— not through a special key, but by being the only staker.
+Earth starts with **one validator**. One party can therefore pass any proposal.
+This is not the result of a special key. It is the result of being the only
+staker.
 
-Stated plainly rather than left to be discovered. It resolves as other people
-stake, and there is no allocation list standing in the way of them doing so.
+This condition ends when other parties stake. There is no allocation list that
+prevents them from doing so.

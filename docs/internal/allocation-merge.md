@@ -3,31 +3,31 @@ sidebar_position: 3
 title: Allocation merge
 ---
 
-# The two allocation streams, merged
+# Merge of the two allocation streams
 
-Step 3 of the module reorganisation, **done**. Steps 1 (tokenomics into `x/earth`)
-and 2 (`x/caretaker` → `x/personhood`) preceded it.
+This is step 3 of the module reorganisation. It is **complete**. Step 1 moved
+tokenomics into `x/earth`. Step 2 renamed `x/caretaker` to `x/personhood`.
 
 `x/personhood/keeper/allocation.go` and `x/deflation/keeper/allocation.go` were
-near-duplicates of one engine, maintained twice — every fix so far (epoch-reset
-semantics, the voter split cap, the zero-percent rejection) had to be applied in
-both. They are now one module.
+near-duplicates of one engine, maintained in two places. Each fix so far —
+epoch-reset semantics, the voter split cap, the zero-percent rejection — was
+applied two times. They are now one module.
 
-## What exists now
+## Current structure
 
-`x/allocation` owns both emission streams, keyed by a stream id:
+`x/allocation` owns both emission streams. A stream id identifies them:
 
 ```go
-STREAM_ID_CARETAKER   = 1 // one-human-one-vote, 1 ERTH/sec
-STREAM_ID_GROUNDWORKS = 2 // stake-weighted,     1 ERTH/sec
+STREAM_ID_CARETAKER   = 1 // one vote for each human, 1 ERTH/sec
+STREAM_ID_GROUNDWORKS = 2 // stake-weighted,          1 ERTH/sec
 ```
 
-Every piece of state is stream-prefixed: `Options[(stream, id)]`,
+Each item of state carries a stream prefix: `Options[(stream, id)]`,
 `Voters[(stream, addr)]`, `RewardIndex[stream]`, `TotalWeight[stream]`,
 `Epoch[stream]`, `OptionSeq[stream]`, `IntegratedOptions[(stream, id)]`. Option
-ids restart per stream.
+ids restart for each stream.
 
-The streams differ in exactly one place, behind one interface:
+The streams differ in one place only, behind one interface:
 
 ```go
 type WeightSource interface {
@@ -36,48 +36,50 @@ type WeightSource interface {
 }
 ```
 
-`x/personhood` registers the caretaker source (live registration →
-`HumanVoterWeight`); the groundworks source is internal to `x/allocation`
-(`GetDelegatorBonded`), since
-that module already holds the staking hooks that keep the weight in sync.
+`x/personhood` registers the caretaker source: a live registration maps to
+`HumanVoterWeight`. The groundworks source is internal to `x/allocation`
+(`GetDelegatorBonded`), because that module already holds the staking hooks that
+keep the weight current.
 
-`x/deflation` is gone. Its `lp_rewards` integrated handler is registered by
-`x/dex`, and `registration_rewards` by `x/personhood`.
+`x/deflation` is removed. `x/dex` registers its `lp_rewards` integrated handler.
+`x/personhood` registers `registration_rewards`.
 
-## Dependency direction
+## Direction of dependencies
 
-The registries (`RegisterWeightSource`, `RegisterIntegratedHandler`) are maps on
-the keeper, populated from other modules' wiring. That is what keeps the graph a
-tree: `x/allocation` depends on staking and bank and nothing else;
-`x/dex` and `x/personhood` reach *into* it. A keeper-to-keeper dependency in both
+The registries `RegisterWeightSource` and `RegisterIntegratedHandler` are maps
+on the keeper. The wiring of other modules populates them. This keeps the
+dependency graph a tree. `x/allocation` depends on staking and bank only. `x/dex`
+and `x/personhood` call *into* it. A keeper-to-keeper dependency in both
 directions would deadlock depinject.
 
-`x/personhood` calls back through a narrow interface it declares itself
-(`AdvanceIndex`, `ClearVoter`, `DrawFromOption`) rather than importing the
+`x/personhood` calls back through a narrow interface that it declares itself:
+`AdvanceIndex`, `ClearVoter`, `DrawFromOption`. It does not import the
 allocation keeper.
 
-## Invariants worth not breaking
+## Invariants
 
 - **The two epochs are independent.** A governance reset of one stream must not
-  touch the other. `TestResetAllocationsIsPerStream` pins this.
-- **`MaxVoterOptions` is a DoS bound, not a usability rule.** `x/personhood`'s
-  expiry sweep clears a lapsed human's vote from BeginBlock, unwinding their
-  split one option at a time with nobody paying gas — multiplied by the sweep
-  limit in a single block.
-- **The caretaker stream's weight is flat.** Bonded stake belongs to the
-  groundworks weight source and the staking hooks, never to the shared engine.
+  affect the other. `TestResetAllocationsIsPerStream` verifies this.
+- **`MaxVoterOptions` is a DoS bound, not a usability rule.** The expiry sweep in
+  `x/personhood` clears the vote of a lapsed human from BeginBlock. It unwinds
+  the split one option at a time, and no account pays gas for this. The sweep
+  limit multiplies this work within one block.
+- **The weight of the caretaker stream is flat.** Bonded stake belongs to the
+  groundworks weight source and to the staking hooks. It must never enter the
+  shared engine.
 - **Option ids are per stream.** `RegistrationRewardOptionID` and
-  `LPRewardsOptionID` are both 1; under one module they would collide if ids were
-  global.
-- **`x/personhood` runs before `x/allocation` in BeginBlock.** The sweep has to
-  return a lapsed human's weight before the stream settles the block's emission.
+  `LPRewardsOptionID` are both 1. Under one module, global ids would collide.
+- **`x/personhood` runs before `x/allocation` in BeginBlock.** The sweep must
+  return the weight of a lapsed human before the stream settles the emission of
+  that block.
 
 ## Verification
 
-Run the chain, not just the test suite. Three separate breakages during this
-reorg passed all tests and would still have broken a running chain: missing
-module account permissions, a renamed genesis key, and a mangled proto.
+Run the chain. Do not rely on the test suite alone. Three separate defects
+during this reorganisation passed each test and would still have broken a
+running chain: missing module account permissions, a renamed genesis key, and a
+malformed proto file.
 
-Minimum checks: bonded pool balance equals the sum of validator tokens at a
-pinned height; `personhood params` returns 7 verifying keys; both streams accrue
-and claim.
+Minimum checks: the bonded pool balance equals the sum of validator tokens at a
+fixed height; `personhood params` returns 7 verifying keys; both streams accrue
+and permit a claim.

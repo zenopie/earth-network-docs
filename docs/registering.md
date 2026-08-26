@@ -4,44 +4,46 @@ sidebar_position: 2
 
 # Registering
 
-You register once, from your phone, with your passport.
+You register one time, from your phone, with your passport.
 
-1. The app reads the chip in your passport.
-2. Your phone builds a zero-knowledge proof that the passport is genuine and
-   signed by a government the chain trusts.
-3. Only the proof is sent.
+1. The app reads the chip in the passport.
+2. The phone builds a zero-knowledge proof. The proof shows that the passport is
+   genuine and that a government the chain trusts signed it.
+3. The app sends only the proof.
 
-Your name, date of birth, passport number and photo never leave the device. This
-is a property of where the proof is generated, not a promise about how data is
-handled after it is received — the network never receives it.
+Your name, date of birth, passport number, and photo stay on the device. This is
+a result of where the proof is generated. It is not a policy about the handling
+of received data. The network does not receive the data.
 
 ## The nullifier
 
-The chain records a **nullifier**: a one-way identifier derived from the passport
-itself.
+The chain records a **nullifier**. This is a one-way identifier that is derived
+from the passport.
 
-It cannot be reversed into your passport, and it is what stops the same passport
-registering twice. Renewing your passport produces the same nullifier, so a
-renewal is not a second person.
+You cannot reverse a nullifier into a passport. The nullifier prevents a second
+registration with the same passport. A renewed passport gives the same
+nullifier, so a renewal does not create a second person.
 
-This is the whole anti-Sybil mechanism. It is why an account cannot be duplicated
-by making another wallet.
+This is the complete anti-Sybil mechanism. A second wallet does not create a
+second account.
 
-## What it gets you
+## Results of registration
 
 - **1 ANML per day**, claimable in the app.
-- **A vote in the Caretaker fund** — one human, one vote, regardless of holdings.
-- **A share of the registration reward pool**, paid in ERTH when you register.
+- **A vote in the Caretaker fund.** Each human has one vote. Holdings do not
+  change it.
+- **A share of the registration reward pool**, paid in ERTH at registration.
 
-## Renewing
+## Renewal
 
-Registration lasts a year. Renew by registering again with the same passport.
+Registration is valid for one year. To renew, register again with the same
+passport.
 
-## Which passports work
+## Supported passports
 
-The chain trusts the Country Signing Certificate Authorities published by ICAO,
-plus a few countries whose certificates ICAO does not distribute. Adding a
-country is a governance decision.
+The chain trusts the Country Signing Certificate Authorities that ICAO
+publishes. It also trusts a small number of countries whose certificates ICAO
+does not distribute. To add a country, use a governance proposal.
 
-If your passport has no readable chip, it cannot be used. That is a limitation of
-the document, not of the network.
+A passport without a readable chip does not work. This is a limit of the
+document, not of the network.

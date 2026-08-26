@@ -4,38 +4,37 @@ sidebar_position: 1
 
 # Running a node
 
-Anyone can run a node. No permission, no stake required.
+Any user can run a node. No permission and no stake are required.
 
-The operational guides live with the code so they stay correct as the software
-changes:
+The operational guides are stored with the code, so that they stay correct as
+the software changes:
 
 - **[Running a node](https://github.com/zenopie/earth-network-chain/blob/master/docs/JOIN.md)**
-  — binary, genesis and its checksum, seeds, gas price, pruning, hardware.
+  — binary, genesis file and its checksum, seeds, gas price, pruning, hardware.
 - **[Upgrades](https://github.com/zenopie/earth-network-chain/blob/master/docs/UPGRADES.md)**
-  — how a coordinated upgrade runs, and what goes wrong.
+  — the procedure for a coordinated upgrade, and its failure modes.
 - **[Releases](https://github.com/zenopie/earth-network-chain/releases)** —
   binaries and checksums.
 
-## What is different about this chain
+## Differences from other chains
 
-Every registration verifies a zero-knowledge proof **on-chain**. That is unusual,
-and it is CPU-heavy.
+Each registration verifies a zero-knowledge proof **on-chain**. This is unusual
+and it uses significant CPU time.
 
-Two consequences:
+There are two consequences:
 
-- Budget more processor than a chain of this size would normally need.
-- Use **state sync** rather than replaying from genesis, because replaying
-  re-verifies every proof ever submitted. Sync cost grows with adoption, not just
+- Allocate more processor capacity than a chain of this size usually requires.
+- Use **state sync**. Do not replay from genesis. A replay verifies each proof
+  that the chain has ever received. Sync cost increases with adoption as well as
   with time.
 
-## Becoming a validator
+## How to become a validator
 
 There is no allowlist. Acquire ERTH, self-delegate, and submit
 `MsgCreateValidator`.
 
-There was no genesis allocation for validators. ERTH is earned — by registering a
-passport, by bidding in the liquidity auction, or on the market.
+Genesis contained no allocation for validators. You must earn ERTH: by
+registration of a passport, by a bid in the liquidity auction, or on the market.
 
-Keep your consensus key off the node itself. The join guide covers the remote
-signer setup, which fails closed: with a signer configured and none answering,
-your node signs nothing rather than signing with a key it should not hold.
+Do not keep the consensus key on the node. See
+[Protecting the consensus key](./remote-signer.md).

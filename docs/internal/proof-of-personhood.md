@@ -3,76 +3,86 @@ sidebar_position: 2
 title: Proof of personhood
 ---
 
-# Proof-of-personhood: status & remaining work
+# Proof of personhood: status and remaining work
 
-Direction: **Noir / Barretenberg UltraHonk, proved on the handset**, chosen over
-Self because the sensitive step never leaves the device (Self offloads it to a
-TEE) and because it needs no per-circuit trusted setup. Registration proofs are
-bb v5.0.0 UltraHonk proofs (poseidon2 flavor), verified natively on-chain.
+The selected direction is **Noir and Barretenberg UltraHonk, proved on the
+handset**. It was selected over Self for two reasons. The sensitive step stays
+on the device, where Self moves it to a TEE. It also requires no trusted setup
+for each circuit. Registration proofs are bb v5.0.0 UltraHonk proofs, in the
+poseidon2 flavor, verified natively on-chain.
 
-The circuits are **ours**, not zkPassport's: `circuits/` in the mobile repo —
-`poa_core` plus seven `lean_poa*` variants, one per Document Signer signature
-algorithm. What is borrowed from zkPassport is the approach and the proving
-library (`noir_android`), not the circuit.
+The circuits are **ours**, not the circuits of zkPassport. They are in
+`circuits/` in the mobile repository: `poa_core` and seven `lean_poa` variants,
+one for each Document Signer signature algorithm. The items taken from
+zkPassport are the approach and the proving library (`noir_android`). The
+circuit is not taken from zkPassport.
 
-## Done
-- [x] **On-chain verifier** — `zk/ultrahonk`: CGo bindings to Barretenberg's
-      own verifier (`third_party/barretenberg-go`, native lib rebuilt against bb
-      **v5.0.0**). Verifies real bb 5.0.0 UltraHonk proofs; sound (rejects
-      tampered). Poseidon2 flavor. See `third_party/barretenberg-go/README.md`.
-- [x] **Caretaker wired** — `MsgRegister{proof, public_signals, signature_algorithm}`
-      → `verifyRegistrationProof` selects the bb VK from `params.verifying_keys`,
-      calls `ultrahonk.Verify`, checks the `dsc_root` binding, returns the
-      nullifier. Keeper test green against the real proof.
-- [x] **Build infra** — `third_party/barretenberg-go/scripts/build-wrapper.sh` +
-      `checksums.json` pinned to v5.0.0 for all platforms.
+## Complete
+
+- [x] **On-chain verifier** — `zk/ultrahonk`. These are CGo bindings to the
+      Barretenberg verifier (`third_party/barretenberg-go`, with the native
+      library rebuilt against bb **v5.0.0**). It verifies actual bb 5.0.0
+      UltraHonk proofs and it is sound: it rejects modified proofs. It uses the
+      poseidon2 flavor. See `third_party/barretenberg-go/README.md`.
+- [x] **Caretaker integration** —
+      `MsgRegister{proof, public_signals, signature_algorithm}` calls
+      `verifyRegistrationProof`. That function selects the bb verifying key from
+      `params.verifying_keys`, calls `ultrahonk.Verify`, checks the `dsc_root`
+      binding, and returns the nullifier. The keeper test passes against an
+      actual proof.
+- [x] **Build infrastructure** —
+      `third_party/barretenberg-go/scripts/build-wrapper.sh` and
+      `checksums.json`, pinned to v5.0.0 for each platform.
 
 ## Remaining
 
-1. **On-device proving, end to end on real hardware.** The code is in place —
+1. **On-device proving, complete, on actual hardware.** The code exists.
    `PassportProver` calls `NoirProver` for a bb v5.0.0 poseidon2 UltraHonk proof
-   of the `lean_poa` circuit and splits it into the chain's
-   `(proof, public_signals)` form. What has not been done is a real passport,
-   scanned on a real handset, registering against a real node. Note the version
-   lockstep the file warns about: noir_android's bb must match the chain's
-   v5.0.0 lib or large-circuit proofs are rejected.
+   of the `lean_poa` circuit, then divides it into the `(proof, public_signals)`
+   form that the chain requires. The untested part is an actual passport,
+   scanned on an actual handset, registering against an actual node. Observe the
+   version requirement in that file: the bb version in noir_android must match
+   the v5.0.0 library of the chain, or the chain rejects large-circuit proofs.
 
-   This is the only open item here. The validator native libs are **not** one:
-   `lib/` carries `darwin_arm64` for dev, and the Linux libs are built per
-   architecture on native runners by `release.yml`, attached to releases by
-   `verifier-libs.yml`, and built in-image by the Dockerfile.
+   This is the only open item. The validator native libraries are not an open
+   item. `lib/` contains `darwin_arm64` for development. `release.yml` builds
+   the Linux libraries for each architecture on native runners,
+   `verifier-libs.yml` attaches them to releases, and the Dockerfile builds them
+   in the image.
 
 ## Settled — do not reopen
 
-- **The public-input schema is pinned and correct.** The positions are
-  governance parameters, read in `x/personhood/keeper/registration.go` as
-  `params.NullifierIndex`, `params.DscKeyIndex` and `params.CurrentDateIndex`,
-  and genesis seeds them **1, 2 and 0**.
+- **The public-input schema is fixed and correct.** The positions are governance
+  parameters. `x/personhood/keeper/registration.go` reads them as
+  `params.NullifierIndex`, `params.DscKeyIndex`, and `params.CurrentDateIndex`.
+  Genesis sets them to **1, 2, and 0**.
 
-  That matches the circuits. `main.nr` takes one public input, `current_date`,
-  and returns `(nullifier, dsc_key)`, so Barretenberg's public array is
-  `[current_date, nullifier, dsc_key]`. All seven variants — P-256, P-384, the
-  three brainpools, RSA-2048 and RSA-4096 — have the identical public surface,
-  which is why one set of indices serves every algorithm.
+  These values match the circuits. `main.nr` takes one public input,
+  `current_date`, and returns `(nullifier, dsc_key)`. The public array from
+  Barretenberg is therefore `[current_date, nullifier, dsc_key]`. All seven
+  variants — P-256, P-384, the three brainpool curves, RSA-2048, and RSA-4096 —
+  have an identical public surface. One set of indices therefore serves each
+  algorithm.
 
-  Confirmed against a real proof rather than by reading the source:
-  `x/personhood/keeper/testdata/lean_poa/public_inputs` holds exactly three
-  field elements — `250101` (a YYMMDD date), then `expected_nullifier`, then
-  `expected_dsc_key`. The phone agrees: `PassportProver.NUM_PUBLIC_INPUTS = 3`,
-  split in that order.
+  This was confirmed against an actual proof, not by reading the source.
+  `x/personhood/keeper/testdata/lean_poa/public_inputs` contains exactly three
+  field elements: `250101` (a YYMMDD date), then `expected_nullifier`, then
+  `expected_dsc_key`. The phone uses the same layout:
+  `PassportProver.NUM_PUBLIC_INPUTS = 3`, divided in that order.
 
-  An earlier version of this file said these were placeholders and that getting
-  them wrong would invalidate every registration. Neither is true any more, and
-  the claim outlived the fix long enough to be repeated as a launch blocker.
+  An earlier version of this file stated that these were placeholders, and that
+  an error in them would invalidate each registration. Both statements are now
+  incorrect. The claim remained in the file after the fix and was repeated as a
+  launch blocker.
 
-- **The verifying keys are seeded, and they are the real ones.** Seven distinct
-  keys ship in `networks/genesis/verifying-keys/`, one per algorithm. The
-  `lean_poa` key is byte-identical to the one the keeper test verifies a real bb
-  proof against, so these are `bb write_vk` output from the actual circuits, not
-  demo keys.
+- **The verifying keys are seeded and are the actual keys.** Seven distinct keys
+  are in `networks/genesis/verifying-keys/`, one for each algorithm. The
+  `lean_poa` key is byte-identical to the key that the keeper test uses to
+  verify an actual bb proof. These are therefore `bb write_vk` output from the
+  actual circuits, not demonstration keys.
 
-- **`dsc_root` is gone.** It pinned a certificate-registry Merkle root back when
-  the registry was off-chain; the field is now `reserved` in
-  `proto/earth/personhood/v1/params.proto`. A registration carries the Document
-  Signer certificate itself, checked against the CSCA trust store — 539
-  certificates, seeded in genesis from `csca/`.
+- **`dsc_root` is removed.** It pinned a Merkle root of the certificate registry
+  when that registry was off-chain. The field is now `reserved` in
+  `proto/earth/personhood/v1/params.proto`. A registration now carries the
+  Document Signer certificate itself, checked against the CSCA trust store. That
+  store holds 539 certificates, seeded in genesis from `csca/`.

@@ -484,8 +484,13 @@ has run. An untested upgrade path is discovered during an upgrade.
 - [x] `docs/JOIN.md` — written, and executed completely against the released
       binary. That execution found a missing step: the node refuses to start
       until `minimum-gas-prices` is set, with an error that does not name the
-      file. Three values stay `TBD` until launch: the seed address, the genesis
-      hash, and the gas price.
+      file. The three values that stayed `TBD` until launch are filled in as of
+      2026-08-28: the peer address
+      (`6ad7347a1e15cc3a247347e152fee9fdd7ed2440@provider.akash-palmito.org:32688`,
+      a persistent peer rather than a seed — there is no seed node, and
+      `seed.erth.network` does not resolve), the genesis hash
+      (`3701aa69c304f45bbede5bb9eef3b7770d57dd7c03f39caa8c1d7b8a1ea4f792`), and
+      the gas price (`0.005uerth`, the node's configured minimum).
 - [ ] Release notes for each tag: binary checksums; the genesis sha256, for the
       launch tag only; and the upgrade name and height, for upgrade tags only.
 - [x] **A documentation site.** `docs-site/` uses Docusaurus, which the Cosmos

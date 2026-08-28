@@ -10,9 +10,9 @@ This page contains the full procedure to sync a node on `earth-1`.
 If you cannot sync a node with this page alone, that is a defect in this page.
 Open an issue.
 
-> **The network is not launched.** Two values below show `TBD`. The launch
-> release supplies them: the seed address and the genesis hash. Until launch,
-> the network has one validator and there is nothing to join.
+> **The network launched at 2026-08-28T06:30:00Z**, from the genesis in the
+> `v0.5.0` release. It has one validator so far, so a node joining today syncs
+> from that one peer and adds the second.
 
 ---
 
@@ -21,7 +21,7 @@ Open an issue.
 Download from the [latest release](https://github.com/zenopie/earth-network-chain/releases/latest):
 
 ```bash
-VERSION=v0.1.7          # use the launch tag
+VERSION=v0.5.0          # the launch tag
 ARCH=amd64              # or arm64
 
 curl -LO https://github.com/zenopie/earth-network-chain/releases/download/$VERSION/earthd_${VERSION}_linux_${ARCH}.tar.gz
@@ -90,8 +90,11 @@ sha256sum ~/.earth/config/genesis.json
 The output must be:
 
 ```
-TBD — published with the launch release
+3701aa69c304f45bbede5bb9eef3b7770d57dd7c03f39caa8c1d7b8a1ea4f792  genesis.json
 ```
+
+A genesis that hashes to anything else is a different chain, whatever its
+`chain_id` says.
 
 If the value differs, stop. Do not continue.
 
@@ -106,7 +109,10 @@ earthd genesis validate-genesis
 **Seeds and reachability**, in `~/.earth/config/config.toml`:
 
 ```toml
-seeds = "TBD@seed.erth.network:26656"
+# persistent_peers, not seeds. A seed is a crawler that hands out addresses and
+# disconnects; this is the network's one node, and you want to hold a connection
+# to it. There is no seed node yet, and seed.erth.network does not resolve.
+persistent_peers = "6ad7347a1e15cc3a247347e152fee9fdd7ed2440@provider.akash-palmito.org:32688"
 # The address that other nodes use to reach this node. Set it if the node is
 # behind NAT, in a container, or at a provider that maps ports. If it is unset,
 # CometBFT advertises the address that it observes on itself and gives that
@@ -117,6 +123,11 @@ external_address = "your.host.or.ip:26656"
 Port **26656** must accept inbound connections. A node without inbound
 connectivity can still sync, because it dials out. But no peer can dial it. It
 therefore adds no connectivity to the network and cannot serve state sync.
+
+The node id above is fixed: it is derived from a node key the deployment injects,
+so it survives a redeploy. The host and port are the Akash provider's, and the
+port is assigned by the provider — if it ever changes, this page is wrong and the
+value in the node's own `/status` under `listen_addr` is right.
 
 For the Docker image, use the `SEEDS`, `PERSISTENT_PEERS`, and `EXTERNAL_ADDRESS`
 environment variables. The entrypoint writes them into `config.toml` at each

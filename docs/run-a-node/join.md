@@ -10,7 +10,7 @@ This page contains the full procedure to sync a node on `earth-1`.
 If you cannot sync a node with this page alone, that is a defect in this page.
 Open an issue.
 
-> **The network launched at 2026-08-28T06:30:00Z**, from the genesis in the
+> **The network launched at 2026-08-28T07:55:00Z**, from the genesis in the
 > `v0.5.0` release. It has one validator so far, so a node joining today syncs
 > from that one peer and adds the second.
 
@@ -21,7 +21,7 @@ Open an issue.
 Download from the [latest release](https://github.com/zenopie/earth-network-chain/releases/latest):
 
 ```bash
-VERSION=v0.5.0          # the launch tag
+VERSION=v0.5.2          # the launch tag
 ARCH=amd64              # or arm64
 
 curl -LO https://github.com/zenopie/earth-network-chain/releases/download/$VERSION/earthd_${VERSION}_linux_${ARCH}.tar.gz
@@ -90,7 +90,7 @@ sha256sum ~/.earth/config/genesis.json
 The output must be:
 
 ```
-3701aa69c304f45bbede5bb9eef3b7770d57dd7c03f39caa8c1d7b8a1ea4f792  genesis.json
+7c7d9f25f842e36496fe6c00f9436b38f33dbad282a08fe2468d1a44b02be28d  genesis.json
 ```
 
 A genesis that hashes to anything else is a different chain, whatever its

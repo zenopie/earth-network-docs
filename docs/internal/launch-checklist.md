@@ -489,7 +489,7 @@ has run. An untested upgrade path is discovered during an upgrade.
       (`6ad7347a1e15cc3a247347e152fee9fdd7ed2440@provider.akash-palmito.org:32688`,
       a persistent peer rather than a seed — there is no seed node, and
       `seed.erth.network` does not resolve), the genesis hash
-      (`3701aa69c304f45bbede5bb9eef3b7770d57dd7c03f39caa8c1d7b8a1ea4f792`), and
+      (`7c7d9f25f842e36496fe6c00f9436b38f33dbad282a08fe2468d1a44b02be28d`), and
       the gas price (`0.005uerth`, the node's configured minimum).
 - [ ] Release notes for each tag: binary checksums; the genesis sha256, for the
       launch tag only; and the upgrade name and height, for upgrade tags only.

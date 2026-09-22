@@ -60,6 +60,12 @@ allocation keeper.
 
 - **The two epochs are independent.** A governance reset of one stream must not
   affect the other. `TestResetAllocationsIsPerStream` verifies this.
+- **Only the groundworks slate is resettable.** `MsgResetAllocations` rejects
+  `STREAM_ID_CARETAKER` before it checks the authority: stake-weighted `x/gov`
+  holds no lever over the caretaker slate, which registered humans redirect by
+  voting. `TestResetAllocationsRejectsCaretaker` verifies this. The cost is that
+  a sybil-captured caretaker slate has no on-chain clear — recovery is a binary
+  upgrade.
 - **`MaxVoterOptions` is a DoS bound, not a usability rule.** The expiry sweep in
   `x/personhood` clears the vote of a lapsed human from BeginBlock. It unwinds
   the split one option at a time, and no account pays gas for this. The sweep

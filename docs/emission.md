@@ -48,9 +48,19 @@ options that holders select.
 The two funds differ in who selects. The Caretaker fund uses **one vote for each
 human**. Holdings have no effect. The Groundworks fund uses **bonded stake**.
 
-Any user can add an option to either fund for a small fee. Divide your vote
-between options by percentage. You can change the division at any time. Rewards
-accrue continuously to the current selection.
+Any user can add an option to the Caretaker fund for a small fee. Options on the
+Groundworks fund are added by governance, and registered humans can vote to
+remove one. Removal needs no stake vote: the Groundworks fund is directed by
+stake, so letting stake block a removal would leave humans able to object to a
+bad option and unable to end it. The reason is that Groundworks votes
+count bonded stake: if anyone could list an option that pays themselves, the best
+move for every staker would be to list their own address and vote for it, and the
+fund would end up paying out in proportion to stake instead of building anything.
+One vote for each human does not have that problem, so the Caretaker fund stays
+open to anyone.
+
+Divide your vote between options by percentage. You can change the division at
+any time. Rewards accrue continuously to the current selection.
 
 The Groundworks fund includes an **emergency fund** option. This option pays the
 community pool of the chain. Stake that points at it adds ERTH to the pool at

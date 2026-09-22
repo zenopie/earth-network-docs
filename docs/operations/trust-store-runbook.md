@@ -21,6 +21,7 @@ directly. The authority is the gov module account, which has no private key.
 ## Emergency: a compromised Document Signer
 
 **This procedure uses the expedited track.** The decision is made in advance.
+Note that it also needs the assembly, which has no quorum — see step 4.
 The duration is one day, not seven.
 
 Prepare all items below before you need them. A procedure that is drafted during
@@ -78,16 +79,37 @@ earthd tx gov submit-proposal revoke-dsc.json \
 **The deposit is 5 ERTH and must be complete.** A proposal with a partial
 deposit stays in the deposit period and the voting period does not start.
 
-### 4. Vote and monitor
+### 4. Vote in BOTH houses, and monitor
+
+Governance is bicameral. A revocation needs the stake vote **and** the assembly —
+the house where one registered human is one vote. Stake alone cannot pass it.
 
 ```bash
+# stake house
 earthd tx gov vote <id> yes --from <key> --chain-id earth-1
+
+# assembly — every registered human who can, should
+earthd tx assembly vote-proposal <id> yes --from <key> --chain-id earth-1
+
 earthd query gov proposal <id>
+earthd query assembly proposal-tally <id>
 ```
 
-The proposal passes at 33.4% quorum and three quarters yes votes. The expedited
-threshold is higher than the normal two thirds because the voting period is one
-day instead of seven.
+The stake house passes at 33.4% quorum and three quarters yes votes. The
+assembly also asks three quarters on the expedited track, for the same reason:
+the voting period is one day instead of seven, so the track pays in agreement
+what it does not pay in deliberation.
+
+**The assembly has no quorum, so silence is a refusal.** A revocation that no
+human votes on does not pass, however much stake is behind it. This is the step
+most likely to be missed in an incident, because it is the one that did not
+exist before: **tell people the vote is open.** Do not assume turnout.
+
+Falling short in the assembly does not destroy the proposal — an expedited
+proposal that misses its bar is converted to a normal one with a full seven-day
+voting period, and its deposit rides along. But a revocation that takes eight
+days instead of one is not the outcome this track exists for. Budget the
+announcement time, not just the voting time.
 
 ### 5. After the proposal passes
 
@@ -210,9 +232,17 @@ export to trust a certificate that nobody approved.
 | Expedited — revocation (DSC or CSCA) | 5 ERTH | 1 day | About 1 day |
 | Normal — adding a CSCA | 1 ERTH | 7 days | About 7 days |
 
-Quorum is 33.4% for both tracks. A normal proposal passes at two thirds yes
-votes. An expedited proposal passes at three quarters. While the chain has one
-validator, each vote passes. The delay is the voting period, not the result.
+Quorum is 33.4% for both tracks **in the stake house**. A normal proposal passes
+at two thirds yes votes there; an expedited one at three quarters. While the
+chain has one validator, each stake vote passes — the delay is the voting period,
+not the result.
+
+**The assembly is the half that can actually stop a revocation.** It has no
+quorum and no minimum turnout, so a proposal with no human votes fails outright,
+and its thresholds are the same two thirds and three quarters measured against
+the votes cast. Missing the expedited bar converts the proposal to the normal
+track rather than killing it, which turns "about 1 day" into about 8. The timing
+above holds only if humans vote.
 
 ---
 
@@ -230,7 +260,11 @@ methods are per-DSC revocation, or expiry at the end of the validity period.
 ## Before launch
 
 - [ ] Confirm that the expedited track is correct for revocation, or record the
-      reason that it is not.
+      reason that it is not. Note that the assembly's lack of a quorum means an
+      expedited revocation now depends on human turnout inside one day; decide in
+      advance how that announcement is made and by whom.
+- [ ] Confirm that enough registered humans can cast an assembly vote — today
+      that means the `earthd` CLI, until the wallet apps ship voting.
 - [ ] Replace `GOV_MODULE_ADDRESS` above with the actual value.
 - [ ] Check the query commands against the released binary. They are written
       from the messages of the module, not from a live run.

@@ -68,6 +68,6 @@ amounts that genesis did give to individual accounts.
 - **[Emission](./emission.md)**: where ERTH comes from and where it goes.
 - **[Using the app](./using-the-app.md)**: swaps, staking and votes.
 - **[Governance](./governance.md)**: how rules change.
-- **[Security review](./security-review.md)**: what the latest audit found and
+- **[Security review](./technical/security-review.md)**: what the latest audit found and
   what is still open.
 - **[Running a node](./run-a-node/overview.md)**: joining the network.

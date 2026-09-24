@@ -148,7 +148,7 @@ therefore adds no connectivity to the network and cannot serve state sync.
 `0befe200008e553842a43fd3a04ce4001cadf788`, which `https://rpc.erth.network/status`
 reports under `node_info.id`. The host and port are assigned by its hosting
 provider and are not advertised, so a new node cannot dial it today. This is an
-open item on the [security review](../security-review.md), and this page will
+open item on the [security review](../technical/security-review.md), and this page will
 give the full address once it is fixed. Until then, ask in the project's channels
 for a peer.
 

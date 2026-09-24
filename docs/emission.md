@@ -20,7 +20,7 @@ by rule and one is a fund that voters point.
 | --- | --- | --- |
 | Staking rewards | Capital | Stakers, in proportion to bonded ERTH |
 | ANML buyback and burn | People | Every ANML holder, through a permanent buyer |
-| Caretaker fund | People, one vote each | Whatever registered humans vote for |
+| Caretaker fund | People, one vote each | Private providers of public goods, competing for those votes |
 | Groundworks fund | Capital, by bonded stake | Whatever stakers vote for |
 
 A fund that nobody has voted on issues nothing. Emission that nobody chose is
@@ -48,12 +48,38 @@ continuously.
 The funds differ in who chooses and who may add options:
 
 - **Caretaker** is one vote per registered human. Anyone can add an option for a
-  small fee, because holdings buy no extra votes here.
+  small fee, because holdings buy no extra votes here. See below for what that
+  makes it.
 - **Groundworks** is weighted by bonded stake. Only governance can add an option.
   If anyone could, every staker's best move would be to list their own address
   and vote for it, and the fund would just be a second staking reward. Registered
   humans can vote to **remove** a Groundworks option on their own, with no stake
   vote, so that they can end a bad option and not merely object to it.
+
+### The Caretaker fund is a market for public goods
+
+Public goods are the things markets fail to make. Everyone benefits from clean
+water data, open maps or security audits of shared software, so nobody pays for
+them, so nobody builds them. States fill the gap with one agency or one
+contractor, paid whether it performs or not. That monopoly is where waste and
+capture settle.
+
+The Caretaker fund makes public goods a competitive market instead:
+
+- **Providers are private.** A company, a team or a single person lists an
+  option with its own address. It runs its own operation and keeps what it
+  earns.
+- **Voting costs voters nothing.** The money comes from issuance, not from the
+  people voting, so there is no free-rider problem. Everyone can back the public
+  goods they value without paying for them.
+- **Income follows service, continuously.** A provider's income is its share of
+  the human vote, paid every block. People can move their vote at any moment, so
+  a provider that slips loses income the same day, and a better one can win it in
+  weeks. There are no tenders, no multi-year contracts and no one to lobby.
+
+The result is public goods built with the efficiency of a private company, and
+held to account by the public directly, one vote each. Every ERTH a provider
+wastes is margin a rival can undercut, and every ERTH it saves is its own.
 
 The Groundworks fund includes an **emergency fund** option that pays the chain's
 community pool. Stake pointed at it builds a reserve before anyone knows what it

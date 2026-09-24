@@ -25,7 +25,7 @@ directly by rule, and the other is a shared fund that voters point somewhere.
 | | Paid to individuals, by rule | A shared fund, pointed by vote |
 | --- | --- | --- |
 | **Capital decides** | **Staking rewards**, paid in proportion to bonded ERTH | **Groundworks fund**, steered by stake |
-| **People decide** | **ANML buyback**: the chain buys and burns the ANML that registered humans claim | **Caretaker fund**, one vote per human |
+| **People decide** | **ANML buyback**: the chain buys and burns the ANML that registered humans claim | **Caretaker fund**: private providers compete to build public goods, and each human's vote moves the money |
 
 The split is written into the software as a constant. No proposal can move money
 from one pillar to another, because any split a vote could change would be won

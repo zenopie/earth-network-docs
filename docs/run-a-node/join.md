@@ -10,9 +10,29 @@ This page contains the full procedure to sync a node on `earth-1`.
 If you cannot sync a node with this page alone, that is a defect in this page.
 Open an issue.
 
-> **The network launched at 2026-08-28T07:55:00Z**, from the genesis in the
-> `v0.5.0` release. It has one validator so far, so a node joining today syncs
-> from that one peer and adds the second.
+> **The network launched at 2026-08-28T07:55:00Z** on the `v0.5.2` binary. The
+> genesis file is the same in every release since `v0.5.0`. It has one validator
+> so far, so a node joining today syncs from that one peer and adds the second.
+
+## Which binary
+
+A node runs the binary for the part of the chain it is processing. Each upgrade
+below halted the chain at its height, and the next binary continued from there.
+
+| Upgrade | Height | Binary from that height |
+| --- | --- | --- |
+| launch | 1 | `v0.5.2` |
+| `v0.6.0` | 30,100 | `v0.6.0` |
+| `v0.7.0` | 50,100 | `v0.7.0` |
+| `v0.8.0` | 90,000 | `v0.8.0` |
+| `v0.9.0` | 391,277 | `v0.9.0` |
+| `v0.9.1` | 467,500 (scheduled) | `v0.9.1` |
+
+- **State sync** (section 4b) starts near the tip, so you need only the binary
+  for the current height: the last row that has already happened.
+- **Replaying from genesis** needs every binary in turn. Start on `v0.5.2` under
+  cosmovisor with download enabled, and it fetches each later binary at its
+  height. See [Upgrades](./upgrades.md#method-b--cosmovisor).
 
 ---
 
@@ -21,7 +41,7 @@ Open an issue.
 Download from the [latest release](https://github.com/zenopie/earth-network-chain/releases/latest):
 
 ```bash
-VERSION=v0.5.2          # the launch tag
+VERSION=v0.5.2          # the launch tag; see "Which binary" above
 ARCH=amd64              # or arm64
 
 curl -LO https://github.com/zenopie/earth-network-chain/releases/download/$VERSION/earthd_${VERSION}_linux_${ARCH}.tar.gz
@@ -112,7 +132,7 @@ earthd genesis validate-genesis
 # persistent_peers, not seeds. A seed is a crawler that hands out addresses and
 # disconnects; this is the network's one node, and you want to hold a connection
 # to it. There is no seed node yet, and seed.erth.network does not resolve.
-persistent_peers = "6ad7347a1e15cc3a247347e152fee9fdd7ed2440@provider.akash-palmito.org:32688"
+persistent_peers = "0befe200008e553842a43fd3a04ce4001cadf788@<host>:<port>"
 # The address that other nodes use to reach this node. Set it if the node is
 # behind NAT, in a container, or at a provider that maps ports. If it is unset,
 # CometBFT advertises the address that it observes on itself and gives that
@@ -124,10 +144,13 @@ Port **26656** must accept inbound connections. A node without inbound
 connectivity can still sync, because it dials out. But no peer can dial it. It
 therefore adds no connectivity to the network and cannot serve state sync.
 
-The node id above is fixed: it is derived from a node key the deployment injects,
-so it survives a redeploy. The host and port are the Akash provider's, and the
-port is assigned by the provider — if it ever changes, this page is wrong and the
-value in the node's own `/status` under `listen_addr` is right.
+**The validator's public P2P address is not published yet.** Its node id is
+`0befe200008e553842a43fd3a04ce4001cadf788`, which `https://rpc.erth.network/status`
+reports under `node_info.id`. The host and port are assigned by its hosting
+provider and are not advertised, so a new node cannot dial it today. This is an
+open item on the [security review](../security-review.md), and this page will
+give the full address once it is fixed. Until then, ask in the project's channels
+for a peer.
 
 For the Docker image, use the `SEEDS`, `PERSISTENT_PEERS`, and `EXTERNAL_ADDRESS`
 environment variables. The entrypoint writes them into `config.toml` at each

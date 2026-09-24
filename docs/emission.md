@@ -4,115 +4,120 @@ sidebar_position: 3
 
 # Emission
 
-Earth issues **4 ERTH per second, permanently**. This is a fixed rate. It is not
-a halving schedule and not a governance parameter.
+Earth issues up to **4 ERTH a second, for ever**: 126,144,000 ERTH a year. The
+rate is fixed in the software. It does not halve, and no vote can change it.
 
-The rate is constant. The supply that it adds to increases. The inflation
-*rate* therefore decreases without intervention: approximately 5% in year one,
-and below 2.5% by year twenty. There is no schedule to maintain.
+Because the rate is fixed while the supply grows, inflation falls on its own.
+Nobody has to maintain a schedule.
 
 ## The four pillars
 
-The chain divides the 4 ERTH/sec into **four equal pillars of 1 ERTH/sec**. Two
-pillars use personhood as the weight and two use capital. Two pay individuals
-and two pay destinations that voters select.
+The 4 ERTH a second is split into four pillars of 1 ERTH a second each. Capital
+decides two of them and people decide two. In each pair, one pays individuals
+by rule and one is a fund that voters point.
 
-| Pillar | Weight | Recipient |
+| Pillar | Who decides | Who receives |
 | --- | --- | --- |
-| Staking rewards | Capital | Individuals, in proportion to stake |
-| ANML buyback-and-burn | Personhood | All users, through ANML destruction |
-| Caretaker fund | Personhood | Options selected at one vote for each human |
-| Groundworks fund | Capital | Options selected by stake |
+| Staking rewards | Capital | Stakers, in proportion to bonded ERTH |
+| ANML buyback and burn | People | Every ANML holder, through a permanent buyer |
+| Caretaker fund | People, one vote each | Whatever registered humans vote for |
+| Groundworks fund | Capital, by bonded stake | Whatever stakers vote for |
+
+A fund that nobody has voted on issues nothing. Emission that nobody chose is
+never created, so before the first human registers the Caretaker fund is silent.
 
 ### Staking rewards
 
-This is standard proof-of-stake. Delegate ERTH to a validator. You then earn a
-part of 1 ERTH/sec in proportion to your stake, less the commission of that
-validator.
+Standard proof of stake. Delegate ERTH to a validator and earn a share of 1 ERTH
+a second in proportion to your stake, less the validator's commission. Unbonding
+takes **21 days**.
 
-Unbonding takes **21 days**.
+### ANML buyback and burn
 
-### ANML buyback-and-burn
-
-Each second, the chain mints 1 ERTH, buys ANML with it on the internal exchange,
-and destroys the ANML.
-
-This gives ANML a price floor. A registered human claims 1 ANML each day and can
-sell it. The chain is a permanent buyer, funded by one quarter of all issuance.
+Every second the chain issues 1 ERTH, uses it to buy ANML on its own exchange,
+and destroys the ANML. Registered humans each claim 1 ANML a day and can sell
+it, and the chain is always there to buy, funded by a quarter of all issuance.
 
 ### The two funds
 
-The **Caretaker fund** and the **Groundworks fund** each direct 1 ERTH/sec to
-options that holders select.
+The **Caretaker fund** and the **Groundworks fund** each pay 1 ERTH a second to
+the options their voters choose. You split your vote across options by
+percentage and can change it at any time. Rewards follow your current split
+continuously.
 
-The two funds differ in who selects. The Caretaker fund uses **one vote for each
-human**. Holdings have no effect. The Groundworks fund uses **bonded stake**.
+The funds differ in who chooses and who may add options:
 
-Any user can add an option to the Caretaker fund for a small fee. Options on the
-Groundworks fund are added by governance, and registered humans can vote to
-remove one. Removal needs no stake vote: the Groundworks fund is directed by
-stake, so letting stake block a removal would leave humans able to object to a
-bad option and unable to end it. The reason is that Groundworks votes
-count bonded stake: if anyone could list an option that pays themselves, the best
-move for every staker would be to list their own address and vote for it, and the
-fund would end up paying out in proportion to stake instead of building anything.
-One vote for each human does not have that problem, so the Caretaker fund stays
-open to anyone.
+- **Caretaker** is one vote per registered human. Anyone can add an option for a
+  small fee, because holdings buy no extra votes here.
+- **Groundworks** is weighted by bonded stake. Only governance can add an option.
+  If anyone could, every staker's best move would be to list their own address
+  and vote for it, and the fund would just be a second staking reward. Registered
+  humans can vote to **remove** a Groundworks option on their own, with no stake
+  vote, so that they can end a bad option and not merely object to it.
 
-Divide your vote between options by percentage. You can change the division at
-any time. Rewards accrue continuously to the current selection.
+The Groundworks fund includes an **emergency fund** option that pays the chain's
+community pool. Stake pointed at it builds a reserve before anyone knows what it
+will be for. Governance decides how the pool is spent.
 
-The Groundworks fund includes an **emergency fund** option. This option pays the
-community pool of the chain. Stake that points at it adds ERTH to the pool at
-each block. Governance then decides the use of the pool. Stakers can therefore
-build a reserve before they know its purpose.
+The first Caretaker option is the **registration reward**. It pays each new
+registrant, and their referrer if they have one, from a pool funded at genesis
+and topped up by the Caretaker votes pointed at it.
 
-## The pre-mine
+## Genesis supply
 
-The chain started with **2,522,880,000 ERTH**. This is exactly twenty years at
-the rate of 4 ERTH/sec, minted at genesis.
+The chain started with **2,522,880,000 ERTH**, twenty years of issuance at
+4 ERTH a second. It was split into four quarters of **630,720,000 ERTH**:
 
-The pre-mine is *additive*. It is not a substitute for issuance. The chain
-continues to issue in addition to it. At year twenty the total is approximately
-5.05 billion, not 2.52 billion.
+| Quarter | Where it went |
+| --- | --- |
+| 1 | The ANML/ERTH pool on the exchange |
+| 2 | The ERTH that liquidity auction bidders receive |
+| 3 | The ERTH paired with what those bidders pay, to open a second pool |
+| 4 | The registration reward pool |
 
-The pre-mine was divided into three equal parts:
+Genesis also placed **21,000 ERTH** in three ordinary accounts: 1,000 to bond the
+first validator and 10,000 each to two others. No other individual received an
+allocation, and there are no founder, team or investor tokens.
 
-- One third started the ANML/ERTH pool on the exchange.
-- One third pays the bidders in the liquidity auction.
-- One third is paired with the amount that those bidders raise, to start a second
-  pool.
+## Protocol-owned liquidity retires in five years
 
-All of the pre-mine went to liquidity. **No person received an allocation.**
+The chain owns its two pools at the start, and burns them down on a straight line
+over **five years**, each from the day it opens. A market needs active
+management, and a liquidity provider's incentives are not a token holder's. So
+the protocol opens the market and then steps back, and independent providers
+take its place. Their share of LP rewards grows every year.
 
-## Protocol-owned liquidity is temporary
+The ANML/ERTH pool burns both assets as it retires. The auction pool burns only
+its ERTH. The other asset stays in the pool, where it buys ERTH from the market
+over time.
 
-The chain owns this liquidity at the start. It **retires the liquidity to zero
-over ten years**.
+## Supply over time
 
-A market requires active management. The incentives of a liquidity provider
-differ from the incentives of an ERTH holder. The protocol therefore starts the
-market and then withdraws from it. Providers who manage the position replace the
-protocol. The share of rewards for those providers increases each year.
+Two of the four quarters sit in these pools, so five years of retirement burns
+1,261,440,000 ERTH while issuance adds 630,720,000. **Supply falls by about
+630 million ERTH over the first five years**, then grows at the fixed rate.
 
-The ANML/ERTH position burns both assets as it retires. The auction pool burns
-only its ERTH. The other asset stays in the pool, which then uses it to buy ERTH
-from the market over time.
+| Point | Supply, before fee burns | Yearly issuance as a share of supply |
+| --- | --- | --- |
+| Genesis | 2.52 billion | Supply shrinks about 5% a year while pools retire |
+| Year 5 | 1.89 billion | 6.7% |
+| Year 20 | 3.78 billion | 3.3% |
 
-## Burning
+These assume all four pillars are voted on from the start and both pools open at
+launch. Real supply is lower, because of the two burns below.
+
+## Burns
 
 Two mechanisms destroy ERTH continuously:
 
-- **Half of each swap fee.** The fee is 0.3% for each hop, charged in ERTH. Half
-  stays with the liquidity providers. The chain destroys the other half.
-- **Half of each transaction fee.** Gas uses the same division. The chain
-  destroys half and pays half to validators and their delegators through the
-  normal staking payout. If the division is not even, the chain burns the extra
-  unit.
+- **Half of every swap fee.** The fee is 0.3% a hop, charged in ERTH. Half stays
+  with liquidity providers and half is burned.
+- **Half of every transaction fee.** The other half goes to validators and their
+  delegators. When a fee does not split evenly, the extra unit is burned.
 
-Activity therefore reduces supply while issuance increases it at a constant rate.
+So activity shrinks supply while issuance grows it at a fixed rate.
 
-The paid half is the only part of validator revenue that responds to network
-use. The staking pillar is a fixed 1 ERTH/sec at all levels of activity. This is
-most important for registration. Verification of a passport proof uses
-significant CPU time, and validators pay that cost at each registration.
+The paid half of fees is the only part of validator income that grows with use:
+staking rewards are a fixed 1 ERTH a second whatever happens. That matters most
+for registration, because verifying a passport proof costs validators real CPU
+time.

@@ -76,24 +76,40 @@ cast do not carry over; the second round is counted from zero.
 Submit the proposal with the full deposit. A proposal with a partial deposit
 stays in the deposit period and the voting period does not start.
 
-## Revocation of a compromised certificate
+## Revoking a compromised certificate
 
-Governments sign passports with Document Signer certificates. A compromised
-certificate permits forged registrations. Revocation therefore uses the
-**expedited** track: one day instead of seven.
+Governments sign passports with **Document Signer** certificates. If one is
+stolen, or a government misuses it, it can sign passports for people who do not
+exist. The chain's answer is to revoke that certificate, which takes a governance
+proposal. Use the **expedited** track: one day instead of seven.
 
-Plan for the assembly. An expedited revocation needs three quarters of the human
-votes cast within one day. If it falls short it is not lost, but it then takes the
-ordinary seven days — so tell people a revocation vote is open rather than
-assuming turnout.
+When the revocation passes:
 
-Revocation is **not retroactive**. Registrations that used the certificate stay
-valid. Handle them separately. Each registration names its certificate publicly,
-so you can identify them. A single vote that removed all of them would also
-remove valid registrations.
+- No new registration signed by that certificate is accepted.
+- Registrations already made with it **stop counting at once**. They can no
+  longer claim ANML, vote in the assembly or carry weight in the Caretaker fund.
+- The chain then removes them in batches over the following blocks. As each one
+  is removed, its votes are taken off every ballot still open.
 
-The [procedure](https://github.com/zenopie/earth-network-chain/blob/master/docs/TRUST_STORE_RUNBOOK.md)
-exists in advance. Do not write a procedure during an emergency.
+**The registrations under a certificate cannot vote on revoking it.** The
+assembly refuses their votes on that proposal, so a forger with enough fake
+registrations cannot vote down its own revocation. Everyone else votes as normal.
+
+This is blunt. Real people whose passports that certificate signed lose their
+registration too, and have to register again with a passport signed by a
+different certificate. Each registration names its certificate publicly, so who
+is affected can be counted before the vote.
+
+Plan for turnout. An expedited revocation needs three quarters of the human votes
+cast within one day. If it falls short it is not lost, but it then takes the
+ordinary seven days, so tell people a revocation vote is open.
+
+The [trust store runbook](./operations/trust-store-runbook.md) covers the
+procedure. Write it down before an emergency, not during one.
+
+Revoking a **Country Signing CA**, the root a country's Document Signers chain
+to, stops new registrations under it but does not remove existing ones. Those are
+removed by revoking the individual Document Signers.
 
 ## Current state of the chain
 

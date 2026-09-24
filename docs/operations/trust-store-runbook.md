@@ -128,11 +128,17 @@ one block. Monitor completion:
 earthd query personhood registrations-by-dsc <dsc-key> --node https://rpc.erth.network
 ```
 
-ANML claims stop immediately, independent of the queue, because the claim path
-re-reads the registration at each claim. The purpose of the purge is governance
-weight. A stream stores its total weight and moves that weight only when a voter
-is explicitly cleared. Weight that a revoked signer produced therefore stays
-counted until its registrations are retired.
+ANML claims, new assembly votes and Caretaker weight stop immediately, independent
+of the queue, because each of them re-checks the signer. The purge is for what was
+already counted: a stream stores its total weight and moves it only when a voter
+is explicitly cleared, and votes already cast sit on open ballots. As each
+registration is retired, its weight is cleared and its votes come off every open
+ballot (from v0.9.1).
+
+The signer's own registrations cannot vote on the revocation proposal itself
+(from v0.9.1). The assembly refuses their votes on any proposal carrying a
+`MsgRevokeDsc` for their signer, so a compromised signer cannot vote down its own
+revocation.
 
 Publish which registrations were retired and the reason. In the normal case, the
 holders of those registrations did nothing wrong. A compromised signer is a

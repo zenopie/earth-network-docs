@@ -4,46 +4,73 @@ sidebar_position: 2
 
 # Registering
 
-You register one time, from your phone, with your passport.
+You register once a year, from your phone, with your passport.
 
-1. The app reads the chip in the passport.
-2. The phone builds a zero-knowledge proof. The proof shows that the passport is
-   genuine and that a government the chain trusts signed it.
+1. The app reads the chip in your passport over NFC.
+2. The phone builds a zero-knowledge proof. It shows that the passport is
+   genuine, that a government the chain trusts signed it, that it has not
+   expired, and that the registration is for your wallet address.
 3. The app sends only the proof.
 
-Your name, date of birth, passport number, and photo stay on the device. This is
-a result of where the proof is generated. It is not a policy about the handling
-of received data. The network does not receive the data.
+Your name, date of birth, passport number and photo stay on the phone. That is
+not a promise about how we handle your data: the data is never sent, so there is
+nothing to handle. [Privacy](./privacy.md) lists exactly what the chain does
+record.
 
 ## The nullifier
 
-The chain records a **nullifier**. This is a one-way identifier that is derived
-from the passport.
+The chain records a **nullifier**, a one-way tag computed from your passport
+number and date of birth. It cannot be turned back into either. A second
+registration with the same passport produces the same nullifier, and the chain
+refuses it as a new person.
 
-You cannot reverse a nullifier into a passport. The nullifier prevents a second
-registration with the same passport. A renewed passport gives the same
-nullifier, so a renewal does not create a second person.
+The proof is also bound to the wallet address you register from. Someone who
+copies your proof out of a block cannot use it for their own wallet.
 
-This is the complete anti-Sybil mechanism. A second wallet does not create a
-second account.
+## What you get
 
-## Results of registration
+- **1 ANML a day**, claimed in the app. Days you do not claim do not carry over.
+- **A vote in the Caretaker fund**, one per human whatever you hold.
+- **A seat in the assembly**, the house that must approve every governance
+  proposal.
+- **A share of the registration reward**, paid in ERTH when you register. It
+  halves as more people register, so early registrants receive more. If someone
+  referred you, you and they each receive a share.
 
-- **1 ANML per day**, claimable in the app.
-- **A vote in the Caretaker fund.** Each human has one vote. Holdings do not
-  change it.
-- **A share of the registration reward pool**, paid in ERTH at registration.
+## Moving to a new wallet
 
-## Renewal
+Register again from the new wallet with the same passport. The chain recognises
+the nullifier and moves your registration, with its ANML clock, to the new
+address. There is no second reward and no second vote.
 
-Registration is valid for one year. To renew, register again with the same
-passport.
+## Renewing
 
-## Supported passports
+A registration lasts one year. To renew, register again.
 
-The chain trusts the Country Signing Certificate Authorities that ICAO
-publishes. It also trusts a small number of countries whose certificates ICAO
-does not distribute. To add a country, use a governance proposal.
+A renewed passport has a new passport number, so it produces a **new**
+nullifier. This is deliberate: a nullifier built from something that never
+changes, like your name, could be guessed by anyone who knows your name and
+birthday, and they could then find your wallet. The cost is that for a short
+time one person can hold a registration from the old passport and one from the
+new. The old one lapses at the end of its year.
 
-A passport without a readable chip does not work. This is a limit of the
-document, not of the network.
+The same applies to anyone who holds two valid passports at once, such as dual
+nationals. Earth treats each passport as one registration.
+
+## Who can register
+
+You need a passport with a readable chip, issued by a country whose signing
+certificates the chain trusts. The chain trusts the certificates that ICAO
+publishes, plus a few countries that ICAO does not distribute. Adding a country
+takes a governance proposal.
+
+Many people in the world do not hold a chip passport. They cannot register yet.
+That is a real limit of building on passports, and it is the price of not
+needing a company, a biometric scanner or a database to decide who is a person.
+
+## Before you register
+
+- Use the latest app. After an upgrade that changes the proof, only proofs from
+  the current app verify.
+- Register from the wallet you intend to keep. You can move later, but it takes
+  another scan.

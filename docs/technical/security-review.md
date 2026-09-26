@@ -50,7 +50,7 @@ three high items left are in the deployment and are being handled separately.
 | Medium | The gas charged for verifying a proof is probably below its real CPU cost, so blocks of invalid proofs are cheap | Governance parameter |
 | Medium | The proof verifier accepts field elements of p or more and does not pin the number of public inputs (registration already guards against both) | Node software |
 | Medium | The verifier library's headers are fetched by a movable git tag and the built library has no pinned hash | Build change |
-| Medium | Validators download upgrade binaries automatically and the node container runs as root | Image change |
+| Medium | The node container runs as root | Image change |
 | Low | The nullifier does not include the issuing country, and a document number longer than 9 characters is truncated | Circuit change |
 | Low | Interchain accounts may execute any message type | Governance parameter |
 | Low | Moving a registration to a new wallet uses up the signer's and country's daily allowance | Next upgrade |
@@ -61,6 +61,12 @@ three high items left are in the deployment and are being handled separately.
 | Low | Re-seeding a pool with no shares hands the depositor any reserve left in it | Next upgrade |
 | Low | After a governance reset of the Groundworks slate, a staking change revives a voter's old split | Next upgrade |
 | Low | The LP unbondings query walks every unbonding on the chain | Node software |
+
+Validators also download upgrade binaries automatically when a governance
+upgrade passes. That is deliberate and stays: the download must match the
+checksum in the proposal, the proposal needs both stake and two thirds of human
+votes, and an operator who does not want automatic upgrades can run without
+cosmovisor.
 
 ### Mobile apps
 

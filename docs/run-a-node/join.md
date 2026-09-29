@@ -10,9 +10,11 @@ This page contains the full procedure to sync a node on `earth-1`.
 If you cannot sync a node with this page alone, that is a defect in this page.
 Open an issue.
 
-> **The network launched at 2026-08-28T07:55:00Z** on the `v0.5.2` binary. The
-> genesis file is the same in every release since `v0.5.0`. It has one validator
-> so far, so a node joining today syncs from that one peer and adds the second.
+> **The network relaunched at 2026-09-29T12:00:00Z** on the `v0.9.3` binary,
+> from a new genesis. The earlier `earth-1` (launched 2026-08-28 on `v0.5.2`)
+> halted at the v0.9.2 upgrade and its state is gone; the chain id is unchanged.
+> It has one validator so far, so a node joining today syncs from that one peer
+> and adds the second.
 
 ## Which binary
 
@@ -21,16 +23,11 @@ below halted the chain at its height, and the next binary continued from there.
 
 | Upgrade | Height | Binary from that height |
 | --- | --- | --- |
-| launch | 1 | `v0.5.2` |
-| `v0.6.0` | 30,100 | `v0.6.0` |
-| `v0.7.0` | 50,100 | `v0.7.0` |
-| `v0.8.0` | 90,000 | `v0.8.0` |
-| `v0.9.0` | 391,277 | `v0.9.0` |
-| `v0.9.1` | 467,500 (scheduled) | `v0.9.1` |
+| launch | 1 | `v0.9.3` |
 
 - **State sync** (section 4b) starts near the tip, so you need only the binary
   for the current height: the last row that has already happened.
-- **Replaying from genesis** needs every binary in turn. Start on `v0.5.2` under
+- **Replaying from genesis** needs every binary in turn. Start on `v0.9.3` under
   cosmovisor with download enabled, and it fetches each later binary at its
   height. See [Upgrades](./upgrades.md#method-b--cosmovisor).
 
@@ -41,7 +38,7 @@ below halted the chain at its height, and the next binary continued from there.
 Download from the [latest release](https://github.com/zenopie/earth-network-chain/releases/latest):
 
 ```bash
-VERSION=v0.5.2          # the launch tag; see "Which binary" above
+VERSION=v0.9.3          # the launch tag; see "Which binary" above
 ARCH=amd64              # or arm64
 
 curl -LO https://github.com/zenopie/earth-network-chain/releases/download/$VERSION/earthd_${VERSION}_linux_${ARCH}.tar.gz
@@ -110,7 +107,7 @@ sha256sum ~/.earth/config/genesis.json
 The output must be:
 
 ```
-7c7d9f25f842e36496fe6c00f9436b38f33dbad282a08fe2468d1a44b02be28d  genesis.json
+acbf85491374558cac98044547ef6f24fa365631ebb254905b3e80489ac46127  genesis.json
 ```
 
 A genesis that hashes to anything else is a different chain, whatever its
@@ -132,7 +129,7 @@ earthd genesis validate-genesis
 # persistent_peers, not seeds. A seed is a crawler that hands out addresses and
 # disconnects; this is the network's one node, and you want to hold a connection
 # to it. There is no seed node yet, and seed.erth.network does not resolve.
-persistent_peers = "0befe200008e553842a43fd3a04ce4001cadf788@<host>:<port>"
+persistent_peers = "3c94e99d4f898e4939964e471be5105e3416e3f5@<host>:<port>"
 # The address that other nodes use to reach this node. Set it if the node is
 # behind NAT, in a container, or at a provider that maps ports. If it is unset,
 # CometBFT advertises the address that it observes on itself and gives that
@@ -145,7 +142,7 @@ connectivity can still sync, because it dials out. But no peer can dial it. It
 therefore adds no connectivity to the network and cannot serve state sync.
 
 **The validator's public P2P address is not published yet.** Its node id is
-`0befe200008e553842a43fd3a04ce4001cadf788`, which `https://rpc.erth.network/status`
+`3c94e99d4f898e4939964e471be5105e3416e3f5`, which `https://rpc.erth.network/status`
 reports under `node_info.id`. The host and port are assigned by its hosting
 provider and are not advertised, so a new node cannot dial it today. This is an
 open item on the [security review](../technical/security-review.md), and this page will

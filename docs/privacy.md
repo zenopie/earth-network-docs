@@ -49,6 +49,12 @@ the proof. Neither contains anything beyond the fields above.
 
 ## What Earth's backend sees
 
-The app talks to a small backend only for rewarded ads, which pay for a new
-wallet's first fees. That service sees the wallet address it pays, and the ad
-network sees what any ad network sees. It never sees passport data.
+The app talks to a small backend only for free gas, which pays for a new
+wallet's first fees. That service sees the wallet address it pays and a device
+attestation — from Apple's App Attest on iOS, and on Android from the phone's
+own secure hardware (key attestation) — proving the request came from a
+genuine copy of the app. The attestation identifies the app install, not the
+person, and is checked and discarded. The backend keeps the address, the time of the grant and an id for
+the attested request, so the same one cannot be paid twice and the daily limits
+can be enforced. It never sees passport data. The app contains no ads and no
+advertising or tracking SDKs.

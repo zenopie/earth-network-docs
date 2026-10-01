@@ -242,9 +242,11 @@ If you change `pruning`, confirm that the node still keeps the states that a
 snapshot requires. `pruning = "default"` keeps more states than the snapshot
 interval requires, so the two settings do not conflict.
 
-Do **not** enable `enabled-unsafe-cors` on a validator. It permits any website to
-read the node and to broadcast through it. To serve a browser application, run a
-separate read-only node.
+`enabled-unsafe-cors` lets any website read the node and broadcast through it.
+The official node turns it on, because it is both the validator and the public
+LCD that the web app calls from the browser. That is a deliberate choice for a
+single-node network. If you run your own validator, leave it off and serve
+browsers from a separate read-only node.
 
 ---
 

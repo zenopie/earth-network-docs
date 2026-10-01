@@ -10,6 +10,23 @@ engine: the Caretaker stream (one vote per human) and the Groundworks stream
 (bonded stake). It replaced two near-duplicate engines in `x/personhood` and the
 old `x/deflation`. Every fix had been made twice before the merge.
 
+:::note Privacy relaunch
+The relaunch genesis keeps this engine and changes who the voters are. No
+voter is an account any more:
+
+- **Caretaker** splits are filed under the caster's caretaker nullifier, from a
+  membership proof, at one flat weight. `x/personhood` holds each split's
+  30-day lease and its sweep clears lapsed ones, because the chain cannot tell
+  when the person behind a split lapses.
+- **Groundworks** weight comes from `x/shieldedstaking` positions
+  (`PositionWeightSource`): locked delegation tokens times the validator's rate
+  at the last epoch end, keyed by the position's one-time key. It replaces
+  `GetDelegatorBonded`, which says nothing about who staked once the shielded
+  pool is the only delegator.
+
+The sections below describe the engine as of v0.9.1.
+:::
+
 ## Structure
 
 Both streams live in one module, keyed by stream id:

@@ -9,6 +9,20 @@ Updated 2026-09-24, after the v0.9.1 circuit fix. Registration is live on
 earth-1: real passports have been scanned on real phones and registered, so
 on-device proving is proven, not pending.
 
+:::note Privacy relaunch
+On the relaunch genesis the passport circuits are unchanged, but public input
+1 is no longer the registrant's address. It is
+`H(TAG_REG, idc, pc_anml, pc_erth, affiliate)`: the commitment to the
+registrant's identity secret, the two notes the first ANML and the reward are
+minted to, and the referral address if any. The chain recomputes it from the
+message. The identity commitment becomes a leaf of `x/personhood`'s identity
+tree, and every later personal action (claims, assembly votes, Caretaker
+splits, referrer bindings) is a separate **membership** proof against that
+tree, with a nullifier derived from the identity secret, never from passport
+data. The passport nullifier below stays as the public dedup key only. See
+[Privacy](../privacy.md).
+:::
+
 ## The stack
 
 - **Circuits:** ours, in `earth-network-mobile/circuits/`. `poa_core` holds the

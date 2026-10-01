@@ -10,11 +10,16 @@ This page contains the full procedure to sync a node on `earth-1`.
 If you cannot sync a node with this page alone, that is a defect in this page.
 Open an issue.
 
-> **The network relaunched at 2026-09-29T12:00:00Z** on the `v0.9.3` binary,
-> from a new genesis. The earlier `earth-1` (launched 2026-08-28 on `v0.5.2`)
-> halted at the v0.9.2 upgrade and its state is gone; the chain id is unchanged.
-> It has one validator so far, so a node joining today syncs from that one peer
-> and adds the second.
+{/* TODO(relaunch): fill in the launch tag, genesis time, genesis sha256 and
+the validator's node id below once networks/genesis.json is final. Confirm the
+chain id: networks/genesis/chain.json still says earth-1. */}
+
+> **The network relaunches from a new genesis** with private ERTH, ANML and
+> staking. Nothing from the earlier `earth-1` carries over: no balances, no
+> registrations, no history. The launch tag, the genesis time and the genesis
+> checksum are published in the release notes and on this page before launch.
+> It starts with one validator, so a node joining syncs from that one peer and
+> adds the second.
 
 ## Which binary
 
@@ -23,12 +28,12 @@ below halted the chain at its height, and the next binary continued from there.
 
 | Upgrade | Height | Binary from that height |
 | --- | --- | --- |
-| launch | 1 | `v0.9.3` |
+| launch | 1 | the launch tag |
 
 - **State sync** (section 4b) starts near the tip, so you need only the binary
   for the current height: the last row that has already happened.
-- **Replaying from genesis** needs every binary in turn. Start on `v0.9.3` under
-  cosmovisor with download enabled, and it fetches each later binary at its
+- **Replaying from genesis** needs every binary in turn. Start on the launch tag
+  under cosmovisor with download enabled, and it fetches each later binary at its
   height. See [Upgrades](./upgrades.md#method-b--cosmovisor).
 
 ---
@@ -38,7 +43,7 @@ below halted the chain at its height, and the next binary continued from there.
 Download from the [latest release](https://github.com/zenopie/earth-network-chain/releases/latest):
 
 ```bash
-VERSION=v0.9.3          # the launch tag; see "Which binary" above
+VERSION=<launch-tag>    # see "Which binary" above
 ARCH=amd64              # or arm64
 
 curl -LO https://github.com/zenopie/earth-network-chain/releases/download/$VERSION/earthd_${VERSION}_linux_${ARCH}.tar.gz
@@ -107,7 +112,7 @@ sha256sum ~/.earth/config/genesis.json
 The output must be:
 
 ```
-acbf85491374558cac98044547ef6f24fa365631ebb254905b3e80489ac46127  genesis.json
+<published with the launch release>  genesis.json
 ```
 
 A genesis that hashes to anything else is a different chain, whatever its
@@ -129,7 +134,7 @@ earthd genesis validate-genesis
 # persistent_peers, not seeds. A seed is a crawler that hands out addresses and
 # disconnects; this is the network's one node, and you want to hold a connection
 # to it. There is no seed node yet, and seed.erth.network does not resolve.
-persistent_peers = "3c94e99d4f898e4939964e471be5105e3416e3f5@<host>:<port>"
+persistent_peers = "<validator-node-id>@<host>:<port>"
 # The address that other nodes use to reach this node. Set it if the node is
 # behind NAT, in a container, or at a provider that maps ports. If it is unset,
 # CometBFT advertises the address that it observes on itself and gives that
@@ -142,8 +147,7 @@ connectivity can still sync, because it dials out. But no peer can dial it. It
 therefore adds no connectivity to the network and cannot serve state sync.
 
 **The validator's public P2P address is not published yet.** Its node id is
-`3c94e99d4f898e4939964e471be5105e3416e3f5`, which `https://rpc.erth.network/status`
-reports under `node_info.id`. The host and port are assigned by its hosting
+what `https://rpc.erth.network/status` reports under `node_info.id`. The host and port are assigned by its hosting
 provider and are not advertised, so a new node cannot dial it today. This is an
 open item on the [security review](../technical/security-review.md), and this page will
 give the full address once it is fixed. Until then, ask in the project's channels
@@ -168,6 +172,26 @@ network is the value that most validators select:
 minimum-gas-prices = "0.005uerth"
 ```
 
+Fees are paid in ERTH only. Do not list `uanml`: ANML exists only in the
+shielded pool and the chain refuses it as a fee. Private transactions pay their
+fee from a shielded note, and this node checks that fee against the same
+minimum.
+
+**Mempool**, in `app.toml`. This value is **required** on this chain:
+
+```toml
+[mempool]
+# Earth's private transactions carry no signer. The SDK's priority and
+# sender-nonce mempools key transactions by signer and sequence and reject a
+# transaction with no signer outright, so any value other than -1 makes this
+# node drop every private transaction: claims, votes, transfers, stake.
+max-txs = -1
+```
+
+`-1` is the default. Check it was not changed by a config template you copied
+from another chain. A node with any other value still follows blocks, but
+refuses private transactions sent to it, and a validator with any other value
+never proposes them.
 **Pruning**, in `app.toml`. Select by the role of the node:
 
 | Role | Setting |
@@ -175,6 +199,21 @@ minimum-gas-prices = "0.005uerth"
 | Validator | `pruning = "default"` |
 | Public RPC | `pruning = "custom"`, `pruning-keep-recent = "362880"`, `pruning-interval = "100"` |
 | Archive | `pruning = "nothing"` — the disk requirement has no limit |
+
+**A node that feeds a privacy indexer** must hold every block and its results
+from genesis. Wallets download every note ever created, so an index with a gap
+is useless. Start it from genesis, never by state sync, and in
+`config.toml`:
+
+```toml
+[storage]
+discard_abci_responses = false   # the indexer reads block_results
+
+[tx_index]
+indexer = "kv"
+```
+
+with `min-retain-blocks = 0` in `app.toml`, so no block is ever pruned.
 
 **Snapshots** are enabled by default. Keep them enabled:
 
@@ -203,9 +242,9 @@ State sync fetches state at a recent height from a peer. It does not replay
 each block.
 
 **This chain gains more from state sync than most chains.** A replay re-executes
-the transactions of each block, and each passport registration verifies a
-zero-knowledge proof. A chain that only transfers tokens replays quickly. This
-chain re-runs one proof for each registration, so replay cost increases with
+the transactions of each block, and each passport registration and each private
+transaction verifies a zero-knowledge proof. A chain that only transfers tokens
+replays quickly. This chain re-runs every proof, so replay cost increases with
 adoption.
 
 Get a trust height and hash below the current tip:
@@ -270,10 +309,17 @@ curl -s localhost:26657/status | jq .result.sync_info
 
 Use an SSD. Do not use a rotating disk. The node calls fsync at each block.
 
-**One requirement is specific to this chain.** Each passport registration
-verifies a zero-knowledge proof on-chain. This uses significant CPU time and the
-node cannot omit it. Allocate more CPU capacity than a chain of this size usually
-requires.
+**Two requirements are specific to this chain.**
+
+- Each passport registration and each private transaction verifies a
+  zero-knowledge proof on-chain. This uses significant CPU time and the node
+  cannot omit it. Allocate more CPU capacity than a chain of this size usually
+  requires.
+- The CPU must support the **ADX** instruction set (Intel Broadwell or later,
+  AMD Zen or later). The proof verifier is built with it, and on an older CPU
+  `earthd` exits with `Illegal instruction`, even for `earthd version`. On a
+  cloud or Akash host, check `grep -c adx /proc/cpuinfo` is not zero before you
+  commit to it.
 
 ---
 
@@ -303,6 +349,25 @@ earthd tx staking create-validator validator.json \
   --chain-id earth-1 --from <your-key> --gas auto --gas-adjustment 1.5
 ```
 
+**Your stake on Earth is your self-bond and the shielded pool.** Ordinary
+delegation does not exist here: the chain refuses `delegate`, `unbond`,
+`redelegate` and `cancel-unbond` from any account except a validator's own
+operator account bonding to itself. Everyone else stakes privately, through the
+shielded pool, which is the only delegator besides validators themselves. Its
+delegations to you change once a day, at the end of an epoch.
+
+- To add or remove your own stake, use `earthd tx staking delegate` or
+  `unbond` from your operator account, to your own validator.
+- Your self-bond, your commission and your governance votes are public. Being a
+  validator is a public role.
+- Your vote on a proposal also covers the private stake delegated to you that
+  does not vote itself. A private staker who votes takes their weight out of
+  yours.
+- Commission works as on any Cosmos chain. The pool's rewards are restaked for
+  its holders once a day.
+
+Fund the account with transparent ERTH. ERTH you receive privately has to be
+unshielded to your operator address first, which makes that amount public.
 **Do not keep the consensus key on the node.** Use a remote signer. See
 [Protecting the consensus key](./remote-signer.md). A remote signer fails closed:
 if a signer is configured and none answers, the node signs nothing.
@@ -334,6 +399,12 @@ of the network, or the binary is wrong. Check both.
 
 **`set min gas price in app.toml`** — the node does not start until
 `minimum-gas-prices` is set in `app.toml`. See step 4.
+
+**Private transactions never reach the chain through this node** — check
+`max-txs = -1` under `[mempool]` in `app.toml`. See step 4.
+
+**`Illegal instruction` on any `earthd` command** — the CPU lacks ADX. See
+Hardware.
 
 **No peers** — the seeds are wrong, or port 26656 does not accept inbound
 connections. Peers must be able to dial this node.

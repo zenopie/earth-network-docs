@@ -198,14 +198,23 @@ never proposes them.
 | --- | --- |
 | Validator | `pruning = "default"` |
 | Public RPC | `pruning = "custom"`, `pruning-keep-recent = "362880"`, `pruning-interval = "100"` |
-| Archive | `pruning = "nothing"` — the disk requirement has no limit |
 
-**A node that feeds a privacy indexer** must hold every block and its results
-from genesis. Wallets download every note ever created, so an index with a gap
-is useless. Start it from genesis, never by state sync, and in
-`config.toml`:
+**The official node is a full-history node.** The project runs one node: the
+validator behind `rpc.erth.network` and `lcd.erth.network`. It has kept every
+block, every block's results and every state since block 1, and it is the node
+the official privacy indexer reads. You do not need your own full-history node
+to look something up at an old height.
+
+**Running your own privacy indexer?** Its node must hold every block and its
+results from genesis. Wallets download every note ever created, so an index
+with a gap is useless. Start it from genesis, never by state sync, and set:
 
 ```toml
+# app.toml
+pruning = "nothing"
+min-retain-blocks = 0
+
+# config.toml
 [storage]
 discard_abci_responses = false   # the indexer reads block_results
 
@@ -213,7 +222,10 @@ discard_abci_responses = false   # the indexer reads block_results
 indexer = "kv"
 ```
 
-with `min-retain-blocks = 0` in `app.toml`, so no block is ever pruned.
+Its disk only grows, so size it well past the Public RPC column under
+[Hardware](#hardware) and watch it. Under cosmovisor, set
+`UNSAFE_SKIP_BACKUP=true`: the pre-upgrade backup copies all of `data/`, and on
+a node like this it can fill the disk at an upgrade height.
 
 **Snapshots** are enabled by default. Keep them enabled:
 
@@ -301,11 +313,11 @@ curl -s localhost:26657/status | jq .result.sync_info
 
 ## Hardware
 
-| | Validator | Public RPC | Archive |
-| --- | --- | --- | --- |
-| CPU | 4 cores | 4 cores | 8 cores |
-| RAM | 16 GB | 16 GB | 32 GB |
-| Disk | 500 GB SSD | 1 TB SSD | 2 TB or more, SSD |
+| | Validator | Public RPC |
+| --- | --- | --- |
+| CPU | 4 cores | 4 cores |
+| RAM | 16 GB | 16 GB |
+| Disk | 500 GB SSD | 1 TB SSD |
 
 Use an SSD. Do not use a rotating disk. The node calls fsync at each block.
 

@@ -30,8 +30,10 @@ The consequences:
   on a CPU with the **ADX** instruction set.
 - Use **state sync**. Do not replay from genesis. A replay verifies each proof
   that the chain has ever received. Sync cost increases with adoption as well as
-  with time. The exception is a node that feeds a privacy indexer, which needs
-  every block.
+  with time. The exception is a node that feeds your own privacy indexer,
+  which needs every block (see
+  [Join the network](./join.md#4-configure)). The official node behind
+  `rpc.erth.network` already keeps full history.
 - Keep `max-txs = -1` under `[mempool]` in `app.toml`, the default. Private
   transactions have no signer, and every other mempool setting rejects them.
   See [Join the network](./join.md#4-configure).

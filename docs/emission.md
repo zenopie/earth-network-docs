@@ -20,37 +20,55 @@ by rule and one is a fund that voters point.
 | --- | --- | --- |
 | Staking rewards | Capital | Stakers, in proportion to bonded ERTH |
 | ANML buyback and burn | People | Every ANML holder, through a permanent buyer |
-| Caretaker fund | People, one vote each | Private providers of public goods, competing for those votes |
-| Groundworks fund | Capital, by bonded stake | Whatever stakers vote for |
+| Caretaker fund | People, one anonymous vote each | Private providers of public goods, competing for those votes |
+| Groundworks fund | Capital, by staked positions | Whatever those positions vote for |
 
 A fund that nobody has voted on issues nothing. Emission that nobody chose is
 never created, so before the first human registers the Caretaker fund is silent.
 
 ### Staking rewards
 
-Standard proof of stake. Delegate ERTH to a validator and earn a share of 1 ERTH
-a second in proportion to your stake, less the validator's commission. Unbonding
-takes **21 days**.
+Proof of stake, held privately. Delegate shielded ERTH to a validator and you
+receive that validator's **delegation token** as a private note. Each day, at
+the end of an epoch, the chain collects every validator's rewards and stakes
+them again. That raises the validator's **exchange rate**: the ERTH each of its
+tokens is worth. So you earn a share of 1 ERTH a second in proportion to your
+stake, less the validator's commission, without claiming anything and without
+anyone seeing what you hold. Validators earn on their public self-bond the
+ordinary way. Unbonding takes **21 days**. See [Privacy](./privacy.md#private-staking).
 
 ### ANML buyback and burn
 
 Every second the chain issues 1 ERTH, uses it to buy ANML on its own exchange,
-and destroys the ANML. Registered humans each claim 1 ANML a day and can sell
-it, and the chain is always there to buy, funded by a quarter of all issuance.
+and destroys the ANML. Registered humans each claim 1 ANML a day, privately,
+and can sell it from their shielded balance, and the chain is always there to
+buy, funded by a quarter of all issuance.
 
 ### The two funds
 
 The **Caretaker fund** and the **Groundworks fund** each pay 1 ERTH a second to
 the options their voters choose. You split your vote across options by
-percentage and can change it at any time. Rewards follow your current split
+percentage and can change it at any time. Rewards follow the current splits
 continuously.
+
+Allocating a fund is a public act. Every split, and what every option earns, is
+on the chain for anyone to read. Who cast each split is not:
+
+- A **Caretaker** split is cast with a proof that the voter is a registered
+  human, not which one. It counts for 30 days and the app refreshes it. A new
+  registration can cast one after 30 days.
+- A **Groundworks** split belongs to a **position**: delegation tokens locked
+  in a public record with its size, validator and split. The position is
+  controlled by a one-time key, so its owner is anonymous. Its weight is the
+  ERTH its tokens are worth, and it keeps earning staking rewards while
+  locked. Stake that is not in a position does not vote in Groundworks.
 
 The funds differ in who chooses and who may add options:
 
 - **Caretaker** is one vote per registered human. Anyone can add an option for a
   small fee, because holdings buy no extra votes here. See below for what that
   makes it.
-- **Groundworks** is weighted by bonded stake. Only governance can add an option.
+- **Groundworks** is weighted by staked positions. Only governance can add an option.
   If anyone could, every staker's best move would be to list their own address
   and vote for it, and the fund would just be a second staking reward. Registered
   humans can vote to **remove** a Groundworks option on their own, with no stake
@@ -71,7 +89,10 @@ The Caretaker fund makes public goods a competitive market instead:
   earns.
 - **Voting costs voters nothing.** The money comes from issuance, not from the
   people voting, so there is no free-rider problem. Everyone can back the public
-  goods they value without paying for them.
+  goods they value without paying for them, apart from a small transaction fee.
+- **Votes are anonymous, the money is not.** Anyone can see which providers
+  the public is funding and how much each earns. Nobody can see how any one
+  person voted.
 - **Income follows service, continuously.** A provider's income is its share of
   the human vote, paid every block. People can move their vote at any moment, so
   a provider that slips loses income the same day, and a better one can win it in
@@ -87,7 +108,9 @@ will be for. Governance decides how the pool is spent.
 
 The first Caretaker option is the **registration reward**. It pays each new
 registrant, and their referrer if they have one, from a pool funded at genesis
-and topped up by the Caretaker votes pointed at it.
+and topped up by the Caretaker votes pointed at it. The registrant's half is
+paid into a private note. The referrer's half is paid to the referrer's public
+address, because a referral is a public act.
 
 ## Genesis supply
 
@@ -138,7 +161,8 @@ Two mechanisms destroy ERTH continuously:
 
 - **Half of every swap fee.** The fee is 0.3% a hop, charged in ERTH. Half stays
   with liquidity providers and half is burned.
-- **Half of every transaction fee.** The other half goes to validators and their
+- **Half of every transaction fee.** Every transaction pays its fee in ERTH,
+  private ones from a shielded note. The other half goes to validators and their
   delegators. When a fee does not split evenly, the extra unit is burned.
 
 So activity shrinks supply while issuance grows it at a fixed rate.

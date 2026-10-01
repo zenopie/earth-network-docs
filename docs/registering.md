@@ -6,11 +6,15 @@ sidebar_position: 2
 
 You register once a year, from your phone, with your passport.
 
-1. The app reads the chip in your passport over NFC.
-2. The phone builds a zero-knowledge proof. It shows that the passport is
+1. The app asks Earth's backend for the fee. The backend checks the
+   registration is valid and pays a little shielded ERTH into a new private
+   note for you.
+2. The app reads the chip in your passport over NFC.
+3. The phone builds a zero-knowledge proof. It shows that the passport is
    genuine, that a government the chain trusts signed it, that it has not
-   expired, and that the registration is for your wallet address.
-3. The app sends only the proof.
+   expired, and that the registration is bound to a secret only your phone
+   holds.
+4. The app sends the proof, paying the fee from that note. No wallet signs it.
 
 Your name, date of birth, passport number and photo stay on the phone. That is
 not a promise about how we handle your data: the data is never sent, so there is
@@ -24,24 +28,52 @@ number and date of birth. It cannot be turned back into either. A second
 registration with the same passport produces the same nullifier, and the chain
 refuses it as a new person.
 
-The proof is also bound to the wallet address you register from. Someone who
-copies your proof out of a block cannot use it for their own wallet.
+The proof is also bound to your **secret commitment**, a value derived from a
+secret on your phone, and to the notes your rewards are paid into. Someone who
+copies your proof out of a block cannot redirect it to themselves.
+
+The registration is tied to **no wallet address**. The chain records the
+nullifier, the registration time, the passport's country and its Document
+Signer certificate, and nothing that points at an account. Everything you do
+as a person afterwards is a fresh proof that you are one of the registered
+humans, without saying which. See [Privacy](./privacy.md#registration-has-no-wallet).
 
 ## What you get
 
-- **1 ANML a day**, claimed in the app. Days you do not claim do not carry over.
-- **A vote in the Caretaker fund**, one per human whatever you hold.
+- **1 ANML at once, then 1 ANML a day**, claimed privately by the app. Days you
+  do not claim do not carry over. Daily claims open the day after tomorrow.
+- **A vote in the Caretaker fund**, one per human whatever you hold. It opens
+  30 days after you register.
 - **A seat in the assembly**, the house that must approve every governance
-  proposal.
-- **A share of the registration reward**, paid in ERTH when you register. It
-  halves as more people register, so early registrants receive more. If someone
-  referred you, you and they each receive a share.
+  proposal. You can vote on every ballot that opens after you register.
+- **A share of the registration reward**, paid in shielded ERTH when you
+  register. It halves as more people register, so early registrants receive
+  more. It pays your later fees.
 
-## Moving to a new wallet
+The waits exist because the chain cannot follow you from one action to the
+next. Without them, one passport could act twice, once under each of two
+secrets.
 
-Register again from the new wallet with the same passport. The chain recognises
-the nullifier and moves your registration, with its ANML clock, to the new
-address. There is no second reward and no second vote.
+## Referrals
+
+If someone referred you, the app names their **referral address**, and the
+reward is split: your half as a private note, theirs in public ERTH to that
+address. A referral address has to be bound by a registered human first, with
+a proof that they are one, so the chain knows a real person vouches for it, not
+who. A registered human can bind one address, 30 days after registering, and
+the app keeps the binding fresh. Without a referrer you receive your half and
+the rest stays in the reward pool.
+
+## Moving to a new phone
+
+Restore your recovery phrase on the new phone. Your secret, your notes and your
+registration come with it, because all of them derive from the phrase.
+
+If you lost the phrase, or think your secret is exposed, scan the same passport
+again from a new wallet. While your registration is live this is a **switch**:
+the old entry is retired, a new one takes its place, and nothing is paid twice.
+A switch restarts the waits above, and notes held by the old wallet stay with
+the old phrase.
 
 ## Renewing
 
@@ -72,5 +104,5 @@ needing a company, a biometric scanner or a database to decide who is a person.
 
 - Use the latest app. After an upgrade that changes the proof, only proofs from
   the current app verify.
-- Register from the wallet you intend to keep. You can move later, but it takes
-  another scan.
+- Write down your recovery phrase. It is the only backup of your registration
+  secret and your private balances.

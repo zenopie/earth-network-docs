@@ -25,8 +25,8 @@ A proposal needs **both** of two separate votes.
 
 | House | Who votes | Weight | To pass |
 | --- | --- | --- | --- |
-| Stake | anyone with bonded stake | the amount bonded | see the table below |
-| Assembly | anyone with a live registration | one vote each | two thirds of the votes cast, or three quarters on the expedited track |
+| Stake | validators, and anyone holding staked ERTH | the amount bonded | see the table below |
+| Assembly | anyone with a live registration | one private vote each | two thirds of the votes cast, or three quarters on the expedited track |
 
 The assembly votes on **every** proposal. There is no proposal that stake can
 pass on its own, upgrades of the software included.
@@ -43,6 +43,42 @@ vote at all.
 
 There is no abstain in the assembly. Two thirds is measured against the votes
 cast, so an abstention and a missing vote are the same thing.
+
+## Assembly votes are private
+
+An assembly vote is a proof that the voter is one of the registered humans,
+with a tag that is the same every time that person votes on that ballot and
+unrelated to anything else they do. So the chain can count one vote per
+person, and let a person change their vote, without knowing who anyone is. The
+running tally is public. Who voted for what is not. See
+[Privacy](./privacy.md#how-claims-and-votes-stay-unlinkable).
+
+You can vote on a ballot only if you registered before it opened. A
+registration made, or switched, after a ballot opens cannot vote on it, which
+stops one passport voting twice under two secrets.
+
+## Stake votes
+
+Most staked ERTH is held privately, as delegation tokens in the shielded pool
+(see [Staking](./using-the-app.md#stake)). It votes by **spending to vote**:
+the app spends your delegation note against a snapshot taken when the proposal
+opened and gives you a fresh note of the same value. The vote carries the
+note's weight and names its validator, both public. The voter is hidden. A
+vote is final: the spent note cannot vote again, and the fresh note was not in
+the snapshot.
+
+Validators vote with their own self-bond in the open. A validator's vote also
+covers the stake delegated to it that did not vote, as on other Cosmos chains.
+If you disagree with your validator, vote yourself and your weight is taken
+out of theirs.
+
+Groundworks positions vote too, signed by the position's own key, with their
+weight public like the position.
+
+A slash during the vote shrinks the votes behind that validator with it, so
+the votes counted never exceed the stake that is actually bonded.
+
+## Fixed rules
 
 The rules of the assembly are fixed in the software. There is no parameter for
 its threshold, because a threshold that governance could set is one governance
@@ -86,19 +122,31 @@ proposal. Use the **expedited** track: one day instead of seven.
 When the revocation passes:
 
 - No new registration signed by that certificate is accepted.
-- Registrations already made with it **stop counting at once**. They can no
-  longer claim ANML, vote in the assembly or carry weight in the Caretaker fund.
-- The chain then removes them in batches over the following blocks. As each one
-  is removed, its votes are taken off every ballot still open.
+- Registrations already made with it are removed in batches over the following
+  blocks. A removed registration can no longer claim ANML, vote in the
+  assembly, or cast or refresh a Caretaker split.
+- Votes those registrations already cast stay where they are, because the
+  chain cannot tell which votes were theirs. A Caretaker split lapses within
+  30 days without a refresh, which a removed registration cannot make.
 
-**The registrations under a certificate cannot vote on revoking it.** The
-assembly refuses their votes on that proposal, so a forger with enough fake
-registrations cannot vote down its own revocation. Everyone else votes as normal.
+**The registrations under a certificate cannot vote on revoking it.** Each
+registration commits to its Document Signer and its country, and the vote's
+proof shows the voter's are not the ones being revoked, without showing what
+they are. So a forger with enough fake registrations cannot vote down its own
+revocation. Everyone else votes as normal.
+
+- A proposal that revokes **one** Document Signer excludes that signer's
+  registrations only.
+- A proposal that revokes several signers, or a Country Signing CA, excludes
+  **every registration from that country** for that vote. All its revocations
+  must belong to one country.
+- A proposal that spans two countries cannot be voted on and fails. Submit one
+  proposal per country.
 
 This is blunt. Real people whose passports that certificate signed lose their
 registration too, and have to register again with a passport signed by a
-different certificate. Each registration names its certificate publicly, so who
-is affected can be counted before the vote.
+different certificate. Each registration names its certificate and country
+publicly, so who is affected can be counted before the vote.
 
 Plan for turnout. An expedited revocation needs three quarters of the human votes
 cast within one day. If it falls short it is not lost, but it then takes the
@@ -115,8 +163,8 @@ removed by revoking the individual Document Signers.
 
 Earth starts with **one validator**. One party therefore controls the stake
 house. This is not the result of a special key. It is the result of being the
-only staker. That condition ends when other parties stake; there is no allocation
-list that prevents them from doing so.
+only staker. That condition ends when other parties stake or run validators;
+there is no allocation list that prevents them from doing so.
 
 The assembly is small at the start for the same kind of reason: it holds as many
 votes as there are registered humans. With few registrations, few people decide —

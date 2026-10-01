@@ -14,7 +14,12 @@ to the rules needs both to agree.
 Being a person here is proved with your passport. Your phone reads its chip and
 builds a zero-knowledge proof that a government signed it, and the chain checks
 the proof. Your name, date of birth and passport number never leave the phone.
-One passport is one registration, however many wallets you own.
+One passport is one registration, and the registration is tied to no wallet.
+
+What you own and what you do as a person is private: balances, transfers,
+swaps, staking, ANML claims and assembly votes. What you do to the shared
+economy is public: where a fund's money goes, who validates, and what sits in
+the pools. See [Privacy](./privacy.md).
 
 ## Four pillars, fixed for good
 
@@ -24,8 +29,8 @@ directly by rule, and the other is a shared fund that voters point somewhere.
 
 | | Paid to individuals, by rule | A shared fund, pointed by vote |
 | --- | --- | --- |
-| **Capital decides** | **Staking rewards**, paid in proportion to bonded ERTH | **Groundworks fund**, steered by stake |
-| **People decide** | **ANML buyback**: the chain buys and burns the ANML that registered humans claim | **Caretaker fund**: private providers compete to build public goods, and each human's vote moves the money |
+| **Capital decides** | **Staking rewards**, paid in proportion to bonded ERTH | **Groundworks fund**, steered by staked positions |
+| **People decide** | **ANML buyback**: the chain buys and burns the ANML that registered humans claim | **Caretaker fund**: private providers compete to build public goods, and each human's anonymous vote moves the money |
 
 The split is written into the software as a constant. No proposal can move money
 from one pillar to another, because any split a vote could change would be won
@@ -40,17 +45,18 @@ both.
 ## Two tokens
 
 **ERTH** is the currency. It pays fees, secures the chain through staking, and is
-what all four pillars pay out.
+what all four pillars pay out. It can be held **shielded**, as private notes, or
+**transparent**, in an ordinary public account.
 
 **ANML** is the personhood dividend. Each registered human can claim **1 ANML a
 day**. A quarter of all issuance buys ANML back and burns it, so the chain is a
-permanent buyer of what humans claim.
+permanent buyer of what humans claim. ANML is always shielded.
 
 ## Two houses
 
 Every governance proposal needs a **stake house**, where votes are weighted by
-bonded ERTH, and an **assembly**, where each registered human has one vote. A
-proposal that no human votes on fails. See [Governance](./governance.md).
+bonded ERTH, and an **assembly**, where each registered human has one private
+vote. A proposal that no human votes on fails. See [Governance](./governance.md).
 
 ## No insider allocation
 
@@ -63,8 +69,8 @@ amounts that genesis did give to individual accounts.
 ## Where to start
 
 - **[Registering](./registering.md)**: how to prove you are human.
-- **[Privacy](./privacy.md)**: what stays on your phone, and what the chain
-  records.
+- **[Privacy](./privacy.md)**: what is private, what is public, and what can
+  still leak.
 - **[Emission](./emission.md)**: where ERTH comes from and where it goes.
 - **[Using the app](./using-the-app.md)**: swaps, staking and votes.
 - **[Governance](./governance.md)**: how rules change.

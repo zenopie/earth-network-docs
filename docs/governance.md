@@ -53,9 +53,15 @@ person, and let a person change their vote, without knowing who anyone is. The
 running tally is public. Who voted for what is not. See
 [Privacy](./privacy.md#how-claims-and-votes-stay-unlinkable).
 
-You can vote on a ballot only if you registered before it opened. A
-registration made, or switched, after a ballot opens cannot vote on it, which
-stops one passport voting twice under two secrets.
+A first-time registrant can vote at once, on every ballot that is open,
+including ones that opened before they registered. The bar falls only on an
+identity that replaced another: a **switch** (the same passport registered from
+a new wallet) or a **re-entry** (the same passport registering again after its
+registration lapsed). Such an identity cannot vote on a ballot that opened
+before the switch or re-entry, or less than a day after it. Its predecessor may
+already have voted there, and the two votes would carry unrelated tags, so this
+is what stops one passport voting twice under two secrets. It votes normally on
+every ballot that opens later.
 
 ## Stake votes
 

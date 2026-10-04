@@ -59,7 +59,9 @@ humans, without saying which. See [Privacy](./privacy.md#registration-has-no-wal
 - **A handle**, a short name people can pay instead of your address, and your
   referral link.
 - **A seat in the assembly**, the house that must approve every governance
-  proposal. You can vote on every ballot that opens after you register.
+  proposal. A first registration votes at once, on every open ballot. After a
+  switch or a re-entry (below), you cannot vote on ballots that opened before
+  it.
 - **A share of the registration reward**, paid in shielded ERTH when you
   register. It halves as more people register, so early registrants receive
   more. It pays your later fees.

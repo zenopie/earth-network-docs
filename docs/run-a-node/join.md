@@ -362,22 +362,34 @@ earthd tx staking create-validator validator.json \
   --chain-id earth-1 --from <your-key> --gas auto --gas-adjustment 1.5
 ```
 
-**Your stake on Earth is your self-bond and the shielded pool.** Ordinary
-delegation does not exist here: the chain refuses `delegate`, `unbond`,
-`redelegate` and `cancel-unbond` from any account except a validator's own
-operator account bonding to itself. Everyone else stakes privately, through the
-shielded pool, which is the only delegator besides validators themselves. Its
-delegations to you change once a day, at the end of an epoch.
+**Your stake on Earth is your self-bond and the private stake module.**
+Ordinary delegation does not exist here. The chain refuses `delegate`,
+`unbond` and `cancel-unbond` from any account except a validator's own operator
+account bonding to itself, and it refuses `redelegate` from every account,
+operators included. Everyone else stakes privately through `x/shieldedstaking`,
+which is the only delegator besides validators themselves. Its delegations to
+you change once a day, at the end of an epoch.
 
 - To add or remove your own stake, use `earthd tx staking delegate` or
-  `unbond` from your operator account, to your own validator.
+  `unbond` from your operator account, to your own validator. A self-bond
+  cannot be moved to another validator; unbond it instead.
 - Your self-bond, your commission and your governance votes are public. Being a
   validator is a public role.
 - Your vote on a proposal also covers the private stake delegated to you that
   does not vote itself. A private staker who votes takes their weight out of
   yours.
-- Commission works as on any Cosmos chain. The pool's rewards are restaked for
-  its holders once a day.
+- **Your income is restaked, not paid out.** The chain sets your operator's
+  withdraw address to a reward escrow that only it controls. At each epoch end
+  your commission and your self-bond rewards are withdrawn into the escrow and
+  delegated again as self-bond. You cannot withdraw them: the chain refuses
+  an operator's `MsgWithdrawDelegatorReward`, every
+  `MsgWithdrawValidatorCommission` and `MsgSetWithdrawAddress`, also through
+  authz, governance or a contract. The only way to take income out is to unbond
+  your self-bond, which takes the unbonding time. Compounding skips a validator
+  while it is jailed or unbonded. When a validator is removed, its escrow is
+  released to its operator.
+- The private stakers' rewards are restaked for them once a day, the same
+  way.
 
 Fund the account with transparent ERTH. ERTH you receive privately has to be
 unshielded to your operator address first, which makes that amount public.

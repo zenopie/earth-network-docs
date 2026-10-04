@@ -17,9 +17,10 @@ the proof. Your name, date of birth and passport number never leave the phone.
 One passport is one registration, and the registration is tied to no wallet.
 
 What you own and what you do as a person is private: balances, transfers,
-swaps, staking, ANML claims and assembly votes. What you do to the shared
-economy is public: where a fund's money goes, who validates, and what sits in
-the pools. See [Privacy](./privacy.md).
+swaps, liquidity, staking, ANML claims and assembly votes. What you do to the
+shared economy is public: where a fund's money goes, who validates, and what
+sits in the pools. People pay each other by **handle**, a short name like
+`@alice`, without anyone learning who paid whom. See [Privacy](./privacy.md).
 
 ## Four pillars, fixed for good
 
@@ -49,14 +50,16 @@ what all four pillars pay out. It can be held **shielded**, as private notes, or
 **transparent**, in an ordinary public account.
 
 **ANML** is the personhood dividend. Each registered human can claim **1 ANML a
-day**. A quarter of all issuance buys ANML back and burns it, so the chain is a
+day**, when they choose to: the app reminds you and never acts on its own. A quarter of all issuance buys ANML back and burns it, so the chain is a
 permanent buyer of what humans claim. ANML is always shielded.
 
 ## Two houses
 
 Every governance proposal needs a **stake house**, where votes are weighted by
 bonded ERTH, and an **assembly**, where each registered human has one private
-vote. A proposal that no human votes on fails. See [Governance](./governance.md).
+vote and two thirds of the votes cast must agree. A proposal that no human
+votes on fails. The assembly alone can remove an option from the Groundworks
+fund. See [Governance](./governance.md).
 
 ## No insider allocation
 
@@ -72,6 +75,7 @@ amounts that genesis did give to individual accounts.
 - **[Privacy](./privacy.md)**: what is private, what is public, and what can
   still leak.
 - **[Emission](./emission.md)**: where ERTH comes from and where it goes.
-- **[Using the app](./using-the-app.md)**: swaps, staking and votes.
+- **[Using the app](./using-the-app.md)**: payments, handles, swaps, staking
+  and votes.
 - **[Governance](./governance.md)**: how rules change.
 - **[Running a node](./run-a-node/overview.md)**: joining the network.

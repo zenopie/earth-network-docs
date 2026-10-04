@@ -38,8 +38,10 @@ therefore never encodes a canonical public key manually.
 # Confirm that the file parses and is the expected certificate
 openssl x509 -in dsc.cer -inform DER -noout -subject -issuer -dates
 
-# Count registrations under it. x/pki has no DSC query; x/personhood has this one
-earthd query personhood registrations-by-dsc <dsc-key> --node https://rpc.erth.network
+# Count registrations under it. x/pki has no DSC query; x/personhood has this one.
+# <dsc-key-hex> is the DSC's commitment in hex: the dsc_key of any registration
+# it signed (earthd query personhood registration <passport-nullifier-hex>).
+earthd query personhood registrations-by-dsc --dsc-key <dsc-key-hex> --node https://rpc.erth.network:443
 # or: curl https://lcd.erth.network/earth/personhood/v1/registrations_by_dsc/<dsc-key>
 ```
 
@@ -134,7 +136,7 @@ one block. Monitor completion:
 ```bash
 # queued, then per batch, then complete
 #   dsc_purge_started / registration_sweep_capped (reason=dsc_revoked) / dsc_purge_complete
-earthd query personhood registrations-by-dsc <dsc-key> --node https://rpc.erth.network
+earthd query personhood registrations-by-dsc --dsc-key <dsc-key-hex> --node https://rpc.erth.network:443
 ```
 
 Retiring a registration zeroes its identity leaf. Once the identity roots from

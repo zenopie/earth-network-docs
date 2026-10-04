@@ -29,18 +29,21 @@ never created, so before the first human registers the Caretaker fund is silent.
 ### Staking rewards
 
 Proof of stake, held privately. Delegate shielded ERTH to a validator and you
-receive that validator's **delegation token** as a private note. Each day, at
+receive that validator's delegation token, **derth**, as a private note. Each day, at
 the end of an epoch, the chain collects every validator's rewards and stakes
 them again. That raises the validator's **exchange rate**: the ERTH each of its
 tokens is worth. So you earn a share of 1 ERTH a second in proportion to your
 stake, less the validator's commission, without claiming anything and without
 anyone seeing what you hold. Validators earn on their public self-bond the
-ordinary way. Unbonding takes **21 days**. See [Privacy](./privacy.md#private-staking).
+ordinary way, and their rewards and commission are restaked too: a validator
+takes income out only by unbonding its self-bond. Unbonding takes **21 days**,
+and the chain pays the ERTH out by itself at the end. See
+[Privacy](./privacy.md#private-staking).
 
 ### ANML buyback and burn
 
 Every second the chain issues 1 ERTH, uses it to buy ANML on its own exchange,
-and destroys the ANML. Registered humans each claim 1 ANML a day, privately,
+and destroys the ANML. Registered humans can each claim 1 ANML a day, privately,
 and can sell it from their shielded balance, and the chain is always there to
 buy, funded by a quarter of all issuance.
 
@@ -55,13 +58,14 @@ Allocating a fund is a public act. Every split, and what every option earns, is
 on the chain for anyone to read. Who cast each split is not:
 
 - A **Caretaker** split is cast with a proof that the voter is a registered
-  human, not which one. It counts for 30 days and the app refreshes it. A new
-  registration can cast one after 30 days.
-- A **Groundworks** split belongs to a **position**: delegation tokens locked
-  in a public record with its size, validator and split. The position is
-  controlled by a one-time key, so its owner is anonymous. Its weight is the
-  ERTH its tokens are worth, and it keeps earning staking rewards while
-  locked. Stake that is not in a position does not vote in Groundworks.
+  human, not which one. It counts for a year; the app reminds its owner to
+  refresh it, and a split nobody refreshes lapses.
+- A **Groundworks** split belongs to a **position**: derth locked in a public
+  record with its size, validator and split. Only its owner can prove it is
+  theirs, so the owner is anonymous. Its weight is the ERTH its derth is worth,
+  and it keeps earning staking rewards while locked. The chain adds up the
+  positions at each validator into one voter. Stake that is not in a position
+  does not vote in Groundworks.
 
 The funds differ in who chooses and who may add options:
 
@@ -109,8 +113,9 @@ will be for. Governance decides how the pool is spent.
 The first Caretaker option is the **registration reward**. It pays each new
 registrant, and their referrer if they have one, from a pool funded at genesis
 and topped up by the Caretaker votes pointed at it. The registrant's half is
-paid into a private note. The referrer's half is paid to the referrer's public
-address, because a referral is a public act.
+paid into a private note. The referrer, named by handle, is paid the other half
+as a note to their handle's address. Without a referrer, that half stays in the
+pool.
 
 ## Genesis supply
 

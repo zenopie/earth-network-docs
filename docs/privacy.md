@@ -142,7 +142,7 @@ under two secrets:
 | Action | How often | Opens |
 | --- | --- | --- |
 | Claim 1 ANML | once a UTC day | the day after tomorrow (registering pays your first ANML at once) |
-| Vote in the assembly | once a ballot, replaceable | at once, on every open ballot; after a switch or re-entry, only on ballots that open after it |
+| Vote in the assembly | once a ballot, replaceable | at once, on every open ballot; after a switch or re-entry, only on ballots that open more than a day after it |
 | Caretaker split | lasts a year, refresh it to keep it | at once for a new registration; after a switch, once the old identity's split could have lapsed, unless you moved it |
 | Claim a handle | lasts a year, renew it to keep it | as for the Caretaker split |
 

@@ -61,7 +61,7 @@ humans, without saying which. See [Privacy](./privacy.md#registration-has-no-wal
 - **A seat in the assembly**, the house that must approve every governance
   proposal. A first registration votes at once, on every open ballot. After a
   switch or a re-entry (below), you cannot vote on ballots that opened before
-  it.
+  it or within a day after it.
 - **A share of the registration reward**, paid in shielded ERTH when you
   register. It halves as more people register, so early registrants receive
   more. It pays your later fees.

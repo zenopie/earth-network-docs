@@ -59,21 +59,25 @@ stops one passport voting twice under two secrets.
 
 ## Stake votes
 
-Most staked ERTH is held privately, as delegation tokens in the shielded pool
-(see [Staking](./using-the-app.md#stake)). It votes by **spending to vote**:
-the app spends your delegation note against a snapshot taken when the proposal
-opened and gives you a fresh note of the same value. The vote carries the
-note's weight and names its validator, both public. The voter is hidden. A
-vote is final: the spent note cannot vote again, and the fresh note was not in
-the snapshot.
+Most staked ERTH is held privately, as derth notes in the shielded pool (see
+[Staking](./using-the-app.md#stake)). The app proves that your notes at a
+validator existed, unspent, when the proposal opened, and casts **one vote per
+validator** you stake with. Nothing is spent, so the same stake can vote on
+every open proposal. The vote's weight, your notes there rounded down to three
+significant figures, and its validator are public. The voter is hidden. A stake
+vote is final: each note publishes a tag for the proposal, and a tag can be
+used once.
+
+Stake moved or added after the proposal opened does not vote on it: a note
+votes only if it was in the snapshot, so no unit of stake votes twice.
 
 Validators vote with their own self-bond in the open. A validator's vote also
 covers the stake delegated to it that did not vote, as on other Cosmos chains.
 If you disagree with your validator, vote yourself and your weight is taken
 out of theirs.
 
-Groundworks positions vote too, signed by the position's own key, with their
-weight public like the position.
+Groundworks positions vote too, proven by the position's owner tag, with their
+weight public like the position. A position's vote can be replaced.
 
 A slash during the vote shrinks the votes behind that validator with it, so
 the votes counted never exceed the stake that is actually bonded.
@@ -123,11 +127,12 @@ When the revocation passes:
 
 - No new registration signed by that certificate is accepted.
 - Registrations already made with it are removed in batches over the following
-  blocks. A removed registration can no longer claim ANML, vote in the
-  assembly, or cast or refresh a Caretaker split.
+  blocks. Once the identity roots from before the removal age out, a removed
+  registration can no longer claim ANML, vote in the assembly, or cast or
+  refresh a Caretaker split.
 - Votes those registrations already cast stay where they are, because the
-  chain cannot tell which votes were theirs. A Caretaker split lapses within
-  30 days without a refresh, which a removed registration cannot make.
+  chain cannot tell which votes were theirs. A Caretaker split lapses within a
+  year without a refresh, which a removed registration cannot make.
 
 **The registrations under a certificate cannot vote on revoking it.** Each
 registration commits to its Document Signer and its country, and the vote's

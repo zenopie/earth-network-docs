@@ -164,8 +164,9 @@ set min gas price in app.toml or flag or env variable
 ```
 
 The node does not relay a transaction below this value. This is a per-node
-setting, not a chain rule. There is no fee module, so the effective floor of the
-network is the value that most validators select:
+setting, not a chain rule. For ordinary signed transactions there is no fee
+module, so the effective floor of the network is the value that most validators
+select:
 
 ```toml
 minimum-gas-prices = "0.005uerth"
@@ -174,7 +175,10 @@ minimum-gas-prices = "0.005uerth"
 Fees are paid in ERTH only. Do not list `uanml`: ANML exists only in the
 shielded pool and the chain refuses it as a fee. Private transactions pay their
 fee from a shielded note, and this node checks that fee against the same
-minimum.
+minimum when it admits them. Private transactions also have a **consensus**
+floor: the `x/shielded` parameter `min_fee`, 1,000 uerth (0.001 ERTH) at
+genesis. Every node enforces it in blocks too, whatever its own setting, and
+only governance can change it.
 
 **Mempool**, in `app.toml`. This value is **required** on this chain:
 

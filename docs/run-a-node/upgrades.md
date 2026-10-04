@@ -53,6 +53,11 @@ current height + (voting period ÷ block time) + margin
 
 An error here costs another 7 days before you can propose again.
 
+The vote is bicameral. An upgrade passes only if the stake house **and** the
+assembly approve it, and the assembly has no quorum: two thirds of the human
+votes cast, so a proposal no registered human votes on fails. Announce the vote.
+See [Governance](../governance.md).
+
 This is a recorded failure, not a theoretical one. The first run of the
 rehearsal script failed in this way. The plan was 25 blocks ahead and the voting
 period was 40 blocks.

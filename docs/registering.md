@@ -100,7 +100,25 @@ be moved, so the new identity waits as above.
 
 ## Renewing
 
-A registration lasts one year. To renew, register again.
+A registration lasts one year. To renew it, register the passport again once
+the year is over. What happens depends on when, and from which wallet:
+
+| You register the same passport | Result |
+| --- | --- |
+| From the same wallet, while the registration is live | Refused (error 1123). It is indistinguishable from a replay of your first registration. |
+| From the same wallet, after the registration has lapsed | A **re-entry**: a new registration, paid like the first (1 ANML and a share of the reward). |
+| From another wallet, while the registration is live | A **switch** (above): the old entry is retired and nothing is paid. |
+
+A re-entered identity is bound by its predecessor, as a switched one is,
+because the chain cannot tell whether the lapsed identity and the new one are
+the same person. It cannot vote on assembly ballots that opened before the
+re-entry or within a day after it. It cannot claim a new handle or cast a new
+Caretaker split until anything the old identity could have held has lapsed.
+From the same wallet, a handle or split you still hold live can be renewed as
+usual. Daily ANML claims open the day after tomorrow, as for a first
+registration.
+
+### A new passport
 
 A renewed passport has a new passport number, so it produces a **new**
 nullifier. This is deliberate: a nullifier built from something that never

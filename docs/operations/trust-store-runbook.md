@@ -38,8 +38,9 @@ therefore never encodes a canonical public key manually.
 # Confirm that the file parses and is the expected certificate
 openssl x509 -in dsc.cer -inform DER -noout -subject -issuer -dates
 
-# List registrations under it. x/pki has no DSC query; x/personhood has this one
+# Count registrations under it. x/pki has no DSC query; x/personhood has this one
 earthd query personhood registrations-by-dsc <dsc-key> --node https://rpc.erth.network
+# or: curl https://lcd.erth.network/earth/personhood/v1/registrations_by_dsc/<dsc-key>
 ```
 
 ### 2. Write the proposal
@@ -85,15 +86,17 @@ Governance is bicameral. A revocation needs the stake vote **and** the assembly 
 the house where one registered human is one vote. Stake alone cannot pass it.
 
 ```bash
-# stake house
+# stake house: a validator votes with its operator key; private stakers vote
+# from the app
 earthd tx gov vote <id> yes --from <key> --chain-id earth-1
-
-# assembly — every registered human who can, should
-earthd tx assembly vote-proposal <id> yes --from <key> --chain-id earth-1
 
 earthd query gov proposal <id>
 earthd query assembly proposal-tally <id>
 ```
+
+Assembly votes are private: each is a membership proof made on a registered
+human's phone, so they are cast **from the app**, not with an operator key.
+Every registered human who can, should.
 
 The stake house passes at 33.4% quorum and three quarters yes votes. The
 assembly also asks three quarters on the expedited track, for the same reason:
@@ -128,16 +131,15 @@ one block. Monitor completion:
 earthd query personhood registrations-by-dsc <dsc-key> --node https://rpc.erth.network
 ```
 
-ANML claims, new assembly votes and Caretaker weight stop immediately, independent
-of the queue, because each of them re-checks the signer. The purge is for what was
-already counted: a stream stores its total weight and moves it only when a voter
-is explicitly cleared, and votes already cast sit on open ballots. As each
-registration is retired, its weight is cleared and its votes come off every open
-ballot (from v0.9.1).
+Retiring a registration zeroes its identity leaf. Once the identity roots from
+before the purge age out, its holder can no longer prove membership: no ANML
+claims, no assembly votes, no Caretaker splits. What it already did under its
+anonymous nullifiers cannot be found and stays: votes already cast remain on open
+ballots, and a Caretaker split remains until it lapses, within a year.
 
-The signer's own registrations cannot vote on the revocation proposal itself
-(from v0.9.1). The assembly refuses their votes on any proposal carrying a
-`MsgRevokeDsc` for their signer, so a compromised signer cannot vote down its own
+The signer's own registrations cannot vote on the revocation proposal itself.
+Every vote on a proposal carrying a `MsgRevokeDsc` proves the voter's signer is
+not the revoked one, so a compromised signer cannot vote down its own
 revocation.
 
 Publish which registrations were retired and the reason. In the normal case, the
@@ -269,14 +271,14 @@ methods are per-DSC revocation, or expiry at the end of the validity period.
       reason that it is not. Note that the assembly's lack of a quorum means an
       expedited revocation now depends on human turnout inside one day; decide in
       advance how that announcement is made and by whom.
-- [ ] Confirm that enough registered humans can cast an assembly vote — today
-      that means the `earthd` CLI, until the wallet apps ship voting.
+- [ ] Confirm that enough registered humans can cast an assembly vote from the
+      app, and know how to reach them.
 - [ ] Replace `GOV_MODULE_ADDRESS` above with the actual value.
 - [ ] Check the query commands against the released binary. They are written
       from the messages of the module, not from a live run.
 - [ ] Decide who can submit a revocation, and how to contact that person outside
-      working hours. At launch this is the genesis validator,
-      `earth14e6sqtf5y7mtzwykqreewe9kg3w94t0f25d54a`. Its key is the
+      working hours. At launch this is the genesis validator's operator account,
+      `earth1n6amvkgfrrgy6ulhurewnm0endkgye69fkcapr`. Its key is the
       `VALIDATOR_MNEMONIC` in the gitignored `.env` file. One person with one key
       is acceptable at launch. An unidentified person is not. A mnemonic in a
       `.env` file is not an acceptable location for this key after the chain

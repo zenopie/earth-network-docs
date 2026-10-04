@@ -74,8 +74,11 @@ significant figures, and its validator are public. The voter is hidden. A stake
 vote is final: each note publishes a tag for the proposal, and a tag can be
 used once.
 
-Stake moved or added after the proposal opened does not vote on it: a note
-votes only if it was in the snapshot, so no unit of stake votes twice.
+The snapshot decides. A note votes if it existed, unspent, when the proposal
+opened. Stake you spend or move after that (unstake, top up, redelegate) still
+votes on that proposal with the note it was in, so you lose nothing by moving.
+Only stake **added** after the snapshot cannot vote on it: the new note was not
+in the snapshot. So no unit of stake votes twice.
 
 Validators vote with their own self-bond in the open. A validator's vote also
 covers the stake delegated to it that did not vote, as on other Cosmos chains.

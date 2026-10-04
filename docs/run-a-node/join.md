@@ -146,12 +146,11 @@ Port **26656** must accept inbound connections. A node without inbound
 connectivity can still sync, because it dials out. But no peer can dial it. It
 therefore adds no connectivity to the network and cannot serve state sync.
 
-**The validator's public P2P address is not published yet.** Its node id is
-what `https://rpc.erth.network/status` reports under `node_info.id`. The host and port are assigned by its hosting
-provider and are not advertised, so a new node cannot dial it today. This is an
-open item on the [security review](../technical/security-review.md), and this page will
-give the full address once it is fixed. Until then, ask in the project's channels
-for a peer.
+**The validator's public P2P address is published here at launch.** Its node
+id is what `https://rpc.erth.network/status` reports under `node_info.id`. The
+host and port are assigned by its hosting provider once the launch lease runs.
+Until this page gives the full address, ask in the project's channels for a
+peer.
 
 For the Docker image, use the `SEEDS`, `PERSISTENT_PEERS`, and `EXTERNAL_ADDRESS`
 environment variables. The entrypoint writes them into `config.toml` at each

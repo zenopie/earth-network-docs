@@ -108,11 +108,13 @@ human votes on does not pass, however much stake is behind it. This is the step
 most likely to be missed in an incident, because it is the one that did not
 exist before: **tell people the vote is open.** Do not assume turnout.
 
-Falling short in the assembly does not destroy the proposal — an expedited
-proposal that misses its bar is converted to a normal one with a full seven-day
-voting period, and its deposit rides along. But a revocation that takes eight
-days instead of one is not the outcome this track exists for. Budget the
-announcement time, not just the voting time.
+Falling short in either house does not destroy the proposal. An expedited
+proposal that misses its bar is converted to a normal one, and its deposit
+rides along. Its voting period becomes seven days counted from the original
+start, so about six days remain. Stake votes carry over (a private stake vote
+stays final); the assembly opens a new ballot, and every human must vote again.
+A revocation that takes seven days instead of one is not the outcome this track
+exists for. Budget the announcement time, not just the voting time.
 
 ### 5. After the proposal passes
 
@@ -249,8 +251,8 @@ not the result.
 quorum and no minimum turnout, so a proposal with no human votes fails outright,
 and its thresholds are the same two thirds and three quarters measured against
 the votes cast. Missing the expedited bar converts the proposal to the normal
-track rather than killing it, which turns "about 1 day" into about 8. The timing
-above holds only if humans vote.
+track rather than killing it, which turns "about 1 day" into about 7 from the
+start, with a second human vote. The timing above holds only if humans vote.
 
 ---
 

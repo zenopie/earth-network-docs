@@ -115,9 +115,16 @@ period. This applies in both houses: the assembly also asks three quarters of an
 expedited proposal.
 
 An expedited proposal that falls short in either house is **not rejected**. It
-becomes an ordinary proposal with a full seven-day voting period ahead of it, and
-is voted again under ordinary rules. The deposit stays with it. Votes already
-cast do not carry over; the second round is counted from zero.
+becomes an ordinary proposal and is decided under ordinary rules. Its voting
+period is the ordinary seven days counted from when voting **first** opened, so
+about six days remain, not seven more. The deposit stays with it.
+
+- **Stake votes carry over.** The stake house tallies again at the new end with
+  the votes already cast. A private stake vote stays final: it cannot be cast
+  again on the same proposal. Stake that has not voted can still vote.
+- **Human votes start again.** The assembly opens a new ballot for the ordinary
+  round, counted from zero, and everyone votes afresh, including those who
+  voted in the expedited round.
 
 Submit the proposal with the full deposit. A proposal with a partial deposit
 stays in the deposit period and the voting period does not start.
@@ -160,8 +167,9 @@ different certificate. Each registration names its certificate and country
 publicly, so who is affected can be counted before the vote.
 
 Plan for turnout. An expedited revocation needs three quarters of the human votes
-cast within one day. If it falls short it is not lost, but it then takes the
-ordinary seven days, so tell people a revocation vote is open.
+cast within one day. If it falls short it is not lost, but it then runs to the
+end of the ordinary seven days from its start, about six more, and the humans
+must vote again. Tell people a revocation vote is open.
 
 The [trust store runbook](./operations/trust-store-runbook.md) covers the
 procedure. Write it down before an emergency, not during one.

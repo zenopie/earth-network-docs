@@ -64,15 +64,20 @@ on the chain for anyone to read. Who cast each split is not:
   record with its size, validator and split. Only its owner can prove it is
   theirs, so the owner is anonymous. Its weight is the ERTH its derth is worth,
   and it keeps earning staking rewards while locked. The chain adds up the
-  positions at each validator into one voter. Stake that is not in a position
-  does not vote in Groundworks.
+  positions at each validator into one voter. Private stake that is not in a
+  position does not vote in Groundworks.
+- A validator's **operator** votes in Groundworks in the open, from its
+  operator account, weighted by its public self-bond. That weight counts only
+  while the validator is Bonded, in the active set: out of it, the operator's
+  split stays but weighs nothing until the validator is Bonded again.
 
 The funds differ in who chooses and who may add options:
 
 - **Caretaker** is one vote per registered human. Anyone can add an option for a
   small fee, because holdings buy no extra votes here. See below for what that
   makes it.
-- **Groundworks** is weighted by staked positions. Only governance can add an option.
+- **Groundworks** is weighted by staked positions and operators' self-bonds.
+  Only governance can add an option.
   If anyone could, every staker's best move would be to list their own address
   and vote for it, and the fund would just be a second staking reward. Registered
   humans can vote to **remove** a Groundworks option on their own, with no stake

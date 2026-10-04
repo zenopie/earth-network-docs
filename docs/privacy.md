@@ -12,13 +12,15 @@ The short version:
 
 | Private | Public |
 | --- | --- |
-| Your ERTH and ANML balances, and every send, swap and stake | That a transaction happened, and its fee |
+| Your ERTH and ANML balances, and every send, swap, stake and liquidity deposit | That a transaction happened, and its fee |
 | Which wallet belongs to which registered human | That a passport registered, its country and its signing certificate |
 | Your ANML claims | That someone claimed |
 | Your assembly votes | The running tally |
 | Who cast each Caretaker split | The split itself, and how much each option earns |
 | Who owns each Groundworks position | The position: its size, its validator and its split |
 | Who staked, and how much each person holds | The amount entering or leaving each validator |
+| Who holds LP shares | Each pool's reserves and total shares, and the amounts going in and out |
+| Who pays a handle | The handle directory: each handle and the shielded address it names |
 
 Allocations are public acts. Pointing a share of the chain's issuance at
 someone is a decision about money that belongs to everyone, so the decision is
@@ -29,9 +31,9 @@ visible. The person making it is not.
 - Your name, date of birth, passport number and photo. The app reads them from
   the chip to build a proof and then discards them.
 - Your secrets. Everything private on Earth is derived from your recovery
-  phrase: the key that owns your notes, the secret behind your registration, and
-  one-time keys for Groundworks positions. The recovery phrase is still the only
-  backup.
+  phrase: the key that owns your notes, the secret behind your registration,
+  and the tags that prove you own a stake position. The recovery phrase is
+  still the only backup.
 
 ## Shielded and transparent ERTH
 
@@ -43,11 +45,12 @@ ERTH exists in two forms.
   exists and has not been spent without learning its owner or its amount. When
   you send shielded ERTH, the chain sees that some notes were spent and some new
   ones created, and a proof that the amounts balance. It does not see who, to
-  whom, or how much.
+  whom, or how much. One transaction can spend any number of notes, so a large
+  payment from many small notes is still one transaction.
 - **Transparent ERTH** is ordinary ERTH in an ordinary account, visible like on
   any other chain. It exists for the public parts of the economy: validators'
-  self-bond, liquidity pools, IBC transfers, exchanges, contracts, and payouts
-  to the addresses of fund options.
+  self-bond, IBC transfers, exchanges, contracts, and payouts to the addresses
+  of fund options.
 
 You move between the two by **shielding** (transparent to shielded, which shows
 the amount going in and the account it came from) and **unshielding** (the
@@ -64,12 +67,20 @@ sent to an exchange address or a contract. It is claimed into a note, sold from
 a note, and provided as liquidity from a note. Its only public appearances are
 in the ANML/ERTH pool's reserves and in the buyback, which burns it.
 
+## Liquidity is private too
+
+LP shares are notes. Depositing into a pool from your shielded balance mints
+your shares as a private note, and a withdrawal pays both sides back to you as
+notes when it matures. The pool, its reserves and the amounts going in and out
+are public, because a pool is shared money. Who deposited is not. LP share
+notes can be sent only inside the pool: they cannot be unshielded.
+
 ## Registration has no wallet
 
-Registering proves you hold a genuine passport, as before. What changed is what
-the proof is tied to. It is no longer tied to a wallet address. It is tied to a
-**secret commitment**, a value derived from a secret on your phone that the
-chain can check later proofs against without ever seeing the secret.
+Registering proves you hold a genuine passport. The proof is not tied to a
+wallet address. It is tied to a **secret commitment**, a value derived from a
+secret on your phone that the chain can check later proofs against without ever
+seeing the secret.
 
 The chain records each registration under its passport nullifier, the one-way
 tag that stops one passport registering twice. That record holds the
@@ -85,8 +96,10 @@ does not say which human.
 
 Registering again with the same passport while your registration is live is a
 **switch**. The old entry is retired, a new one takes its place, and nothing is
-paid twice. A switch resets the waiting periods below, because the chain cannot
-tell the new entry and the old one apart from anyone else.
+paid twice. Before you switch, the app can move your handle and your Caretaker
+vote to the new identity, so neither has to wait. Without a move, the new
+identity waits until anything the old one held has lapsed, because the chain
+cannot tell the two apart from anyone else.
 
 ## How claims and votes stay unlinkable
 
@@ -101,92 +114,126 @@ The tags come from your secret, never from your passport. The government that
 issued your passport knows your passport number, so a tag built from it could
 be recomputed by them. A tag built from a secret on your phone cannot.
 
-Because the chain cannot follow a person across actions, a new or switched
-registration waits before some actions open:
+Some actions open only after a wait, so that one passport cannot act twice
+under two secrets:
 
-| Action | How often | Opens after you register |
+| Action | How often | Opens |
 | --- | --- | --- |
 | Claim 1 ANML | once a UTC day | the day after tomorrow (registering pays your first ANML at once) |
-| Vote in the assembly | once a ballot, replaceable | ballots that open after you register |
-| Caretaker split | refreshed every 30 days by the app | 30 days |
-| Referrer binding | refreshed every 30 days by the app | 30 days |
+| Vote in the assembly | once a ballot, replaceable | on ballots that open after you register |
+| Caretaker split | lasts a year, refresh it to keep it | at once for a new registration; after a switch, once the old identity's split could have lapsed, unless you moved it |
+| Claim a handle | lasts a year, renew it to keep it | as for the Caretaker split |
 
-The waits stop one passport from acting twice under two secrets. A Caretaker
-split counts for 30 days and then lapses unless refreshed, because the chain
-cannot find a lapsed person's split to remove it. The app refreshes it for you.
+A Caretaker split lapses unless refreshed, because the chain cannot find a
+lapsed person's split to remove it. Nothing renews or refreshes on its own: the
+app reminds you, and you confirm.
 
-## Referrals are public
+## Handles
 
-A referral pays an address, so it is a public act. A registered human can
-**bind** an address as their referral address with a membership proof. The
-chain then knows that some live human vouches for that address, not which one.
-A registration that names the address pays the referrer's half of the reward
-to it in transparent ERTH. The registrant's half is still a private note.
+A **handle** is a short name, like `@alice`, that a registered human claims for
+their shielded address, so people can pay them without copying a long address.
+One handle per person. A handle lasts a year. After that it is reserved to its
+owner for a renewal window, and then it is free for anyone.
+
+The handle directory is public: each handle and the address it names. Paying a
+handle is private all the same. To pay `@alice`, the app downloads the **whole**
+directory and looks her up on your phone, then checks the entry against the
+chain's own copy before any money moves. It never asks a server for one handle,
+so nobody learns which handle you looked up or paid.
+
+## Referrals
+
+A referral is named by handle. Open someone's link,
+`https://erth.network/ref/<handle>`, or install the app from it, and the handle
+is filled in for you at registration. You can remove or replace it.
+
+When the registration lands, the chain splits the reward: your half to your own
+private note, the referrer's half as a note to their handle's address. The
+handle and the referral amount are public on the registration. Where the
+referrer's note goes next is not.
 
 ## Private staking
 
-Staking is private too. The shielded pool is the only delegator to validators.
-You hold its delegation as notes.
+Staking is private too. The shielded pool is the only delegator to validators,
+apart from each validator's own self-bond. You hold its delegation as stake
+notes.
 
-- **Delegation tokens.** Delegating to a validator turns shielded ERTH into a
-  delegation token for that validator, also held as a note. Each validator's
-  token has an **exchange rate** into ERTH. Rewards are restaked for everyone
-  at once, so the rate rises. You never claim rewards: your tokens become worth
-  more ERTH.
-- **Daily epochs.** Delegations and undelegations take effect together once a
-  day, at the end of an epoch. That batches everyone's changes, which hides
-  when each one was made.
-- **Unbonding** still takes 21 days, from the epoch it is processed in. You hold
-  an unbonding note meanwhile, and redeem it for ERTH when it matures. If the
-  validator is slashed during unbonding, the note pays out less, exactly as an
-  ordinary unbonding would.
+- **One note per validator.** Delegating to a validator gives you **derth**,
+  that validator's delegation token, as a private note. Staking more with the
+  same validator merges into the note you already have, in the same
+  transaction. A note's amount is never public.
+- **Exchange rate.** Each validator's derth has an exchange rate into ERTH.
+  Rewards are restaked for everyone at once, so the rate rises. You never claim
+  rewards: your derth becomes worth more ERTH.
+- **Daily epochs.** Delegations and undelegations reach the validators together
+  once a day, at the end of an epoch. That batches everyone's changes.
+- **Unbonding** takes 21 days. When it ends the chain pays the ERTH into a
+  private note for you by itself: there is nothing to claim. If the validator
+  is slashed during unbonding, the payout is smaller, exactly as an ordinary
+  unbonding would be.
+- **Redelegation** moves stake to another validator at once, with no unbonding
+  gap. The moved derth is **labelled** until the window in which the old
+  validator can still be punished has closed, about the unbonding time. If the
+  old validator is slashed in that window for something it did before you
+  moved, the moved stake pays its share, not the new validator's other
+  stakers. Until the label clears, the moved part cannot be unstaked or moved
+  again. The rest of your stake moves freely.
 - **Slashing** lowers the validator's exchange rate, so every holder of its
-  token shares the loss in proportion.
+  derth shares the loss in proportion.
 
-What is visible: the amount entering or leaving each validator, and each
-validator's rate. Not who holds the tokens.
+What is visible: the amounts entering or leaving each validator, and each
+validator's rate. Not who holds the derth or how much.
 
 Validators bond their own stake publicly from their operator address. Running a
 validator is a public role. Ordinary delegation from a transparent account is
 not possible on Earth.
 
-### Voting with stake: spend to vote
+### Voting with stake
 
-To vote on a proposal with your stake, the app spends your delegation note
-against a snapshot taken when the proposal opened, and immediately gives you a
-fresh note of the same value. The vote counts with the note's weight. The spent
-note cannot vote again, and the fresh one did not exist at the snapshot, so it
-cannot either. Votes are final.
+To vote on a proposal with your stake, the app proves that your derth notes
+existed, unspent, when the proposal opened. Nothing is spent, so the same notes
+can vote on every open proposal. Each vote publishes a tag for that proposal,
+so a note cannot vote twice on it, and a stake vote cannot be changed.
 
-The weight and the validator are public. The voter is not. A validator's vote
-also covers any of its stake that did not vote, as on other Cosmos chains.
+You cast **one vote per validator** you stake with. It carries one weight, the
+sum of your notes there rounded down to three significant figures, so your
+exact holdings do not show. The weight and the validator are public. The voter
+is not. A validator's vote also covers any of its stake that did not vote, as
+on other Cosmos chains.
 
 ### Groundworks positions
 
 Voting in the Groundworks fund is a public act weighted by stake, so it uses a
-**position**: delegation tokens locked into a public record with a split. The
-position shows its size, its validator and its split. Its owner is a one-time
-key that only your phone holds. Locked tokens keep earning. Unlock them and they
-return to you as a note.
+**position**: derth locked into a public record with a split. The position
+shows its size, its validator and its split. Its owner is proven by a tag that
+only your phone can produce, and nothing links it to you. Locked derth keeps
+earning. Unlock it and it merges back into your note at that validator.
 
 ## Fees: paid in ERTH, half burned
 
 Every transaction pays a fee in ERTH. There are no free transactions on chain.
 
-Private transactions are not signed by any account. They pay their fee from a
-shielded ERTH note, with a proof that the fee was taken from a note you own. An
-action that produces ERTH, such as selling ANML or redeeming an unbonding note,
-can pay its fee from what it produces. Someone who holds only ANML can sell it
-and pay from the proceeds.
+Private transactions are not signed by any account. They pay their fee from
+your shielded ERTH, in the same transaction, with a proof that the fee came
+from notes you own. Selling ANML therefore needs a little shielded ERTH for the
+fee; your registration reward covers that.
 
-Half of every fee is burned and half goes to validators, as before.
+Half of every fee is burned and half goes to validators.
 
-Your first fee is covered by Earth's backend. Before you register, the app asks
-the backend for gas. The backend checks the registration you are about to send
-is valid, and shields a little ERTH into a new note for you. It learns that a
-passport is about to register, which the chain shows publicly anyway, and
-nothing about where the note goes next. After that, your registration reward
-pays your fees.
+Your first fee is covered by Earth's backend. Before you register, the app sends
+the backend the registration it is about to broadcast. The backend checks it
+with the chain's own rules and, if it is valid, shields a little ERTH into a new
+note for you. It learns that a passport is about to register, which the chain
+shows publicly anyway, and nothing about where the note goes next. After that,
+your registration reward pays your fees.
+
+## Nothing happens without you
+
+The app sends a transaction only when you confirm it. It never claims, refreshes,
+renews or votes in the background, and never spends a fee you did not approve.
+The daily ANML claim, the Caretaker refresh and the handle renewal are
+reminders. The one thing that happens on its own is the chain paying out a
+finished unbonding, and that costs you nothing.
 
 ## What can still leak
 
@@ -194,8 +241,8 @@ Privacy here is strong, not perfect. Know the limits.
 
 - **A small crowd hides you less.** Your actions hide among everyone else's.
   At launch there are few registered humans and few notes, so a claim or a
-  vote is one of only a handful. The privacy grows with the network. The app
-  jitters its automatic actions and staking batches at epoch ends to help.
+  vote is one of only a handful. The privacy grows with the network. Staking
+  changes are batched at epoch ends to help.
 - **Timing.** If you shield 100 ERTH at noon and someone unshields 100 ERTH at
   12:01, an observer can guess. Wait between moving in and out, and avoid
   round, distinctive amounts.
@@ -203,13 +250,15 @@ Privacy here is strong, not perfect. Know the limits.
   is public and linked together. If you shield from and unshield to the same
   address, or post it with your name, it is not private. Use a fresh address
   for each public purpose.
-- **Amounts at the edges.** Shielding, unshielding, delegating, swapping from a
-  note and locking a position each reveal their amount and, where it applies,
-  the pool or validator. Only the owner is hidden.
-- **What the registration shows.** A registration still shows the passport's
-  country and its Document Signer certificate, which narrow down roughly which
-  office issued it and when. With few registrants from one country, that is a
-  small group.
+- **Amounts at the edges.** Shielding, unshielding, delegating, redelegating,
+  swapping, providing liquidity and locking a position each reveal their amount
+  and, where it applies, the pool or validator. Only the owner is hidden.
+- **Your handle.** A handle names your shielded address publicly. Payments to it
+  stay private, but anyone who knows your handle knows that address is yours.
+- **What the registration shows.** A registration shows the passport's country
+  and its Document Signer certificate, which narrow down roughly which office
+  issued it and when. With few registrants from one country, that is a small
+  group.
 - **Your network connection.** Whoever relays your transaction sees your IP
   address. Use a VPN or Tor if that matters to you.
 
@@ -231,14 +280,15 @@ can withhold data but cannot forge it.
 
 ## What Earth's backend sees
 
-The backend does two things: it pays gas for a first registration and it runs
-the indexer.
+The backend does three things: it pays gas for a first registration, it runs
+the indexer, and it serves the handle directory.
 
 - **Gas.** It sees the registration you are about to send, which the chain is
   about to publish anyway, and pays a note it cannot follow. It keeps the
   passport nullifier and the month, so one passport is funded once a month.
-- **Indexer.** It sees which ranges your phone downloads, like any website sees
-  page requests. Every phone downloads the same ranges.
+- **Indexer and handle directory.** It sees which ranges your phone downloads,
+  like any website sees page requests. Every phone downloads the same ranges,
+  and the whole directory.
 
 It never sees passport data. The app contains no ads and no advertising or
 tracking SDKs.

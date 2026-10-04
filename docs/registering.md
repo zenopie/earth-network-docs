@@ -23,10 +23,20 @@ record.
 
 ## The nullifier
 
-The chain records a **nullifier**, a one-way tag computed from your passport
-number and date of birth. It cannot be turned back into either. A second
-registration with the same passport produces the same nullifier, and the chain
-refuses it as a new person.
+The chain records a **passport nullifier**, a one-way hash of the issuing
+state, the document number, its check digit and your date of birth (plus the
+passport's optional-data field, where a long document number continues). It
+cannot be turned back into any of them. It is deterministic on purpose: the
+same passport always gives the same nullifier, so a second registration with it
+is recognised, and the chain refuses to count it as a new person.
+
+Deterministic also means recomputable. Anyone who holds those fields can hash
+them and look the nullifier up: the state that issued your passport, or anyone
+with a scan of its photo page. They can see that the passport registered, when,
+under which Document Signer certificate, and which referrer handle it named.
+They cannot see your wallet, your balances, your claims or your votes: none of
+those is tied to the passport nullifier. See
+[Privacy](./privacy.md#the-passport-nullifier-can-be-recomputed).
 
 The proof is also bound to your **secret commitment**, a value derived from a
 secret on your phone, to the notes your rewards are paid into, to your
@@ -92,10 +102,11 @@ A registration lasts one year. To renew, register again.
 
 A renewed passport has a new passport number, so it produces a **new**
 nullifier. This is deliberate: a nullifier built from something that never
-changes, like your name, could be guessed by anyone who knows your name and
-birthday, and they could then find your wallet. The cost is that for a short
-time one person can hold a registration from the old passport and one from the
-new. The old one lapses at the end of its year.
+changes, like your name, could be computed by anyone who knows your name and
+birthday. A document number is printed in your passport and almost nowhere
+else. The cost is that for a short time one person can hold a registration from
+the old passport and one from the new. The old one lapses at the end of its
+year.
 
 The same applies to anyone who holds two valid passports at once, such as dual
 nationals. Earth treats each passport as one registration.

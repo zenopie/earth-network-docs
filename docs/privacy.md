@@ -85,8 +85,30 @@ seeing the secret.
 The chain records each registration under its passport nullifier, the one-way
 tag that stops one passport registering twice. That record holds the
 registration time, the passport's country and its Document Signer certificate.
-It holds no address. Your registration reward and your first ANML are paid into
-notes that only your phone can find.
+The registration also shows the referrer handle it named, if any. It holds no
+address. Your registration reward and your first ANML are paid into notes that
+only your phone can find.
+
+### The passport nullifier can be recomputed
+
+The passport nullifier is a fixed hash of data printed in the passport: the
+issuing state, the document number, its check digit and the date of birth
+(plus the optional-data field, where a long document number continues). It
+has to be fixed. The same passport must give the same nullifier every time,
+or one passport could register as many people. A value drawn from a secret on
+your phone would change with the phone.
+
+The cost is that anyone who holds that data can compute the nullifier and look
+it up. The issuing state can. So can anyone with a copy or scan of the photo
+page, such as a hotel, a border agency or a leaked database. They learn that
+the passport registered, when, under which Document Signer certificate, and
+which referrer handle it named.
+
+They learn nothing past the registration. Nothing on chain links the
+nullifier to a wallet, a balance, a claim, a Caretaker split, an assembly vote,
+a handle you hold or anything you stake. Those use tags made from your secret
+(below), and the passport data does not reach them. Timing can still hint at a
+link: see [What can still leak](#what-can-still-leak).
 
 From then on, everything you do as a person is a fresh proof: "I am one of the
 registered humans, and here is a tag that stops me doing this twice". The proof
@@ -269,6 +291,11 @@ Privacy here is strong, not perfect. Know the limits.
   and its Document Signer certificate, which narrow down roughly which office
   issued it and when. With few registrants from one country, that is a small
   group.
+- **Whoever holds your passport data.** Your issuing state, or anyone with a
+  scan of your passport, can recompute your passport nullifier and see that
+  you registered, when, under which certificate and with which referrer
+  handle. Not your wallet or anything you do with it. See
+  [above](#the-passport-nullifier-can-be-recomputed).
 - **Your network connection.** Whoever relays your transaction sees your IP
   address. Use a VPN or Tor if that matters to you.
 

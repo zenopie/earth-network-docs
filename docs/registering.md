@@ -6,14 +6,14 @@ sidebar_position: 2
 
 You register once a year, from your phone, with your passport.
 
-1. The app asks Earth's backend for the fee. The backend checks the
-   registration is valid and pays a little shielded ERTH into a new private
-   note for you.
-2. The app reads the chip in your passport over NFC.
-3. The phone builds a zero-knowledge proof. It shows that the passport is
+1. The app reads the chip in your passport over NFC.
+2. The phone builds a zero-knowledge proof. It shows that the passport is
    genuine, that a government the chain trusts signed it, that it has not
    expired, and that the registration is bound to a secret only your phone
    holds.
+3. The app asks Earth's backend for the fee. The backend checks the
+   registration with the chain's own rules and pays a little shielded ERTH
+   into a new private note for you.
 4. The app sends the proof, paying the fee from that note. No wallet signs it.
 
 Your name, date of birth, passport number and photo stay on the phone. That is
@@ -29,8 +29,9 @@ registration with the same passport produces the same nullifier, and the chain
 refuses it as a new person.
 
 The proof is also bound to your **secret commitment**, a value derived from a
-secret on your phone, and to the notes your rewards are paid into. Someone who
-copies your proof out of a block cannot redirect it to themselves.
+secret on your phone, to the notes your rewards are paid into, to your
+referrer's handle and to this network. Someone who copies your proof out of a
+block cannot redirect it to themselves or replay it elsewhere.
 
 The registration is tied to **no wallet address**. The chain records the
 nullifier, the registration time, the passport's country and its Document
@@ -40,10 +41,13 @@ humans, without saying which. See [Privacy](./privacy.md#registration-has-no-wal
 
 ## What you get
 
-- **1 ANML at once, then 1 ANML a day**, claimed privately by the app. Days you
-  do not claim do not carry over. Daily claims open the day after tomorrow.
-- **A vote in the Caretaker fund**, one per human whatever you hold. It opens
-  30 days after you register.
+- **1 ANML at once, then 1 ANML a day**, claimed privately when you choose to;
+  the app reminds you. Days you do not claim do not carry over. Daily claims
+  open the day after tomorrow.
+- **A vote in the Caretaker fund**, one per human whatever you hold. It counts
+  for a year at a time, and you refresh it when the app reminds you.
+- **A handle**, a short name people can pay instead of your address, and your
+  referral link.
 - **A seat in the assembly**, the house that must approve every governance
   proposal. You can vote on every ballot that opens after you register.
 - **A share of the registration reward**, paid in shielded ERTH when you
@@ -56,24 +60,31 @@ secrets.
 
 ## Referrals
 
-If someone referred you, the app names their **referral address**, and the
-reward is split: your half as a private note, theirs in public ERTH to that
-address. A referral address has to be bound by a registered human first, with
-a proof that they are one, so the chain knows a real person vouches for it, not
-who. A registered human can bind one address, 30 days after registering, and
-the app keeps the binding fresh. Without a referrer you receive your half and
-the rest stays in the reward pool.
+A referrer is named by their **handle**. If you opened someone's link,
+`https://erth.network/ref/<handle>`, or installed the app from it, the handle
+is filled in for you; you can remove or replace it before you register. The app
+checks that the handle is live before it is used.
+
+The reward is then split: your half as a private note, the referrer's half as a
+note the chain pays to their handle's address. The handle and the amount are
+public on the registration. Without a referrer you receive your half and the
+rest stays in the reward pool.
 
 ## Moving to a new phone
 
 Restore your recovery phrase on the new phone. Your secret, your notes and your
 registration come with it, because all of them derive from the phrase.
 
-If you lost the phrase, or think your secret is exposed, scan the same passport
-again from a new wallet. While your registration is live this is a **switch**:
-the old entry is retired, a new one takes its place, and nothing is paid twice.
-A switch restarts the waits above, and notes held by the old wallet stay with
-the old phrase.
+If you think your secret is exposed, scan the same passport again from a new
+wallet. While your registration is live this is a **switch**: the old entry is
+retired, a new one takes its place, and nothing is paid twice. Before
+switching, move your handle and your Caretaker vote to the new wallet from the
+old one; otherwise the new identity waits until they could have lapsed. Notes
+held by the old wallet stay with the old phrase, so send them across first.
+
+If you lost the phrase, the old wallet's notes, handle and vote are lost with
+it. Scanning your passport from a new wallet is still a switch, but nothing can
+be moved, so the new identity waits as above.
 
 ## Renewing
 

@@ -163,6 +163,11 @@ revocation. Everyone else votes as normal.
   must belong to one country.
 - A proposal that spans two countries cannot be voted on and fails. Submit one
   proposal per country.
+- A revocation must stand alone, at the top level. A proposal that carries a
+  revocation together with **any other message**, or wraps a revocation inside
+  another message such as an authz `MsgExec`, cannot be voted on in the
+  assembly and fails. Otherwise a change the excluded registrations had no say
+  in could ride along with the revocation.
 
 This is blunt. Real people whose passports that certificate signed lose their
 registration too, and have to register again with a passport signed by a

@@ -64,6 +64,10 @@ earthd query personhood registrations-by-dsc <dsc-key> --node https://rpc.erth.n
 }
 ```
 
+Keep the proposal to revocations only, at the top level. A proposal that adds
+any other message, or wraps the revocation in another message such as authz
+`MsgExec`, cannot be voted on in the assembly and fails.
+
 Get the authority address:
 
 ```bash

@@ -45,8 +45,11 @@ ERTH exists in two forms.
   exists and has not been spent without learning its owner or its amount. When
   you send shielded ERTH, the chain sees that some notes were spent and some new
   ones created, and a proof that the amounts balance. It does not see who, to
-  whom, or how much. One transaction can spend any number of notes, so a large
-  payment from many small notes is still one transaction.
+  whom, or how much. A transaction spends at most **16 notes**: each note
+  spent takes one action, a bundle holds at most 16 actions (the
+  `max_actions_per_bundle` parameter), and every transaction today carries one
+  bundle (the protocol allows two a message). A payment from more than 16
+  notes takes more than one transaction.
 - **Transparent ERTH** is ordinary ERTH in an ordinary account, visible like on
   any other chain. It exists for the public parts of the economy: validators'
   self-bond, IBC transfers, exchanges, contracts, and payouts to the addresses
@@ -116,8 +119,9 @@ does not say which human.
 
 ### Switching phones or secrets
 
-Registering again with the same passport while your registration is live is a
-**switch**. The old entry is retired, a new one takes its place, and nothing is
+Registering the same passport again from **another wallet** while your
+registration is live is a **switch**. (From the same wallet it is refused: see
+[Renewing](./registering.md#renewing).) The old entry is retired, a new one takes its place, and nothing is
 paid twice. Before you switch, the app can move your handle and your Caretaker
 vote to the new identity, so neither has to wait. Without a move, the new
 identity waits until anything the old one held has lapsed, because the chain
@@ -176,14 +180,20 @@ referrer's note goes next is not.
 
 ## Private staking
 
-Staking is private too. The shielded pool is the only delegator to validators,
-apart from each validator's own self-bond. You hold its delegation as stake
-notes.
+Staking is private too. The private staking module, `x/shieldedstaking`, is
+the only delegator to validators, apart from each validator's own self-bond.
+You hold your share of its delegation as **stake notes**. They live in the
+module's own note tree, beside the shielded pool's, not in the pool: you
+delegate from the pool and are paid back into it.
 
 - **One note per validator.** Delegating to a validator gives you **derth**,
   that validator's delegation token, as a private note. Staking more with the
   same validator merges into the note you already have, in the same
   transaction. A note's amount is never public.
+- **Stake notes are owner-locked.** A stake proof can only create stake notes
+  for the key that spent them, so derth cannot be sent or given to anyone
+  else, and it is never a coin that could be traded. To hand stake to someone,
+  unstake it and send the ERTH.
 - **Exchange rate.** Each validator's derth has an exchange rate into ERTH.
   Rewards are restaked for everyone at once, so the rate rises. You never claim
   rewards: your derth becomes worth more ERTH.
@@ -247,7 +257,9 @@ the backend the registration it is about to broadcast. The backend checks it
 with the chain's own rules and, if it is valid, shields a little ERTH into a new
 note for you. It learns that a passport is about to register, which the chain
 shows publicly anyway, and nothing about where the note goes next. After that,
-your registration reward pays your fees.
+your registration reward pays your fees. A switch is funded the same way,
+because the new wallet starts empty. Either kind is granted once per passport
+in any 30 days.
 
 ## Nothing happens without you
 
@@ -282,9 +294,10 @@ Privacy here is strong, not perfect. Know the limits.
   is public and linked together. If you shield from and unshield to the same
   address, or post it with your name, it is not private. Use a fresh address
   for each public purpose.
-- **Amounts at the edges.** Shielding, unshielding, delegating, redelegating,
-  swapping, providing liquidity and locking a position each reveal their amount
-  and, where it applies, the pool or validator. Only the owner is hidden.
+- **Amounts at the edges.** Shielding, unshielding, delegating, undelegating,
+  redelegating, swapping, providing liquidity and locking a position each
+  reveal their amount and, where it applies, the pool or validator. Only the
+  owner is hidden. An undelegation's payout, 21 days later, is linked to it.
 - **Your handle.** A handle names your shielded address publicly. Payments to it
   stay private, but anyone who knows your handle knows that address is yours.
 - **What the registration shows.** A registration shows the passport's country
@@ -320,9 +333,14 @@ can withhold data but cannot forge it.
 The backend does three things: it pays gas for a first registration, it runs
 the indexer, and it serves the handle directory.
 
-- **Gas.** It sees the registration you are about to send, which the chain is
-  about to publish anyway, and pays a note it cannot follow. It keeps the
-  passport nullifier and the month, so one passport is funded once a month.
+- **Gas.** It sees the registration or switch you are about to send, which
+  the chain is about to publish anyway, and pays a note it cannot follow. For
+  each grant it stores the passport nullifier, the date, and whether it was a
+  switch, and nothing that names the note or your wallet. It refuses a second
+  grant to the same passport within any 30 days (a sliding window, not a
+  calendar month), and deletes each record after 31 days, once it can no
+  longer decide anything. It also sees your IP address, like any web server,
+  and keeps it only in memory for rate limits.
 - **Indexer and handle directory.** It sees which ranges your phone downloads,
   like any website sees page requests. Every phone downloads the same ranges,
   and the whole directory.

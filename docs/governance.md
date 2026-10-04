@@ -65,8 +65,8 @@ every ballot that opens later.
 
 ## Stake votes
 
-Most staked ERTH is held privately, as derth notes in the shielded pool (see
-[Staking](./using-the-app.md#stake)). The app proves that your notes at a
+Most staked ERTH is held privately, as derth notes in `x/shieldedstaking`'s
+own note tree (see [Staking](./using-the-app.md#stake)). The app proves that your notes at a
 validator existed, unspent, when the proposal opened, and casts **one vote per
 validator** you stake with. Nothing is spent, so the same stake can vote on
 every open proposal. The vote's weight, your notes there rounded down to three

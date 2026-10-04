@@ -44,8 +44,9 @@ There is no allowlist. Acquire ERTH, self-delegate, and submit
 `MsgCreateValidator`.
 
 Validators bond their own stake publicly. Nobody else delegates to a validator
-directly: users stake privately through the shielded pool, which delegates on
-their behalf once a day. See
+directly, and no account can delegate to yours: users stake privately through
+the private staking module, `x/shieldedstaking`, which delegates on their
+behalf once a day. See
 [Join the network](./join.md#how-to-become-a-validator).
 
 Genesis funds one ordinary account: the first validator's operator, with

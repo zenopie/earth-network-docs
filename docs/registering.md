@@ -63,8 +63,10 @@ humans, without saying which. See [Privacy](./privacy.md#registration-has-no-wal
   switch or a re-entry (below), you cannot vote on ballots that opened before
   it or within a day after it.
 - **A share of the registration reward**, paid in shielded ERTH when you
-  register. It halves as more people register, so early registrants receive
-  more. It pays your later fees.
+  register. Each registration draws one ten-thousandth (1e-4) of the reward
+  pool, half to you and half to your referrer, so each draw is a little
+  smaller than the last and early registrants receive more. Caretaker votes
+  pointed at the reward top the pool up. It pays your later fees.
 
 The waits exist because the chain cannot follow you from one action to the
 next. Without them, one passport could act twice, once under each of two
@@ -79,8 +81,8 @@ checks that the handle is live before it is used.
 
 The reward is then split: your half as a private note, the referrer's half as a
 note the chain pays to their handle's address. The handle and the amount are
-public on the registration. Without a referrer you receive your half and the
-rest stays in the reward pool.
+public on the registration. Without a referrer only your half is drawn (half
+of 1e-4 of the pool), and the rest stays in the reward pool.
 
 ## Moving to a new phone
 

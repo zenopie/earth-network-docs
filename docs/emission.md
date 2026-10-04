@@ -117,7 +117,9 @@ will be for. Governance decides how the pool is spent.
 
 The first Caretaker option is the **registration reward**. It pays each new
 registrant, and their referrer if they have one, from a pool funded at genesis
-and topped up by the Caretaker votes pointed at it. The registrant's half is
+and topped up by the Caretaker votes pointed at it. Each registration draws
+1e-4 of the pool (half of that without a referrer), so the reward shrinks as
+registrations add up unless votes refill it. The registrant's half is
 paid into a private note. The referrer, named by handle, is paid the other half
 as a note to their handle's address. Without a referrer, that half stays in the
 pool.

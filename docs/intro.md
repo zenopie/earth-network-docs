@@ -30,7 +30,7 @@ directly by rule, and the other is a shared fund that voters point somewhere.
 
 | | Paid to individuals, by rule | A shared fund, pointed by vote |
 | --- | --- | --- |
-| **Capital decides** | **Staking rewards**, paid in proportion to bonded ERTH | **Groundworks fund**, steered by staked positions |
+| **Capital decides** | **Staking rewards**, paid in proportion to bonded ERTH | **Groundworks fund**, steered by staked positions and validators' self-bonds |
 | **People decide** | **ANML buyback**: the chain buys and burns the ANML that registered humans claim | **Caretaker fund**: private providers compete to build public goods, and each human's anonymous vote moves the money |
 
 The split is written into the software as a constant. No proposal can move money
@@ -66,8 +66,9 @@ fund. See [Governance](./governance.md).
 There are no founder tokens, no team unlock and no investor tranche. The genesis
 supply went to liquidity and to the reward for registering. After genesis, ERTH
 is earned: by registering, staking, providing liquidity, or being voted a share of
-a fund. See [Emission](./emission.md) for the exact split, including the small
-amounts that genesis did give to individual accounts.
+a fund. See [Emission](./emission.md) for the exact split, including the one
+small account that genesis funds: the first validator's operator, with 1,000
+ERTH.
 
 ## Where to start
 

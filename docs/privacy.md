@@ -246,6 +246,16 @@ Privacy here is strong, not perfect. Know the limits.
 - **Timing.** If you shield 100 ERTH at noon and someone unshields 100 ERTH at
   12:01, an observer can guess. Wait between moving in and out, and avoid
   round, distinctive amounts.
+- **Timing around your handle.** Registrations are public, and so is every
+  handle being claimed or moved. If a handle is claimed shortly after a
+  registration lands, or moved shortly before a switch lands, an observer can
+  guess that the two belong together, and so link that passport's
+  registration (its country, its signing certificate, and anyone who can
+  recompute its nullifier, below) to the handle and the address it names. The
+  fewer registrations there are, the better the guess. The app adds no delay
+  of its own: it sends each step only when you tap, so the gap is yours to
+  choose. Leave hours or days, not seconds, between registering and claiming
+  a handle, and between moving a handle and switching.
 - **Reusing a transparent address.** Everything a transparent ERTH address does
   is public and linked together. If you shield from and unshield to the same
   address, or post it with your name, it is not private. Use a fresh address

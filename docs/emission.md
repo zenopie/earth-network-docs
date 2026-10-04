@@ -134,8 +134,10 @@ The chain started with **2,522,880,000 ERTH**, twenty years of issuance at
 | 3 | The ERTH paired with what those bidders pay, to open a second pool |
 | 4 | The registration reward pool |
 
-Genesis also placed **21,000 ERTH** in three ordinary accounts: 1,000 to bond the
-first validator and 10,000 each to two others. No other individual received an
+Genesis also places **1,000 ERTH** in one ordinary account, the first
+validator's operator: enough to bond the validator and pay governance deposits.
+It is the only account funded at genesis. The devnet's faucet and gas-wallet
+accounts are removed from the launch genesis. No other individual receives an
 allocation, and there are no founder, team or investor tokens.
 
 ## Protocol-owned liquidity retires in five years

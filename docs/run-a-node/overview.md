@@ -48,7 +48,8 @@ directly: users stake privately through the shielded pool, which delegates on
 their behalf once a day. See
 [Join the network](./join.md#how-to-become-a-validator).
 
-Genesis contained no allocation for validators. You must earn ERTH: by
+Genesis funds one ordinary account: the first validator's operator, with
+1,000 ERTH. There is no allocation for other validators. You must earn ERTH: by
 registration of a passport, by a bid in the liquidity auction, or on the market.
 
 Do not keep the consensus key on the node. See

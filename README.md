@@ -2,13 +2,10 @@
 
 Documentation for the earth network, published at **https://docs.erth.network**.
 
-    docs/                     user guides — what the chain is and how to use it
-    docs/run-a-node/          node operators: joining, Akash, upgrades
+    docs/                     user guides: what the chain is and how to use it
+    docs/run-a-node/          node operators: joining, the consensus key, upgrades
     docs/operations/          runbooks for things that go wrong
-    docs/internal/            working notes, including the launch checklist
-
-The internal notes are public deliberately. The launch checklist has unticked
-boxes in it; publishing it is a forcing function, not an oversight.
+    docs/technical/           how the core pieces work: personhood, the fund streams
 
 ## Local
 

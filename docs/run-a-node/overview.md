@@ -6,13 +6,12 @@ sidebar_position: 1
 
 Any user can run a node. No permission and no stake are required.
 
-The operational guides are stored with the code, so that they stay correct as
-the software changes:
-
-- **[Running a node](https://github.com/zenopie/earth-network-chain/blob/master/docs/JOIN.md)**
-  — binary, genesis file and its checksum, seeds, gas price, pruning, hardware.
-- **[Upgrades](https://github.com/zenopie/earth-network-chain/blob/master/docs/UPGRADES.md)**
-  — the procedure for a coordinated upgrade, and its failure modes.
+- **[Join the network](./join.md)** — binary, genesis file and its checksum,
+  peers, gas price, pruning, hardware.
+- **[Protecting the consensus key](./remote-signer.md)** — a remote signer for
+  validators.
+- **[Upgrades](./upgrades.md)** — the procedure for a coordinated upgrade, and
+  its failure modes.
 - **[Releases](https://github.com/zenopie/earth-network-chain/releases)** —
   binaries and checksums.
 

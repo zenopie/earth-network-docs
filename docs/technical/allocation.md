@@ -66,7 +66,7 @@ from.
     comes off the stream at that exact time, even if the block lands later: a
     position's split is cleared (`splits` empty, `split_expires_at` 0) and it
     stops voting until re-cast; an operator's vote is removed. Events:
-    `position` with action `split_lapsed` (every `position` event carries
+    `shieldedstaking_position` with action `split_lapsed` (every such event carries
     `split_expires_at`) and `split_lapsed` (`stream`, `voter`, `expires_at`)
     for operators. Wallets remind before expiry; renewal is manual, never
     automatic.

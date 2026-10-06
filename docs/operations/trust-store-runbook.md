@@ -192,13 +192,13 @@ the chain counts as separate humans. This is the sybil surface and the reason
 that the message exists. It is also the reason that a revocation excludes each
 honest passport holder of that country.
 
-**The CSCA must resolve to one known country.** The assembly excludes the
-whole country from the vote, and the country comes from the trust store: it is
-known only when the trust store holds a certificate with this key and every such certificate names the
-same country. A CSCA revocation whose country is unknown cannot be voted on at
-all, so it fails for want of votes, and during an incident that costs the
-full voting period. Check the certificate's country before you submit, and put
-one country's revocations in one proposal (see
+**The CSCA must resolve to one known country.** The assembly excludes the whole
+country from the vote, and the country comes from the trust store: it is known
+only when the trust store holds a certificate with this key and every such
+certificate names the same country. A CSCA revocation whose country is unknown
+cannot be voted on at all, so it fails for want of votes, and during an incident
+that costs the full voting period. Check the certificate's country before you
+submit, and put one country's revocations in one proposal (see
 [Governance](../governance.md)).
 
 **Track:** use expedited if the root is compromised. Use normal if the change is

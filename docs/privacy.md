@@ -128,13 +128,15 @@ does not say which human.
 Registering the same passport again from **another wallet** while your
 registration is live is a **switch**. (From the same wallet it is refused: see
 [Renewing](./registering.md#renewing).) The old entry is retired, a new one
-takes its place, and nothing is paid twice. Before you switch, the app can move your handle and your Caretaker
-vote to the new identity, so neither has to wait. A move goes only to your own
-next identity: the app proves privately that both were made from the same
-passport, without revealing it, and nobody else's identity can receive one.
-Without a move, the new identity waits until anything the old one held has
-lapsed, because the chain cannot tell the two apart from anyone else. A
-passport can switch at most once a day (see
+takes its place, and nothing is paid twice. Once the switch has landed, the app
+can move your handle and your Caretaker vote to the new identity, so neither
+has to wait; it needs both recovery phrases on the phone. A move goes only to
+your own next identity: the app proves privately that both were made from the
+same passport, without revealing it, and nobody else's identity can receive
+one. Without a move (always the case if the old phrase is lost), the new
+identity waits until anything the old one held has lapsed, because the chain
+cannot tell the two apart from anyone else. A passport can switch at most once
+a day (see
 [Moving to a new phone](./registering.md#moving-to-a-new-phone)).
 
 ## How claims and votes stay unlinkable
@@ -294,14 +296,14 @@ Privacy here is strong, not perfect. Know the limits.
   round, distinctive amounts.
 - **Timing around your handle.** Registrations are public, and so is every
   handle being claimed or moved. If a handle is claimed shortly after a
-  registration lands, or moved shortly before a switch lands, an observer can
+  registration lands, or moved shortly after a switch lands, an observer can
   guess that the two belong together, and so link that passport's
   registration (its country, its signing certificate, and anyone who can
   recompute its nullifier, below) to the handle and the address it names. The
   fewer registrations there are, the better the guess. The app adds no delay
   of its own: it sends each step only when you tap, so the gap is yours to
   choose. Leave hours or days, not seconds, between registering and claiming
-  a handle, and between moving a handle and switching.
+  a handle, and between switching and moving a handle.
 - **Reusing a transparent address.** Everything a transparent ERTH address does
   is public and linked together. If you shield from and unshield to the same
   address, or post it with your name, it is not private. Use a fresh address

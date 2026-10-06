@@ -100,17 +100,22 @@ registration come with it, because all of them derive from the phrase.
 
 If you think your secret is exposed, scan the same passport again from a new
 wallet. While your registration is live this is a **switch**: the old entry is
-retired, a new one takes its place, and nothing is paid twice. Before
-switching, move your handle and your Caretaker vote to the new wallet from the
-old one; otherwise the new identity waits until they could have lapsed. Notes
-held by the old wallet stay with the old phrase, so send them across first.
+retired, a new one takes its place, and nothing is paid twice. Notes held by
+the old wallet stay with the old phrase, so send them across first.
+
+Once the switch has landed, the app can move your handle and your Caretaker
+vote to the new identity, so neither has to wait. A move needs **both recovery
+phrases on the phone**, the old one and the new one, and must be made while the
+new identity is still your passport's live one (before you switch again).
+A handle in its renewal period cannot be moved: renew it first.
 
 A move only carries a handle or a split over to **your own next identity**.
 The app proves, privately, that the old identity and the new one were made
 from the same passport, without saying which passport. A handle or a split
 cannot be moved to anyone else's identity. Without a move, the old identity's
 handle keeps resolving and its split keeps counting until their leases end,
-but neither can be renewed or changed.
+but neither can be renewed or changed, and the new identity waits until they
+could have lapsed.
 
 A passport can switch **once a day**. The switch must be proven on a later
 date (UTC) than the registration it replaces, so a second switch the same day
@@ -118,8 +123,8 @@ is refused (error 1128); try again the next day. The app proves switches on
 today's date.
 
 If you lost the phrase, the old wallet's notes, handle and vote are lost with
-it. Scanning your passport from a new wallet is still a switch, but nothing can
-be moved, so the new identity waits as above.
+it. Scanning your passport from a new wallet is still a switch, but without the
+old phrase nothing can be moved, so the new identity waits as above.
 
 ## Renewing
 

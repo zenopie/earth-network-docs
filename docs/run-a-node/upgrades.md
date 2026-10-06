@@ -337,9 +337,16 @@ Coordinate this publicly. A node that skips alone is on a different chain from
 that block onward.
 
 **The chain is halted and consensus cannot continue.** This requires a genesis
-restart, not an upgrade. Export the state, build a new genesis file from it, and
-start a new chain id. See `scripts/build-genesis.sh` and
-`networks/genesis/README.md`.
+restart, not an upgrade. Earth's policy is to keep the chain id `earth-1`: the
+wallets hardcode it and every registration proof binds it, so a new chain id
+would need a wallet release before anyone could register. A restart therefore
+means a new genesis file (built from exported state, or fresh), a new genesis
+time and checksum, and a **new consensus key** for every validator: a key that
+signed the old chain's heights would sign the same heights again under the
+same chain id, which looks like a double-sign, and a remote signer's
+high-water mark would refuse. Every node wipes its data and installs the new
+genesis, as in [Join the network](./join.md). See `scripts/build-genesis.sh`
+and `networks/genesis/README.md`.
 
 ---
 

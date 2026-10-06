@@ -163,6 +163,12 @@ revocation. Everyone else votes as normal.
   must belong to one country.
 - A proposal that spans two countries cannot be voted on and fails. Submit one
   proposal per country.
+- A Country Signing CA revocation must resolve to one known country: the
+  chain must be able to tell which country every certificate behind that key
+  names. If it cannot, the proposal cannot be voted on and fails, even on its
+  own, because there is no group of registrations it could exclude. (A lone
+  Document Signer revocation is fine either way: it excludes that signer's
+  registrations.)
 - A revocation must stand alone, at the top level. A proposal that carries a
   revocation together with **any other message**, or wraps a revocation inside
   another message such as an authz `MsgExec`, cannot be voted on in the

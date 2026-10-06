@@ -129,9 +129,13 @@ Registering the same passport again from **another wallet** while your
 registration is live is a **switch**. (From the same wallet it is refused: see
 [Renewing](./registering.md#renewing).) The old entry is retired, a new one
 takes its place, and nothing is paid twice. Before you switch, the app can move your handle and your Caretaker
-vote to the new identity, so neither has to wait. Without a move, the new
-identity waits until anything the old one held has lapsed, because the chain
-cannot tell the two apart from anyone else.
+vote to the new identity, so neither has to wait. A move goes only to your own
+next identity: the app proves privately that both were made from the same
+passport, without revealing it, and nobody else's identity can receive one.
+Without a move, the new identity waits until anything the old one held has
+lapsed, because the chain cannot tell the two apart from anyone else. A
+passport can switch at most once a day (see
+[Moving to a new phone](./registering.md#moving-to-a-new-phone)).
 
 ## How claims and votes stay unlinkable
 

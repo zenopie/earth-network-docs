@@ -105,6 +105,18 @@ switching, move your handle and your Caretaker vote to the new wallet from the
 old one; otherwise the new identity waits until they could have lapsed. Notes
 held by the old wallet stay with the old phrase, so send them across first.
 
+A move only carries a handle or a split over to **your own next identity**.
+The app proves, privately, that the old identity and the new one were made
+from the same passport, without saying which passport. A handle or a split
+cannot be moved to anyone else's identity. Without a move, the old identity's
+handle keeps resolving and its split keeps counting until their leases end,
+but neither can be renewed or changed.
+
+A passport can switch **once a day**. The switch must be proven on a later
+date (UTC) than the registration it replaces, so a second switch the same day
+is refused (error 1128); try again the next day. The app proves switches on
+today's date.
+
 If you lost the phrase, the old wallet's notes, handle and vote are lost with
 it. Scanning your passport from a new wallet is still a switch, but nothing can
 be moved, so the new identity waits as above.

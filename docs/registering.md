@@ -9,8 +9,8 @@ You register once a year, from your phone, with your passport.
 1. The app reads the chip in your passport over NFC.
 2. The phone builds a zero-knowledge proof. It shows that the passport is
    genuine, that a government the chain trusts signed it, that it has not
-   expired, and that the registration is bound to a secret only your phone
-   holds.
+   expired, and that you know the secret of the identity being registered,
+   which only your phone holds.
 3. The app asks Earth's backend for the fee. The backend checks the
    registration with the chain's own rules and pays a little shielded ERTH
    into a new private note for you.
@@ -47,16 +47,38 @@ published nullifier. A guess reveals the same things as a recomputation: that
 the passport registered, when, its certificate and its referrer handle. Not
 your wallet.
 
-The proof is also bound to your **secret commitment**, a value derived from a
-secret on your phone, to the notes your rewards are paid into, to your
-referrer's handle and to this network. Someone who copies your proof out of a
-block cannot redirect it to themselves or replay it elsewhere.
+The proof is also bound to your **identity commitment**, a value derived from
+your identity's secret (below), to the notes your rewards are paid into, to
+your referrer's handle and to this network. Someone who copies your proof out
+of a block cannot redirect it to themselves or replay it elsewhere.
 
 The registration is tied to **no wallet address**. The chain records the
 nullifier, the registration time, the passport's country and its Document
 Signer certificate, and nothing that points at an account. Everything you do
 as a person afterwards is a fresh proof that you are one of the registered
 humans, without saying which. See [Privacy](./privacy.md#registration-has-no-wallet).
+
+## Your identities
+
+Each registration is to an **identity**: a secret the app derives from your
+recovery phrase, and a public commitment to it that becomes your entry in the
+chain's identity tree. Your ANML claims, votes, Caretaker split and handle are
+all proven with that secret. Every registration proves that whoever sends it
+knows the identity's secret, so nobody can register a passport to an identity
+they did not create.
+
+The chain accepts each identity **only once**. An identity that has
+registered, whether it is still live, has lapsed or was switched away, is
+refused if it is registered again, by any passport (error 1130). So one
+recovery phrase holds a **series of identities**. The wallet's first
+registration uses the first one, and every later registration from the same
+wallet, a renewal or a fresh identity, uses its next one. Your notes, stake and
+shielded address belong to the phrase, not to an identity, so they never move.
+You never need a new wallet or a new recovery phrase to register again.
+
+If the chain ever refuses a registration with 1130 (the app missed one of its
+own registrations, for example after restoring from an older backup), the app
+moves on to your next identity by itself. Start the registration again.
 
 ## What you get
 
@@ -95,29 +117,26 @@ of 1e-4 of the pool), and the rest stays in the reward pool.
 
 ## Moving to a new phone
 
-Restore your recovery phrase on the new phone. Your secret, your notes and your
-registration come with it, because all of them derive from the phrase.
+Restore your recovery phrase on the new phone. Your identities, your notes and
+your registration come with it, because all of them derive from the phrase.
 
-If you think your secret is exposed, scan the same passport again from a new
-wallet. While your registration is live this is a **switch**: the old entry is
-retired, a new one takes its place, and nothing is paid twice. Notes held by
-the old wallet stay with the old phrase, so send them across first.
+## Switching identity
 
-Once the switch has landed, the app can move your handle and your Caretaker
-vote to the new identity, so neither has to wait. A move needs **both recovery
-phrases on the phone**, the old one and the new one, and must be made while the
-new identity is still your passport's live one (before you switch again).
-A handle in its renewal period cannot be moved, and once the switch has landed
-the old identity can no longer renew it, so renew a handle that is close to
-lapsing **before** you switch.
+Registering your passport again while its registration is live is a
+**switch**: the old entry is retired, a new one takes its place, and nothing
+is paid twice. The app's **Switch identity** screen offers two kinds of
+target:
 
-A move only carries a handle or a split over to **your own next identity**.
-The app proves, privately, that the old identity and the new one were made
-from the same passport, without saying which passport. A handle or a split
-cannot be moved to anyone else's identity. Without a move, the old identity's
-handle keeps resolving and its split keeps counting until their leases end,
-but neither can be renewed or changed, and the new identity waits until they
-could have lapsed.
+- **Another wallet** on the phone. The passport is registered to that wallet's
+  next identity. Notes held by the old wallet stay with its phrase, so send
+  them across first. Switching back to a wallet you used before works too: it
+  registers its own next identity.
+- **A fresh identity in this wallet**, from the same recovery phrase. Use it if
+  you think this identity's secret alone was exposed. That is rare: the app
+  derives the secret from your phrase and keeps it only in memory. It does not
+  help if your **recovery phrase** may be exposed, because anyone with the
+  phrase can derive every identity of the wallet. In that case create a new
+  wallet, with a new phrase, and switch to it.
 
 A passport can switch **once a day**. The switch must be proven on a later
 date (UTC) than the registration it replaces, so a second switch the same day
@@ -125,28 +144,84 @@ is refused (error 1128); try again the next day. The app proves switches on
 today's date.
 
 If you lost the phrase, the old wallet's notes, handle and vote are lost with
-it. Scanning your passport from a new wallet is still a switch, but without the
-old phrase nothing can be moved, so the new identity waits as above.
+it. Registering your passport from a new wallet is still a switch, but without
+the old phrase nothing can be moved, so the new identity waits as below.
+
+## Moving your handle and vote
+
+Once a switch or a renewal has landed, the app can move your handle and your
+Caretaker vote from the identity it replaced to the new one, so neither has to
+wait. Open **Identity** to do it. A move is a private transaction proven with
+both identities' secrets, which stay on the phone:
+
+- From an earlier identity of the **same wallet** (a renewal, or a fresh
+  identity), both secrets come from its one recovery phrase. The fee comes from
+  the wallet's own private ERTH.
+- From **another wallet**, that wallet must be on the phone too, with its
+  phrase.
+
+A move is **one step**: from an identity to the one that replaced it, and
+only while the new one is your passport's live identity. After a second
+switch, anything still held by the identity two steps back can never move;
+it stays there until its lease ends. So move before you switch again. If the
+identity you are leaving still holds something, the Switch identity screen
+warns you, and switches only once you tick **Switch anyway and leave it where
+it is**.
+
+**When to move.** A move made right after a switch can be linked to it by its
+timing (see [Privacy](./privacy.md#what-can-still-leak)), and a renewal is
+just as public. So once the switch or renewal lands, the app picks a random
+time between 6 hours and 3 days after it, and shows it as **Suggested: move
+after** a date. Moving earlier is your choice (the app
+asks you to confirm), and nothing hurries a move while the new identity stays
+live. The app reminds you when the time comes. It never moves anything on its
+own.
+
+A handle in its renewal period cannot be moved, and once the switch has landed
+the old identity can no longer renew it, so renew a handle that is close to
+lapsing **before** you switch.
+
+**Only to your own next identity.** The app proves, privately, that the old
+identity and the new one follow each other under the same passport, without
+saying which passport. And since every registration proves knowledge of its
+identity's secret, every identity in your passport's chain is one you created
+yourself. So a handle or a split cannot be sold to someone else's identity: a
+buyer could at most be promised your secret, which you would still know. What
+no passport-based system can stop is selling the passport itself. Handing
+someone your passport's chip data, with the secret of your current identity,
+lets them register your passport to their own identity and move your handle or
+split there for one lease. That is selling your personhood, name and passport
+number included.
+
+Without a move, the old identity's handle keeps resolving and its split keeps
+counting until their leases end, but neither can be renewed or changed, and
+the new identity cannot claim a handle or cast a split until they could have
+lapsed (up to a year).
 
 ## Renewing
 
-A registration lasts one year. To renew it, register the passport again once
-the year is over. What happens depends on when, and from which wallet:
+A registration lasts one year. To renew it, open **Identity** once the year is
+over and tap **Renew registration**. The app registers your passport to the
+wallet's next identity, derived from the same recovery phrase: no new wallet
+or phrase is needed. What happens depends on when, and to which identity:
 
 | You register the same passport | Result |
 | --- | --- |
-| From the same wallet, while the registration is live | Refused (error 1123). It is indistinguishable from a replay of your first registration. |
-| From the same wallet, after the registration has lapsed | A **re-entry**: a new registration, paid like the first (1 ANML and a share of the reward). |
-| From another wallet, while the registration is live | A **switch** (above): the old entry is retired and nothing is paid. |
+| From the same wallet, after the registration has lapsed (**Renew registration**) | A **re-entry** with the wallet's next identity: a new registration, paid like the first (1 ANML and a share of the reward). |
+| From another wallet, after the registration has lapsed | A re-entry with that wallet's next identity, paid the same way. |
+| To a fresh identity in the same wallet, while the registration is live | A **switch** (above): the old entry is retired and nothing is paid. |
+| From another wallet, while the registration is live | A switch to that wallet's next identity. |
+| To an identity that has registered before | Refused: error 1123 while that registration is live, 1130 after. The app never sends one. |
 
 A re-entered identity is bound by its predecessor, as a switched one is,
 because the chain cannot tell whether the lapsed identity and the new one are
 the same person. It cannot vote on assembly ballots that opened before the
 re-entry or within a day after it. It cannot claim a new handle or cast a new
 Caretaker split until anything the old identity could have held has lapsed.
-From the same wallet, a handle or split you still hold live can be renewed as
-usual. Daily ANML claims open the day after tomorrow, as for a first
-registration.
+A handle or split your previous identity still holds live does not need that
+wait: bring it over from Identity (above). The previous identity can no longer
+renew it, so move it before its lease ends. Daily ANML claims open the day
+after tomorrow, as for a first registration.
 
 ### A new passport
 

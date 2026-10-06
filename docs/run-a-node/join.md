@@ -11,8 +11,9 @@ If you cannot sync a node with this page alone, that is a defect in this page.
 Open an issue.
 
 {/* TODO(relaunch): fill in the launch tag, genesis time, genesis sha256 and
-the validator's node id below once networks/genesis.json is final. Confirm the
-chain id: networks/genesis/chain.json still says earth-1. */}
+the validator's node id and P2P address below once the ceremony
+(scripts/ceremony.sh in the chain repo) has produced the final
+networks/genesis.json. The chain id is earth-1. */}
 
 > **The network relaunches from a new genesis** with private ERTH, ANML and
 > staking. Nothing from the earlier `earth-1` carries over: no balances, no
@@ -195,6 +196,7 @@ max-txs = -1
 from another chain. A node with any other value still follows blocks, but
 refuses private transactions sent to it, and a validator with any other value
 never proposes them.
+
 **Pruning**, in `app.toml`. Select by the role of the node:
 
 | Role | Setting |
@@ -230,7 +232,9 @@ Its disk only grows, so size it well past the Public RPC column under
 `UNSAFE_SKIP_BACKUP=true`: the pre-upgrade backup copies all of `data/`, and on
 a node like this it can fill the disk at an upgrade height.
 
-**Snapshots** are enabled by default. Keep them enabled:
+**Snapshots.** `earthd init` writes `snapshot-interval = 0`, which disables
+them (the Cosmos SDK default). The Docker image sets the values below on every
+start. On a binary install, set them yourself:
 
 ```toml
 snapshot-interval = 1000      # approximately 80 minutes at 5-second blocks
@@ -363,7 +367,8 @@ Paste it unquoted. It is an object, not a string.
 
 ```bash
 earthd tx staking create-validator validator.json \
-  --chain-id earth-1 --from <your-key> --gas auto --gas-adjustment 1.5
+  --chain-id earth-1 --from <your-key> --gas auto --gas-adjustment 1.5 \
+  --gas-prices 0.005uerth
 ```
 
 **Your stake on Earth is your self-bond and the private stake module.**

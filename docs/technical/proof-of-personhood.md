@@ -7,7 +7,8 @@ title: Proof of personhood
 
 A registration is one zero-knowledge proof, made on the phone from the
 passport's chip and checked by the chain. It proves the passport is genuine
-and binds the registration to a secret on the phone. It names no wallet.
+and that the registrant knows the secret of the identity it registers. It
+names no wallet.
 Every later personal action (ANML claims, assembly votes, Caretaker splits,
 handles) is a separate **membership** proof against the chain's identity
 tree. See [Privacy](../privacy.md).
@@ -44,6 +45,9 @@ tree. See [Privacy](../privacy.md).
 4. The DSC signature over `sha256(signedAttrs)` verifies under the DSC key.
 5. The passport has not expired as of `current_date`.
 6. The binding input is not zero.
+7. `idc = H(TAG_ID, id_secret)`, output as public input 4, where `id_secret`
+   is a private witness: the registrant knows the secret of the identity it
+   registers.
 
 Each embedded hash must sit inside the bytes that were actually hashed, not
 merely inside its buffer: `sha256_var` ignores bytes past its length, so a
@@ -52,7 +56,7 @@ unhashed tail.
 
 ## Public inputs
 
-Four field elements, in this order, and the chain's params agree:
+Five field elements, in this order, and the chain's params agree:
 
 | Index | Value | Param |
 | --- | --- | --- |
@@ -60,6 +64,7 @@ Four field elements, in this order, and the chain's params agree:
 | 1 | registration binding | `address_index` |
 | 2 | nullifier | `nullifier_index` |
 | 3 | DSC commitment | `dsc_key_index` |
+| 4 | identity commitment (`idc`) | `idc_index` |
 
 The chain rejects any input of p or more before verifying, and pins
 `current_date` to block time within the skew parameter.
@@ -82,6 +87,30 @@ Input 1 is not an address. It is
 
 The chain recomputes the binding from the message, so a proof copied out of a
 block cannot be redirected to other notes, another referrer or another chain.
+
+## Identity commitment
+
+The chain requires public input 4 to equal `MsgRegister.idc`, or refuses
+with `ErrBadPublicInputs` (1103). This holds for a first registration, a
+switch and a re-entry alike. Without it, a holder could register her passport
+to an idc someone else chose, and the succession the chain writes would let
+them receive her handle or Caretaker split by a move. With it, every identity
+in a passport's chain is one whose secret its holder had when registering it,
+so a handle or split cannot be sold to someone else's identity. The residual
+is selling the passport itself: its DG1 and SOD with the current identity's
+secret let a buyer register it to his own identity and move the handle or
+split there for one lease.
+
+An idc registers **once**. `x/personhood` keeps the set `UsedIdcs` (genesis
+`used_idcs`) and refuses any idc in it in the ante, before the proof
+(`ErrIdcUsed`, 1130); an idc whose registration is still live is refused
+first, as a replay (`ErrRegistrationReplay`, 1123). Occupying someone's idc
+needs its secret, so the set cannot be used to block anyone. The wallet
+therefore derives a series of identity secrets from one recovery phrase,
+`id_secret_g` for g = 0, 1, 2, …, and registers the lowest unused one each
+time: a renewal after a lapse, or a fresh identity in the same wallet, needs no
+new phrase. Notes, stake and the shielded address are the same for every
+generation.
 
 ## Nullifier
 
@@ -130,7 +159,7 @@ as a DSC. See the [trust store runbook](../operations/trust-store-runbook.md).
 
 Genesis carries one key per passport circuit
 (`networks/genesis/verifying-keys/`) and one per private circuit (action,
-membership, stake, vote: `networks/genesis/shielded-verifying-keys/`). A key
+membership, move, stake, vote: `networks/genesis/shielded-verifying-keys/`). A key
 change is a governance-approved upgrade whose handler swaps the keys at the
 upgrade height, together with an app release that proves against them. Ship
 the app before the height.

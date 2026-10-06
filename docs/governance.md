@@ -55,9 +55,10 @@ running tally is public. Who voted for what is not. See
 
 A first-time registrant can vote at once, on every ballot that is open,
 including ones that opened before they registered. The bar falls only on an
-identity that replaced another: a **switch** (the same passport registered from
-a new wallet) or a **re-entry** (the same passport registering again after its
-registration lapsed). Such an identity cannot vote on a ballot that opened
+identity that replaced another: a **switch** (the same passport registered to
+a new identity, in another wallet or the same one, while its registration is
+live) or a **re-entry** (the same passport registering again after its
+registration lapsed, as a renewal does). Such an identity cannot vote on a ballot that opened
 before the switch or re-entry, or less than a day after it. Its predecessor may
 already have voted there, and the two votes would carry unrelated tags, so this
 is what stops one passport voting twice under two secrets. It votes normally on

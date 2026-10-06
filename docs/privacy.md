@@ -31,8 +31,8 @@ visible. The person making it is not.
 - Your name, date of birth, passport number and photo. The app reads them from
   the chip to build a proof and then discards them.
 - Your secrets. Everything private on Earth is derived from your recovery
-  phrase: the key that owns your notes, the secret behind your registration,
-  and the tags that prove you own a stake position. The recovery phrase is
+  phrase: the key that owns your notes, the secret behind each registration
+  (one phrase holds a series of identities), and the tags that prove you own a stake position. The recovery phrase is
   still the only backup.
 
 ## Shielded and transparent ERTH
@@ -81,9 +81,10 @@ notes can be sent only inside the pool: they cannot be unshielded.
 ## Registration has no wallet
 
 Registering proves you hold a genuine passport. The proof is not tied to a
-wallet address. It is tied to a **secret commitment**, a value derived from a
-secret on your phone that the chain can check later proofs against without ever
-seeing the secret.
+wallet address. It is tied to an **identity commitment**, a value derived from
+a secret on your phone that the chain can check later proofs against without
+ever seeing the secret. The registration proves that you know that secret, and
+the chain accepts each identity only once.
 
 The chain records each registration under its passport nullifier, the one-way
 tag that stops one passport registering twice. That record holds the
@@ -123,21 +124,38 @@ From then on, everything you do as a person is a fresh proof: "I am one of the
 registered humans, and here is a tag that stops me doing this twice". The proof
 does not say which human.
 
-### Switching phones or secrets
+### Switching identity, renewing and moving
 
-Registering the same passport again from **another wallet** while your
-registration is live is a **switch**. (From the same wallet it is refused: see
-[Renewing](./registering.md#renewing).) The old entry is retired, a new one
-takes its place, and nothing is paid twice. Once the switch has landed, the app
-can move your handle and your Caretaker vote to the new identity, so neither
-has to wait; it needs both recovery phrases on the phone. A move goes only to
-your own next identity: the app proves privately that both were made from the
-same passport, without revealing it, and nobody else's identity can receive
-one. Without a move (always the case if the old phrase is lost), the new
-identity waits until anything the old one held has lapsed, because the chain
-cannot tell the two apart from anyone else. A passport can switch at most once
-a day (see
-[Moving to a new phone](./registering.md#moving-to-a-new-phone)).
+Every registration uses a fresh identity. The chain refuses an identity that
+has registered before (error 1130), so the wallet derives a new one for each
+registration from the same recovery phrase: renewing after the yearly lapse
+registers the wallet's next identity, and no new wallet or phrase is ever
+needed.
+
+Registering the passport again while its registration is live is a
+**switch**: to another wallet's next identity, or to a fresh identity in this
+wallet. The old entry is retired, a new one takes its place, and nothing is
+paid twice. A fresh identity in the same wallet answers a leaked identity
+secret. It does not answer a leaked recovery phrase, since the phrase derives
+every identity of the wallet; for that, switch to a new wallet with a new
+phrase. A passport can switch at most once a day.
+
+Once a switch or renewal has landed, the app can move your handle and your
+Caretaker vote from the previous identity, so neither has to wait. The move is
+proven with both identities' secrets: within one wallet the one phrase is
+enough, from another wallet both must be on the phone. A move goes one step,
+only to your own next identity. The app proves privately that both identities
+follow each other under the same passport, without revealing it. Because
+every registration proves knowledge of its identity's secret, nobody else's
+identity can become your successor, so a handle or split cannot be sold to
+someone else's identity. The one way around that is to hand over the passport
+itself: its chip data and your current identity's secret would let a buyer
+register your passport to his own identity. That is selling the passport.
+Without a move (always the case if the old phrase is lost), the new identity
+waits until anything the old one held has lapsed, because the chain cannot
+tell the two apart from anyone else. See
+[Switching identity](./registering.md#switching-identity) and
+[Renewing](./registering.md#renewing).
 
 ## How claims and votes stay unlinkable
 
@@ -159,7 +177,7 @@ under two secrets:
 | --- | --- | --- |
 | Claim 1 ANML | once a UTC day | the day after tomorrow (registering pays your first ANML at once) |
 | Vote in the assembly | once a ballot, replaceable | at once, on every open ballot; after a switch or re-entry, only on ballots that open more than a day after it |
-| Caretaker split | lasts a year, refresh it to keep it | at once for a new registration; after a switch, once the old identity's split could have lapsed, unless you moved it |
+| Caretaker split | lasts a year, refresh it to keep it | at once for a new registration; after a switch or re-entry, once the old identity's split could have lapsed, unless you moved it |
 | Claim a handle | lasts a year, renew it to keep it | as for the Caretaker split |
 
 A Caretaker split lapses unless refreshed, because the chain cannot find a
@@ -273,8 +291,9 @@ the backend the registration it is about to broadcast. The backend checks it
 with the chain's own rules and, if it is valid, shields a little ERTH into a new
 note for you. It learns that a passport is about to register, which the chain
 shows publicly anyway, and nothing about where the note goes next. After that,
-your registration reward pays your fees. A switch is funded the same way,
-because the new wallet starts empty. Either kind is granted once per passport
+your registration reward pays your fees. Every later registration, a switch or
+a renewal, is funded the same way, since no wallet signs a registration. Any
+kind is granted once per passport
 in any 30 days.
 
 ## Nothing happens without you
@@ -298,14 +317,16 @@ Privacy here is strong, not perfect. Know the limits.
   round, distinctive amounts.
 - **Timing around your handle.** Registrations are public, and so is every
   handle being claimed or moved. If a handle is claimed shortly after a
-  registration lands, or moved shortly after a switch lands, an observer can
+  registration lands, or moved shortly after a switch or renewal lands, an
+  observer can
   guess that the two belong together, and so link that passport's
   registration (its country, its signing certificate, and anyone who can
   recompute its nullifier, below) to the handle and the address it names. The
-  fewer registrations there are, the better the guess. The app adds no delay
-  of its own: it sends each step only when you tap, so the gap is yours to
-  choose. Leave hours or days, not seconds, between registering and claiming
-  a handle, and between switching and moving a handle.
+  fewer registrations there are, the better the guess. The app sends each
+  step only when you tap, so the gap is yours to choose. Leave hours or days,
+  not seconds, between registering and claiming a handle. For moves, the app
+  picks a random time 6 hours to 3 days after the switch or renewal and
+  suggests moving after it; it reminds you then and never moves on its own.
 - **Reusing a transparent address.** Everything a transparent ERTH address does
   is public and linked together. If you shield from and unshield to the same
   address, or post it with your name, it is not private. Use a fresh address

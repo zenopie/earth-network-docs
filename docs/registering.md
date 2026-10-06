@@ -38,6 +38,15 @@ They cannot see your wallet, your balances, your claims or your votes: none of
 those is tied to the passport nullifier. See
 [Privacy](./privacy.md#the-passport-nullifier-can-be-recomputed).
 
+It can also be guessed. Many countries issue document numbers that are
+numeric or close to sequential, and the registration shows the country and
+the Document Signer certificate, which narrows the time the passport was
+issued and so the range its number falls in. Someone who knows your country
+and date of birth can try candidate numbers, cheaply, until one matches a
+published nullifier. A guess reveals the same things as a recomputation: that
+the passport registered, when, its certificate and its referrer handle. Not
+your wallet.
+
 The proof is also bound to your **secret commitment**, a value derived from a
 secret on your phone, to the notes your rewards are paid into, to your
 referrer's handle and to this network. Someone who copies your proof out of a
@@ -125,8 +134,9 @@ registration.
 A renewed passport has a new passport number, so it produces a **new**
 nullifier. This is deliberate: a nullifier built from something that never
 changes, like your name, could be computed by anyone who knows your name and
-birthday. A document number is printed in your passport and almost nowhere
-else. The cost is that for a short time one person can hold a registration from
+birthday, for the rest of your life. The document number at least limits that
+to holders of this passport's data, or to someone able to guess its number
+(above), and only until the passport is replaced. The cost is that for a short time one person can hold a registration from
 the old passport and one from the new. The old one lapses at the end of its
 year.
 

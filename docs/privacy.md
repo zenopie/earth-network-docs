@@ -107,6 +107,12 @@ page, such as a hotel, a border agency or a leaked database. They learn that
 the passport registered, when, under which Document Signer certificate, and
 which referrer handle it named.
 
+It can also be guessed without the passport. Where a country's document
+numbers are numeric or near-sequential, someone who knows your country and
+date of birth can try candidate numbers until one matches a published
+nullifier. The certificate on the registration narrows when the passport was
+issued, and so the range to try. A correct guess reveals the same things.
+
 They learn nothing past the registration. Nothing on chain links the
 nullifier to a wallet, a balance, a claim, a Caretaker split, an assembly vote,
 a handle you hold or anything you stake. Those use tags made from your secret

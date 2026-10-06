@@ -85,9 +85,21 @@ block cannot be redirected to other notes, another referrer or another chain.
 
 ## Nullifier
 
-Poseidon2 over the issuing state, the whole document number and the date of
-birth. It is the public dedup key only: every later action uses nullifiers
-derived from the identity secret, never from passport data.
+Poseidon2 over DG1's issuing state (3 bytes), the 9-character document number
+field, its check digit, the date of birth (6 bytes) and the optional-data
+field, which carries the overflow of a number longer than nine characters
+(`nullifier_preimage` in `circuits/poa_core`). Every byte is covered by the
+SOD hash, so none of it can be chosen. It is the public dedup key only: every
+later action uses nullifiers derived from the identity secret, never from
+passport data.
+
+The hash is unkeyed and fast, so the nullifier is recomputable by anyone who
+holds those fields, and guessable where they are predictable: the check digit
+follows from the number, many states issue numeric or near-sequential
+numbers, the optional-data field is empty or a guessable personal number for
+most, and the registration's country and DSC narrow the issue window. Given a
+country and a date of birth, the number space is about 10^9 or less. A match
+reveals the registration (time, country, DSC, referrer handle), not a wallet.
 
 The nullifier is not renewal-stable. A nullifier built from something that
 never changes, like the name, could be recomputed by anyone who knows a name

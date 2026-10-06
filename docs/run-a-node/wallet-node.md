@@ -89,9 +89,21 @@ plain HTTP, so use it only on a network you control.
 
 In Earth Wallet, open **Settings → Network** and enter your node's REST (LCD)
 and RPC addresses, for example `https://lcd.example.org` and
-`https://rpc.example.org`. The wallet then sends its chain traffic only there.
+`https://rpc.example.org`. Both are required. The wallet then sends its chain
+traffic only there.
 
-Your node must be on `earth-1` and synced. If it falls behind or stops, the
-wallet shows stale balances or cannot send until it is back.
+Before saving, the wallet checks that the node follows the live chain:
+
+- **Same genesis.** It reads the node's genesis from the RPC
+  (`/genesis_chunked`) and compares it with the live chain's. Every node keeps
+  its genesis, so a state-synced node passes. A node left over from an earlier
+  earth-1 launch, or another network using the same name, is refused.
+- **Same node.** The LCD and the RPC must report the same block at a recent
+  height, so they belong to one node.
+- **Synced.** A node whose latest block is more than 10 minutes old is refused
+  until it catches up.
+
+If your node later falls behind or stops, the wallet shows stale balances or
+cannot send until it is back.
 
 The web app at erth.network always uses Earth's node.

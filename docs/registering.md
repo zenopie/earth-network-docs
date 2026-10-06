@@ -136,9 +136,9 @@ nationals. Earth treats each passport as one registration.
 ## Who can register
 
 You need a passport with a readable chip, issued by a country whose signing
-certificates the chain trusts. The chain trusts the certificates that ICAO
-publishes, plus a few countries that ICAO does not distribute. Adding a country
-takes a governance proposal.
+certificates the chain trusts. At launch the chain trusts the certificates in
+ICAO's master list and nothing else. Adding a country, including one ICAO does
+not distribute, takes a governance proposal.
 
 Many people in the world do not hold a chip passport. They cannot register yet.
 That is a real limit of building on passports, and it is the price of not

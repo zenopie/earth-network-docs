@@ -14,7 +14,8 @@ first sync after installing or restoring takes longer than the ones after it.
 
 **The app does nothing on its own.** Every transaction is one you confirmed.
 Things that need doing regularly, such as the daily ANML claim, the Caretaker
-refresh and your handle's renewal, appear as reminders.
+refresh, your handle's renewal and a suggested move after a switch, appear as
+reminders.
 
 ## Send and receive
 
@@ -45,6 +46,33 @@ claim it. You can change to another free handle, or release yours, at any time.
 Your handle is also your referral link: `https://erth.network/ref/<handle>`.
 Someone who registers from it names you as their referrer, and the chain pays
 your half of their registration reward into a private note for you.
+
+## Identity
+
+The **Identity** screen shows your registration. One recovery phrase holds a
+series of identities, and the chain accepts each only once, so every
+registration after your first uses the wallet's next identity. See
+[Your identities](./registering.md#your-identities).
+
+- **Renew registration.** A registration lasts a year. Once it has ended, tap
+  Renew registration and scan your passport: the wallet registers it to its
+  next identity, from the same recovery phrase. No new wallet or phrase.
+- **Switch identity.** While your registration is live, you can move it to
+  another wallet on the phone, or to **a fresh identity in this wallet**. Pick
+  the fresh identity if you think this identity's secret leaked. If your
+  recovery phrase may have leaked, create a new wallet instead and switch to
+  it. A passport can switch once a day (UTC).
+- **Bring your handle and caretaker vote.** After a switch or renewal, the
+  identity you left still holds them. Identity offers to move each to the new
+  identity, as a private transaction proven with both identities' secrets.
+  Within one wallet the one phrase is enough and the fee comes from its
+  private ERTH. The app suggests a random time to move, 6 hours to 3 days
+  after the switch or renewal, so the move is not linked to it by timing; it
+  reminds you then and never moves on its own. Move before switching again: a
+  move goes only from an identity to the one that replaced it.
+
+See [Switching identity](./registering.md#switching-identity) and
+[Moving your handle and vote](./registering.md#moving-your-handle-and-vote).
 
 ## Swap
 

@@ -50,7 +50,8 @@ what all four pillars pay out. It can be held **shielded**, as private notes, or
 **transparent**, in an ordinary public account.
 
 **ANML** is the personhood dividend. Each registered human can claim **1 ANML a
-day**, when they choose to: the app reminds you and never acts on its own. A quarter of all issuance buys ANML back and burns it, so the chain is a
+day**, when they choose to: the app reminds you and never acts on its own. A
+quarter of all issuance buys ANML back and burns it, so the chain is a
 permanent buyer of what humans claim. ANML is always shielded.
 
 ## Two houses

@@ -47,8 +47,9 @@ from.
     jailed or tombstoned) the vote stays, at weight zero, and the weight
     returns with no new vote when it is Bonded again. A change of self-bond
     re-weighs the operator at once; the validator bonding, starting to unbond
-    or being slashed re-weighs it at that block's EndBlock. `x/shieldedstaking`'s own account carries no weight: its
-    delegations are the private stake, already counted through positions.
+    or being slashed re-weighs it at that block's EndBlock.
+    `x/shieldedstaking`'s own account carries no weight: its delegations are
+    the private stake, already counted through positions.
 
 ## Option kinds
 

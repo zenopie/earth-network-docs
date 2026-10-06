@@ -79,8 +79,9 @@ token, **derth**, as one private note per validator: staking more with the same
 validator adds to the note you have. Rewards are restaked for everyone once a
 day, so each derth is worth more ERTH over time. The app shows the ERTH your
 derth is worth. Stake notes are owner-locked: they cannot be sent or given to
-anyone else. To hand stake over, unstake it and send the ERTH. Staked ERTH also lets you vote in governance and, through a
-position, in the Groundworks fund.
+anyone else. To hand stake over, unstake it and send the ERTH. Staked ERTH
+also lets you vote in governance and, through a position, in the Groundworks
+fund.
 
 Stake changes take effect at the end of the day's **epoch**, together with
 everyone else's. The amount and the validator are public, you are not.

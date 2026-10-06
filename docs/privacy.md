@@ -19,7 +19,7 @@ The short version:
 | Who cast each Caretaker split | The split itself, and how much each option earns |
 | Who owns each Groundworks position | The position: its size, its validator and its split |
 | Who staked, and how much each person holds | The amount entering or leaving each validator |
-| Who holds LP shares | Each pool's reserves and total shares, and the amounts going in and out |
+| Who holds LP shares (deposited from the shielded balance) | Each pool's reserves and total shares, and the amounts going in and out |
 | Who pays a handle | The handle directory: each handle and the shielded address it names |
 
 Allocations are public acts. Pointing a share of the chain's issuance at
@@ -243,7 +243,9 @@ earning. Unlock it and it merges back into your note at that validator.
 
 ## Fees: paid in ERTH, half burned
 
-Every transaction pays a fee in ERTH. There are no free transactions on chain.
+Every transaction pays a fee in ERTH. Every private transaction pays at least
+the chain's minimum fee, which is part of consensus. A signed transaction pays
+whatever minimum gas price the validators set on their nodes.
 
 Private transactions are not signed by any account. They pay their fee from
 your shielded ERTH, in the same transaction, with a proof that the fee came
@@ -309,8 +311,10 @@ Privacy here is strong, not perfect. Know the limits.
   you registered, when, under which certificate and with which referrer
   handle. Not your wallet or anything you do with it. See
   [above](#the-passport-nullifier-can-be-recomputed).
-- **Your network connection.** Whoever relays your transaction sees your IP
-  address. Use a VPN or Tor if that matters to you.
+- **Your network connection.** Whoever relays your transaction or answers
+  your app's queries sees your IP address. For Earth's own servers that
+  includes your passport nullifier and your wallet address: see
+  [What Earth's servers see](#what-earths-servers-see).
 
 ## The indexer, and why your wallet downloads everything
 
@@ -328,22 +332,45 @@ accounts. Anyone can run their own from a full-history node, and the app checks
 what it downloads against the roots the chain publishes, so a dishonest indexer
 can withhold data but cannot forge it.
 
-## What Earth's backend sees
+## What Earth's servers see
 
-The backend does three things: it pays gas for a first registration, it runs
-the indexer, and it serves the handle directory.
+Earth runs three kinds of server your phone talks to: the backend (gas for a
+first registration, the indexer, the handle directory), its own chain node,
+and Cloudflare in front of both.
 
-- **Gas.** It sees the registration or switch you are about to send, which
-  the chain is about to publish anyway, and pays a note it cannot follow. For
-  each grant it stores the passport nullifier, the date, and whether it was a
+- **Gas.** The backend sees the registration or switch you are about to send,
+  which the chain is about to publish anyway, including its passport
+  nullifier and referrer handle, and pays a note it cannot follow. For each
+  grant it stores the passport nullifier, the date, and whether it was a
   switch, and nothing that names the note or your wallet. It refuses a second
   grant to the same passport within any 30 days (a sliding window, not a
   calendar month), and deletes each record after 31 days, once it can no
   longer decide anything. It also sees your IP address, like any web server,
   and keeps it only in memory for rate limits.
-- **Indexer and handle directory.** It sees which ranges your phone downloads,
-  like any website sees page requests. Every phone downloads the same ranges,
-  and the whole directory.
+- **Indexer and handle directory.** The backend sees which ranges your phone
+  downloads, like any website sees page requests. Every phone downloads the
+  same ranges, and the whole directory.
+- **Earth's node (lcd.erth.network, rpc.erth.network).** The app sends every
+  transaction you make through Earth's own node, and reads chain data from
+  it. To show your transparent balances, liquidity withdrawals and
+  transaction history, the app today asks the node about your wallet's
+  account address on each refresh. So the node sees your IP address, each transaction you
+  broadcast, the address you ask about, and when.
+- **Cloudflare.** The node and the backend are both reached through
+  Cloudflare, which terminates the encrypted connection. Cloudflare sees
+  everything the two servers see: your IP address, the gas request with its
+  passport nullifier, your transactions and your address queries.
+
+Put together: whoever runs Earth's servers, and Cloudflare, sees your IP
+address next to your passport nullifier when you ask for gas, and next to your
+wallet address when the app refreshes or broadcasts. If your IP address stays
+the same, those can be matched, which links your passport to your wallet. And
+anyone with your passport data can recompute the nullifier (see
+[above](#the-passport-nullifier-can-be-recomputed)). Whether these servers keep
+logs is not something the app can prove to you, so assume they can.
+
+If that matters to you, use a VPN or Tor, for registration as well as for
+everyday use.
 
 It never sees passport data. The app contains no ads and no advertising or
 tracking SDKs.

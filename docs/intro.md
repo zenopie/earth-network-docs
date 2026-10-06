@@ -16,8 +16,9 @@ builds a zero-knowledge proof that a government signed it, and the chain checks
 the proof. Your name, date of birth and passport number never leave the phone.
 One passport is one registration, and the registration is tied to no wallet.
 
-What you own and what you do as a person is private: balances, transfers,
-swaps, liquidity, staking, ANML claims and assembly votes. What you do to the
+What you own and what you do as a person is private: shielded balances,
+transfers, swaps, liquidity and staking from your shielded balance, ANML claims
+and assembly votes. What you do to the
 shared economy is public: where a fund's money goes, who validates, and what
 sits in the pools. People pay each other by **handle**, a short name like
 `@alice`, without anyone learning who paid whom. See [Privacy](./privacy.md).

@@ -73,14 +73,15 @@ any other message, or wraps the revocation in another message such as authz
 Get the authority address:
 
 ```bash
-earthd query auth module-account gov --node https://rpc.erth.network
+earthd query auth module-account gov --node https://rpc.erth.network:443
 ```
 
 ### 3. Submit
 
 ```bash
 earthd tx gov submit-proposal revoke-dsc.json \
-  --from <key> --chain-id earth-1 --gas auto --gas-adjustment 1.5
+  --from <key> --chain-id earth-1 --gas auto --gas-adjustment 1.5 \
+  --gas-prices 0.005uerth --node https://rpc.erth.network:443
 ```
 
 **The deposit is 5 ERTH and must be complete.** A proposal with a partial
@@ -94,7 +95,8 @@ the house where one registered human is one vote. Stake alone cannot pass it.
 ```bash
 # stake house: a validator votes with its operator key; private stakers vote
 # from the app
-earthd tx gov vote <id> yes --from <key> --chain-id earth-1
+earthd tx gov vote <id> yes --from <key> --chain-id earth-1 \
+  --gas auto --gas-adjustment 1.5 --gas-prices 0.005uerth
 
 earthd query gov proposal <id>
 earthd query assembly proposal-tally <id>
@@ -162,13 +164,11 @@ country has a signer that the chain trusts.
 This applies to a new country, or to a country that rotates its root. There is
 no urgency. Use the normal 7-day track.
 
-CSCAs come from the ICAO master list. Update the trust store instead of adding
-the certificate manually, so that the repository and the chain agree:
-
-```bash
-# add the certificate, then regenerate
-go run ./tools/pki-genesis csca/masterlist/allowlist.ml csca/additional/*.cer
-```
+CSCAs come from the ICAO master list (`csca/masterlist/allowlist.ml` in the
+chain repo). A CSCA that ICAO does not distribute goes in `csca/additional/` as
+a `.cer` file. Update the trust store there instead of only on chain, so that
+the repository and the chain agree. `make genesis` (`scripts/build-genesis.sh`)
+runs `tools/pki-genesis` over both and rebuilds the genesis `pki.cscas`.
 
 For a chain that already runs, add the certificate with `MsgAddCsca`. Use the
 same proposal structure as above, with `"expedited": false` and a 1 ERTH

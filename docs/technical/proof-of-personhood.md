@@ -16,8 +16,12 @@ tree. See [Privacy](../privacy.md).
 
 - **Circuits:** ours, in `earth-network-mobile/circuits/`. `poa_core` holds the
   shared logic (hash binding, expiry, the binding input, nullifier, DSC
-  commitment). Seven `lean_poa_*` binaries differ only in how they verify the
-  SOD signature: P-256, P-384, brainpool 256/384/512, RSA-2048, RSA-4096. The
+  commitment). 33 `lean_poa_*` register circuits differ only in the DSC key
+  type, signature padding and hash profile: RSA-2048/3072/4096 with PKCS#1
+  v1.5 or PSS and any exponent in [3, 2^17), and ECDSA on P-224, P-256, P-384,
+  P-521 and brainpoolP224r1/256r1/384r1/512r1, each with the SHA-1 to SHA-512
+  hash combinations real passports carry. The message's `signature_algorithm`
+  names the variant, and genesis carries one verifying key per variant. The
   approach and the proving library come from zkPassport; the circuits do not.
 - **Proof system:** Noir with Barretenberg UltraHonk, poseidon2 flavour, no
   trusted setup. Everything is pinned to **bb v5.0.0 final**. Android proves
@@ -92,10 +96,13 @@ gives a second registration until the first lapses.
 
 ## DSC commitment
 
-`Poseidon2(curve tag ‖ canonical key bytes)`. The tag separates same-width
-curves (P-256 from brainpool256, P-384 from brainpool384). `CURVE_TAG_*` in
-`poa_core` must equal `certs.Tag*` in the chain for ever: append only, never
-renumber. The chain recomputes the commitment from the DSC certificate in the
+ECDSA keys: `Poseidon2(curve tag ‖ x ‖ y)`, with tags P-256 1, P-384 2,
+P-521 3, brainpoolP256r1 4, brainpoolP384r1 5, brainpoolP512r1 6, P-224 8 and
+brainpoolP224r1 9. The tag separates same-width curves (P-256 from
+brainpool256, P-384 from brainpool384). RSA keys: `Poseidon2(10 ‖ e ‖
+modulus)`, the exponent being a circuit witness; tag 7 (RSA without its
+exponent) is retired. `CURVE_TAG_*` in `poa_core` must equal `certs.Tag*` in
+the chain for ever: append only, never renumber. The chain recomputes the commitment from the DSC certificate in the
 transaction and requires it to equal public input 3, so the circuit cannot
 sign with one key and name another.
 

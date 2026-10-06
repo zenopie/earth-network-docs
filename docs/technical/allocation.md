@@ -40,14 +40,20 @@ from.
     bytes`, with an absolute weight per option: the validator's epoch rate
     times the sum of `derth x percent` over its live positions. Lock, update
     and unlock adjust those totals exactly, so the work per epoch grows with
-    validators, not with positions.
+    validators, not with positions. Position weight does not depend on the
+    validator's status: it keeps counting while the validator is jailed or
+    unbonded (it still expires after a year). This is intentional; see the
+    operator rule below.
   - **Operators**: a validator's operator account votes with
     `MsgSetAllocations`, weighted by its self-bond. The weight counts only
     while the validator is **Bonded**. When it leaves the active set (or is
     jailed or tombstoned) the vote stays, at weight zero, and the weight
     returns with no new vote when it is Bonded again. A change of self-bond
     re-weighs the operator at once; the validator bonding, starting to unbond
-    or being slashed re-weighs it at that block's EndBlock.
+    or being slashed re-weighs it at that block's EndBlock. Only the
+    operator's self-bond is tied to Bonded status: the operator controls
+    whether its validator stays in the active set, while a position's
+    anonymous owner does not.
     `x/shieldedstaking`'s own account carries no weight: its delegations are
     the private stake, already counted through positions.
 

@@ -65,11 +65,17 @@ on the chain for anyone to read. Who cast each split is not:
   theirs, so the owner is anonymous. Its weight is the ERTH its derth is worth,
   and it keeps earning staking rewards while locked. The chain adds up the
   positions at each validator into one voter. Private stake that is not in a
-  position does not vote in Groundworks.
+  position does not vote in Groundworks. A position keeps its weight while its
+  validator is jailed or unbonded; the weight still expires after a year.
 - A validator's **operator** votes in Groundworks in the open, from its
   operator account, weighted by its public self-bond. That weight counts only
   while the validator is Bonded, in the active set: out of it, the operator's
   split stays but weighs nothing until the validator is Bonded again.
+
+The difference is intentional. A position's owner is anonymous and may not
+learn at once that the validator was jailed, so the weight does not vanish
+under them; they can move the stake when they do. The operator runs the
+validator, so its own weight depends on keeping it in the active set.
 
 The funds differ in who chooses and who may add options:
 

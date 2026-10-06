@@ -340,9 +340,9 @@ can withhold data but cannot forge it.
 
 ## What Earth's servers see
 
-Earth runs three kinds of server your phone talks to: the backend (gas for a
-first registration, the indexer, the handle directory), its own chain node,
-and Cloudflare in front of both.
+Your phone talks to three kinds of server Earth runs or uses: the backend (gas
+for a first registration, the indexer, the handle directory, circuit
+downloads), Earth's own chain node, and Cloudflare in front of both.
 
 - **Gas.** The backend sees the registration or switch you are about to send,
   which the chain is about to publish anyway, including its passport
@@ -351,32 +351,48 @@ and Cloudflare in front of both.
   switch, and nothing that names the note or your wallet. It refuses a second
   grant to the same passport within any 30 days (a sliding window, not a
   calendar month), and deletes each record after 31 days, once it can no
-  longer decide anything. It also sees your IP address, like any web server,
-  and keeps it only in memory for rate limits.
+  longer decide anything.
 - **Indexer and handle directory.** The backend sees which ranges your phone
   downloads, like any website sees page requests. Every phone downloads the
   same ranges, and the whole directory.
-- **Earth's node (lcd.erth.network, rpc.erth.network).** The app sends every
-  transaction you make through Earth's own node, and reads chain data from
-  it. To show your transparent balances, liquidity withdrawals and
-  transaction history, the app today asks the node about your wallet's
-  account address on each refresh. So the node sees your IP address, each transaction you
-  broadcast, the address you ask about, and when.
+- **Earth's node (lcd.erth.network, rpc.erth.network).** Unless you point the
+  app at your own node, it sends every transaction you make through Earth's
+  node and reads chain data from it. To show your transparent balances,
+  liquidity withdrawals and transaction history, the app asks the node about
+  your wallet's account address on each refresh. So the node receives your
+  IP address, each transaction you broadcast, the address you ask about, and
+  when.
 - **Cloudflare.** The node and the backend are both reached through
-  Cloudflare, which terminates the encrypted connection. Cloudflare sees
-  everything the two servers see: your IP address, the gas request with its
-  passport nullifier, your transactions and your address queries.
+  Cloudflare, which terminates the encrypted connection. Cloudflare receives
+  everything the two servers receive: your IP address, the gas request with
+  its passport nullifier, your transactions and your address queries.
 
-Put together: whoever runs Earth's servers, and Cloudflare, sees your IP
-address next to your passport nullifier when you ask for gas, and next to your
-wallet address when the app refreshes or broadcasts. If your IP address stays
-the same, those can be matched, which links your passport to your wallet. And
-anyone with your passport data can recompute the nullifier (see
-[above](#the-passport-nullifier-can-be-recomputed)). Whether these servers keep
-logs is not something the app can prove to you, so assume they can.
+Put together, this traffic could link your passport to your wallet: your IP
+address arrives next to your passport nullifier when you ask for gas, and next
+to your wallet address when the app refreshes or broadcasts. And anyone with
+your passport data can recompute the nullifier (see
+[above](#the-passport-nullifier-can-be-recomputed)).
 
-If that matters to you, use a VPN or Tor, for registration as well as for
-everyday use.
+**Earth's no-logs policy.** Earth's node and backend do not store client IP
+addresses, request paths or gas-request identifiers. Rate limits use
+short-lived counters held in memory only. The one record kept is the gas
+grant's passport nullifier and date, above, for the 30-day limit. Cloudflare
+is a separate company; what it records is governed by its own policy, not
+ours.
 
-It never sees passport data. The app contains no ads and no advertising or
-tracking SDKs.
+**That is a promise, not a proof.** The app cannot show you that a server
+keeps no logs. Whoever runs Earth's node and backend, and Cloudflare, could
+see this traffic if they chose to, and you are trusting them not to. To trust
+no one with it:
+
+- **Run your own node** and point Earth Wallet at it (Settings → Network). Your
+  transactions and address queries then go only to a machine you control. See
+  [Use your own node](./run-a-node/wallet-node.md). The backend-only features
+  still use Earth's backend: the handle directory, the private note streams,
+  the gas grant and circuit downloads. All but the gas grant serve everyone
+  the same data.
+- **Use a VPN or Tor**, for registration especially (the gas request is the
+  one that carries your passport nullifier) as well as for everyday use.
+
+None of these servers ever receives passport data. The app contains no ads and
+no advertising or tracking SDKs.

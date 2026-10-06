@@ -8,6 +8,8 @@ Any user can run a node. No permission and no stake are required.
 
 - **[Join the network](./join.md)** — binary, genesis file and its checksum,
   peers, gas price, pruning, hardware.
+- **[Use your own node](./wallet-node.md)** — point Earth Wallet at a node you
+  run, so your transactions and queries do not go through Earth's.
 - **[Protecting the consensus key](./remote-signer.md)** — a remote signer for
   validators.
 - **[Upgrades](./upgrades.md)** — the procedure for a coordinated upgrade, and

@@ -125,8 +125,11 @@ options by percentage. Confirm the vote. You can change it at any time.
   lapses; a lapsed split stops counting.
 - **Groundworks**: lock staked derth into a **position** with your split. The
   position is public; only your phone can prove it is yours. Locked derth keeps
-  earning. Unlock it to merge it back into your note. If governance resets the
-  Groundworks votes, your split counts for nothing until you vote again.
+  earning. Unlock it to merge it back into your note. Your split lasts one
+  year from when you cast or last renewed it; the app reminds you before it
+  expires, and voting again renews it. An expired split stops counting until
+  you vote again. If governance resets the Groundworks votes, your split counts
+  for nothing until you vote again.
 
 Rewards follow the current vote and accrue continuously. A change of vote does
 not reset the rewards that you have already earned.

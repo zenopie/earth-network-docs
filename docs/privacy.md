@@ -251,7 +251,9 @@ Voting in the Groundworks fund is a public act weighted by stake, so it uses a
 **position**: derth locked into a public record with a split. The position
 shows its size, its validator and its split. Its owner is proven by a tag that
 only your phone can produce, and nothing links it to you. Locked derth keeps
-earning. Unlock it and it merges back into your note at that validator.
+earning. Unlock it and it merges back into your note at that validator. Its
+split lasts one year from when it was cast or last renewed, like a Caretaker
+split; the app reminds you, and you renew it by voting again.
 
 ## Fees: paid in ERTH, half burned
 
@@ -279,8 +281,8 @@ in any 30 days.
 
 The app sends a transaction only when you confirm it. It never claims, refreshes,
 renews or votes in the background, and never spends a fee you did not approve.
-The daily ANML claim, the Caretaker refresh and the handle renewal are
-reminders. The one thing that happens on its own is the chain paying out a
+The daily ANML claim, the Caretaker refresh, the Groundworks renewal and the
+handle renewal are reminders. The one thing that happens on its own is the chain paying out a
 finished unbonding, and that costs you nothing.
 
 ## What can still leak

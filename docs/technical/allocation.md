@@ -42,7 +42,7 @@ from.
     and unlock adjust those totals exactly, so the work per epoch grows with
     validators, not with positions. Position weight does not depend on the
     validator's status: it keeps counting while the validator is jailed or
-    unbonded (it still expires after a year). This is intentional; see the
+    unbonded, until its lease ends (below). This is intentional; see the
     operator rule below.
   - **Operators**: a validator's operator account votes with
     `MsgSetAllocations`, weighted by its self-bond. The weight counts only
@@ -56,6 +56,20 @@ from.
     anonymous owner does not.
     `x/shieldedstaking`'s own account carries no weight: its delegations are
     the private stake, already counted through positions.
+  - **Leases**: every Groundworks split, a position's and an operator's,
+    counts for `groundworks_lease_seconds` (x/allocation param 2; 0 means the
+    default of 365 days, otherwise 1 day to 2 years) from when it was cast or
+    last renewed. A position's lease is `Position.split_expires_at`, set by
+    `MsgLockPosition` and `MsgUpdatePosition` (an update with the same split
+    renews it); an operator's is `Voter.expires_at`, set by every
+    `MsgSetAllocations` (a re-weigh keeps it). At the lease end the split
+    comes off the stream at that exact time, even if the block lands later: a
+    position's split is cleared (`splits` empty, `split_expires_at` 0) and it
+    stops voting until re-cast; an operator's vote is removed. Events:
+    `position` with action `split_lapsed` (every `position` event carries
+    `split_expires_at`) and `split_lapsed` (`stream`, `voter`, `expires_at`)
+    for operators. Wallets remind before expiry; renewal is manual, never
+    automatic.
 
 ## Option kinds
 

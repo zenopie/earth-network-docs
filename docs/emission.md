@@ -66,11 +66,20 @@ on the chain for anyone to read. Who cast each split is not:
   and it keeps earning staking rewards while locked. The chain adds up the
   positions at each validator into one voter. Private stake that is not in a
   position does not vote in Groundworks. A position keeps its weight while its
-  validator is jailed or unbonded; the weight still expires after a year.
+  validator is jailed or unbonded, until its split's year runs out.
 - A validator's **operator** votes in Groundworks in the open, from its
   operator account, weighted by its public self-bond. That weight counts only
   while the validator is Bonded, in the active set: out of it, the operator's
   split stays but weighs nothing until the validator is Bonded again.
+
+Every Groundworks split, a position's or an operator's, lasts one year from
+when it was cast or last renewed. Casting it again renews it for another
+year. When the year runs out the split stops counting: a position's split is
+cleared and the position stops voting until its owner casts one again, and an
+operator's vote is removed. Wallets remind you before a split expires;
+renewing is manual, never automatic, so no fee is spent without you. The
+length is a governance parameter (`groundworks_lease_seconds`, 365 days by
+default, settable from 1 day to 2 years).
 
 The difference is intentional. A position's owner is anonymous and may not
 learn at once that the validator was jailed, so the weight does not vanish

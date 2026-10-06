@@ -48,7 +48,10 @@ from.
     `MsgSetAllocations`, weighted by its self-bond. The weight counts only
     while the validator is **Bonded**. When it leaves the active set (or is
     jailed or tombstoned) the vote stays, at weight zero, and the weight
-    returns with no new vote when it is Bonded again. A change of self-bond
+    returns with no new vote when it is Bonded again, provided its one-year
+    lease has not ended meanwhile. A vote whose lease ends while the
+    validator is out is removed, and it cannot be renewed at zero weight: the
+    operator casts it again once the validator is Bonded. A change of self-bond
     re-weighs the operator at once; the validator bonding, starting to unbond
     or being slashed re-weighs it at that block's EndBlock. Only the
     operator's self-bond is tied to Bonded status: the operator controls

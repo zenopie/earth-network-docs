@@ -78,8 +78,12 @@ Open port 443. Do not put a CDN in front of it: the point is that nobody but
 you sees this traffic.
 
 Anyone who learns the two addresses can use your node too. If you would rather
-not expose it to the internet, reach it over a VPN you run (WireGuard,
-Tailscale) and use the VPN address in the wallet. It still needs HTTPS.
+not expose it to the internet, reach it over a VPN you run and use the VPN address in the wallet. The app
+accepts plain HTTP only to a local address: 10.x, 172.16–31.x, 192.168.x,
+link-local, IPv6 fc00::/7, a `.local` name, or `localhost`, so a WireGuard address in those ranges works
+without a certificate. Tailscale's 100.x addresses count as remote and need
+HTTPS (Tailscale can issue the certificate). Anyone on that network can read
+plain HTTP, so use it only on a network you control.
 
 ## 4. Point Earth Wallet at it
 

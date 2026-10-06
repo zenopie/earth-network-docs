@@ -70,7 +70,9 @@ on the chain for anyone to read. Who cast each split is not:
 - A validator's **operator** votes in Groundworks in the open, from its
   operator account, weighted by its public self-bond. That weight counts only
   while the validator is Bonded, in the active set: out of it, the operator's
-  split stays but weighs nothing until the validator is Bonded again.
+  split stays but weighs nothing until the validator is Bonded again. If the
+  split's year runs out meanwhile it is removed, and the operator casts it
+  again once the validator is back.
 
 Every Groundworks split, a position's or an operator's, lasts one year from
 when it was cast or last renewed. Casting it again renews it for another

@@ -107,7 +107,9 @@ Once the switch has landed, the app can move your handle and your Caretaker
 vote to the new identity, so neither has to wait. A move needs **both recovery
 phrases on the phone**, the old one and the new one, and must be made while the
 new identity is still your passport's live one (before you switch again).
-A handle in its renewal period cannot be moved: renew it first.
+A handle in its renewal period cannot be moved, and once the switch has landed
+the old identity can no longer renew it, so renew a handle that is close to
+lapsing **before** you switch.
 
 A move only carries a handle or a split over to **your own next identity**.
 The app proves, privately, that the old identity and the new one were made

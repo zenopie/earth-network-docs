@@ -350,7 +350,9 @@ can withhold data but cannot forge it.
 
 Your phone talks to three kinds of server Earth runs or uses: the backend (gas
 for a first registration, the indexer, the handle directory, circuit
-downloads), Earth's own chain node, and Cloudflare in front of both.
+downloads), Earth's own chain node, and Cloudflare in front of both. The
+backend and the node run as containers on Akash providers, independent
+hosting companies, which matters below.
 
 - **Gas.** The backend sees the registration or switch you are about to send,
   which the chain is about to publish anyway, including its passport
@@ -374,6 +376,12 @@ downloads), Earth's own chain node, and Cloudflare in front of both.
   Cloudflare, which terminates the encrypted connection. Cloudflare receives
   everything the two servers receive: your IP address, the gas request with
   its passport nullifier, your transactions and your address queries.
+- **Hosting providers.** The Akash provider running each container can, in
+  principle, read its memory, including requests after Cloudflare has
+  decrypted them. Those carry your IP address (Cloudflare passes it along), so
+  the backend's provider could see it next to a gas request's passport
+  nullifier, and the node's provider next to your address queries and
+  broadcasts.
 
 Put together, this traffic could link your passport to your wallet: your IP
 address arrives next to your passport nullifier when you ask for gas, and next
@@ -384,13 +392,22 @@ your passport data can recompute the nullifier (see
 **Earth's no-logs policy.** Earth's node and backend do not store client IP
 addresses, request paths or gas-request identifiers. Rate limits use
 short-lived counters held in memory only. The one record kept is the gas
-grant's passport nullifier and date, above, for the 30-day limit. Cloudflare
-is a separate company; what it records is governed by its own policy, not
-ours.
+grant's record above (nullifier, day, grant kind and time, for 31 days). The
+full policy, and how each service meets it, is in the deploy repository's
+`NO_LOGS.md`. It covers what Earth's servers store. It does not bind:
+
+- **Cloudflare**, a separate company whose records follow its own policy. One
+  of them is visible to Earth too: requests that trip one of Earth's firewall
+  or rate-limit rules are kept in Cloudflare's Security Events log, with IP
+  address and path, for Cloudflare's retention period. Earth does not export
+  it, and requests that trip no rule are not in it.
+- **Hosting providers**, which could read a container's memory while it runs.
+  Earth's services write nothing identifying to disk or logs, so there is
+  nothing stored to read later.
 
 **That is a promise, not a proof.** The app cannot show you that a server
-keeps no logs. Whoever runs Earth's node and backend, and Cloudflare, could
-see this traffic if they chose to, and you are trusting them not to. To trust
+keeps no logs. Whoever runs Earth's node and backend, Cloudflare, and the providers
+hosting them could see this traffic if they chose to, and you are trusting them not to. To trust
 no one with it:
 
 - **Run your own node** and point Earth Wallet at it (Settings → Network). Your

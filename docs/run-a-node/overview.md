@@ -33,9 +33,8 @@ The consequences:
   which needs every block (see
   [Join the network](./join.md#4-configure)). The official node behind
   `rpc.erth.network` already keeps full history.
-- Keep `max-txs = -1` under `[mempool]` in `app.toml`, the default. Private
-  transactions have no signer, and every other mempool setting rejects them.
-  See [Join the network](./join.md#4-configure).
+- The mempool needs no setting. Private transactions have no signer, so
+  `earthd` always runs the no-op app mempool and ignores `mempool.max-txs`.
 
 ## How to become a validator
 

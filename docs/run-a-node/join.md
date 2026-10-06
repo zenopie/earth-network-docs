@@ -51,11 +51,16 @@ curl -LO https://github.com/zenopie/earth-network-chain/releases/download/$VERSI
 curl -LO https://github.com/zenopie/earth-network-chain/releases/download/$VERSION/checksums.txt
 
 sha256sum -c checksums.txt --ignore-missing     # the result must be OK
-tar xzf earthd_${VERSION}_linux_${ARCH}.tar.gz
+mkdir -p earthd-$VERSION
+tar -C earthd-$VERSION -xzf earthd_${VERSION}_linux_${ARCH}.tar.gz
 
-sudo install -m755 earthd_${VERSION}_linux_${ARCH}/bin/earthd /usr/local/bin/
-sudo install -m644 earthd_${VERSION}_linux_${ARCH}/lib/*     /usr/local/lib/
+sudo install -m755 earthd-$VERSION/bin/earthd /usr/local/bin/
+sudo install -m644 earthd-$VERSION/lib/*      /usr/local/lib/
 ```
+
+The archive holds `bin/`, `lib/` and `LICENSE` at its root, with no wrapper
+directory (the layout cosmovisor expects), so extract it into a directory of
+its own.
 
 Run both `install` commands. `earthd` links `libwasmvm`, the CosmWasm engine, as
 a shared library. The two components are version-locked. Do not use the `earthd`
@@ -181,21 +186,12 @@ floor: the `x/shielded` parameter `min_fee`, 1,000 uerth (0.001 ERTH) at
 genesis. Every node enforces it in blocks too, whatever its own setting, and
 only governance can change it.
 
-**Mempool**, in `app.toml`. This value is **required** on this chain:
-
-```toml
-[mempool]
-# Earth's private transactions carry no signer. The SDK's priority and
-# sender-nonce mempools key transactions by signer and sequence and reject a
-# transaction with no signer outright, so any value other than -1 makes this
-# node drop every private transaction: claims, votes, transfers, stake.
-max-txs = -1
-```
-
-`-1` is the default. Check it was not changed by a config template you copied
-from another chain. A node with any other value still follows blocks, but
-refuses private transactions sent to it, and a validator with any other value
-never proposes them.
+**Mempool.** Nothing to set. Earth's private transactions carry no signer,
+and the SDK's priority and sender-nonce mempools refuse a transaction with
+none, so `earthd` always runs the no-op app mempool and ignores
+`mempool.max-txs` in `app.toml`. If a copied config template sets it to
+anything but `-1`, the node logs an error saying it is ignored and runs as
+usual.
 
 **Pruning**, in `app.toml`. Select by the role of the node:
 
@@ -434,8 +430,9 @@ of the network, or the binary is wrong. Check both.
 **`set min gas price in app.toml`** — the node does not start until
 `minimum-gas-prices` is set in `app.toml`. See step 4.
 
-**Private transactions never reach the chain through this node** — check
-`max-txs = -1` under `[mempool]` in `app.toml`. See step 4.
+**Private transactions never reach the chain through this node** — their fee
+must meet this node's `minimum-gas-prices` as well as the consensus `min_fee`.
+Check `minimum-gas-prices` in `app.toml`. See step 4.
 
 **`Illegal instruction` on any `earthd` command** — the CPU lacks ADX. See
 Hardware.

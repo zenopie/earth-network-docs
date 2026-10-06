@@ -36,7 +36,7 @@ const siteBaseUrl = cname ? "/" : "/earth-network-docs/";
 /** @type {import('@docusaurus/types').Config} */
 const config = {
   title: "Earth Network",
-  tagline: "One human, one account",
+  tagline: "People are private; power and public money are public",
   favicon: "img/favicon.ico",
 
   url: siteUrl,
@@ -113,8 +113,8 @@ const config = {
                 href: "https://github.com/zenopie/earth-network-chain/releases",
               },
               {
-                label: "Running a node",
-                href: "https://github.com/zenopie/earth-network-chain/blob/master/docs/JOIN.md",
+                label: "Join the network",
+                to: "/run-a-node/join",
               },
             ],
           },

@@ -131,12 +131,13 @@ target:
   next identity. Notes held by the old wallet stay with its phrase, so send
   them across first. Switching back to a wallet you used before works too: it
   registers its own next identity.
-- **A fresh identity in this wallet**, from the same recovery phrase. Use it if
-  you think this identity's secret alone was exposed. That is rare: the app
-  derives the secret from your phrase and keeps it only in memory. It does not
-  help if your **recovery phrase** may be exposed, because anyone with the
-  phrase can derive every identity of the wallet. In that case create a new
-  wallet, with a new phrase, and switch to it.
+- **A fresh identity in this wallet**, from the same recovery phrase. This
+  helps only if this identity's secret leaked by itself, outside the phone, for
+  example in a proof's witness file or a log. It does not help if the **phone**
+  may be compromised or your **recovery phrase** may be exposed: the wallet
+  holds the key every identity of the wallet derives from in memory, and
+  anyone with that key or the phrase can derive them all. In that case create
+  a new wallet, with a new phrase, and switch to it.
 
 A passport can switch **once a day**. The switch must be proven on a later
 date (UTC) than the registration it replaces, so a second switch the same day
@@ -164,22 +165,34 @@ A move is **one step**: from an identity to the one that replaced it, and
 only while the new one is your passport's live identity. After a second
 switch, anything still held by the identity two steps back can never move;
 it stays there until its lease ends. So move before you switch again. If the
-identity you are leaving still holds something, the Switch identity screen
-warns you, and switches only once you tick **Switch anyway and leave it where
-it is**.
+identity your current one replaced still holds something (after another
+switch it could never move), the Switch identity screen warns you, and
+switches only once you tick **Switch anyway and leave it where it is**. What
+the identity you are switching away from holds is fine: you can move it
+after the switch.
 
-**When to move.** A move made right after a switch can be linked to it by its
-timing (see [Privacy](./privacy.md#what-can-still-leak)), and a renewal is
-just as public. So once the switch or renewal lands, the app picks a random
-time between 6 hours and 3 days after it, and shows it as **Suggested: move
-after** a date. Moving earlier is your choice (the app
-asks you to confirm), and nothing hurries a move while the new identity stays
-live. The app reminds you when the time comes. It never moves anything on its
-own.
+**When to move.** A move has a deadline: the end of the handle's or the
+split's lease. Only a live handle or split can move, and the old identity can
+no longer renew either. Once a lease ends, nothing can move or renew it, and
+the new identity cannot claim a handle or cast a split for up to a year
+(below).
+
+A move made right after a switch can be linked to it by its timing (see
+[Privacy](./privacy.md#what-can-still-leak)), and a renewal is just as public.
+So once the switch or renewal lands, the app picks a random time between 6
+hours and 3 days after it, and shows it as **Suggested: move after** a date,
+together with the date to **move by**. The suggestion is never later than 3
+days before the earliest lease end; if that end is closer than 3 days, the app
+says **Move now** instead. Moving earlier than suggested is your choice (the
+app asks you to confirm). The app reminds you when the suggested time comes,
+more urgently in the last 3 days before the deadline, and stops at the
+deadline. It never moves anything on its own.
 
 A handle in its renewal period cannot be moved, and once the switch has landed
-the old identity can no longer renew it, so renew a handle that is close to
-lapsing **before** you switch.
+the old identity can no longer renew it. So renew a handle or split whose lease
+is close to ending **before** you switch: renewed, it moves with a full lease.
+When either ends within 30 days, the Switch identity screen says so and offers
+**Renew first**.
 
 **Only to your own next identity.** The app proves, privately, that the old
 identity and the new one follow each other under the same passport, without
@@ -190,8 +203,9 @@ buyer could at most be promised your secret, which you would still know. What
 no passport-based system can stop is selling the passport itself. Handing
 someone your passport's chip data, with the secret of your current identity,
 lets them register your passport to their own identity and move your handle or
-split there for one lease. That is selling your personhood, name and passport
-number included.
+split there, renew them while that identity is live, and register the passport
+again each year, until the passport expires or you switch it back. That is
+selling your personhood, name and passport number included.
 
 Without a move, the old identity's handle keeps resolving and its split keeps
 counting until their leases end, but neither can be renewed or changed, and
@@ -222,6 +236,15 @@ A handle or split your previous identity still holds live does not need that
 wait: bring it over from Identity (above). The previous identity can no longer
 renew it, so move it before its lease ends. Daily ANML claims open the day
 after tomorrow, as for a first registration.
+
+**Renew your handle and refresh your Caretaker vote before your registration's
+year ends.** Both leases run a year from when you last renewed them, but only a
+live identity can renew them: once your registration lapses, nothing can
+extend them, and after you renew your registration they can be moved to the
+new identity only until they end. Renewed in the last weeks of the year, they
+outlast the registration by most of a year, which leaves time to renew it and
+move them. From 30 days before your registration ends, the app reminds you if
+your handle's or vote's lease would end within 30 days after it.
 
 ### A new passport
 

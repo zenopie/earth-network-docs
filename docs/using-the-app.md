@@ -58,18 +58,27 @@ registration after your first uses the wallet's next identity. See
   Renew registration and scan your passport: the wallet registers it to its
   next identity, from the same recovery phrase. No new wallet or phrase.
 - **Switch identity.** While your registration is live, you can move it to
-  another wallet on the phone, or to **a fresh identity in this wallet**. Pick
-  the fresh identity if you think this identity's secret leaked. If your
-  recovery phrase may have leaked, create a new wallet instead and switch to
-  it. A passport can switch once a day (UTC).
+  another wallet on the phone, or to **a fresh identity in this wallet**. The
+  fresh identity helps only if this identity's secret leaked by itself,
+  outside the phone (for example in a proof's witness file or a log). If the
+  phone may be compromised or your recovery phrase may have leaked, create a
+  new wallet instead, with a new phrase, and switch to it. If your handle's or
+  caretaker vote's lease ends within 30 days, the screen asks you to renew it
+  first (**Renew first**). A passport can switch once a day (UTC).
 - **Bring your handle and caretaker vote.** After a switch or renewal, the
   identity you left still holds them. Identity offers to move each to the new
   identity, as a private transaction proven with both identities' secrets.
   Within one wallet the one phrase is enough and the fee comes from its
   private ERTH. The app suggests a random time to move, 6 hours to 3 days
   after the switch or renewal, so the move is not linked to it by timing; it
-  reminds you then and never moves on its own. Move before switching again: a
-  move goes only from an identity to the one that replaced it.
+  reminds you then and never moves on its own. Move **by** the date the app
+  shows: the end of the handle's or vote's lease, after which neither can move
+  and the old identity cannot renew it. The suggestion is always at least 3
+  days before that date, or the app says **Move now**. Move before switching
+  again, too: a move goes only from an identity to the one that replaced it.
+- **Before your registration's year ends**, renew your handle and refresh your
+  caretaker vote, so that their leases outlast the registration. The app
+  reminds you from 30 days before the end.
 
 See [Switching identity](./registering.md#switching-identity) and
 [Moving your handle and vote](./registering.md#moving-your-handle-and-vote).

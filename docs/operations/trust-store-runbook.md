@@ -80,9 +80,15 @@ earthd query auth module-account gov --node https://rpc.erth.network:443
 
 ```bash
 earthd tx gov submit-proposal revoke-dsc.json \
-  --from <key> --chain-id earth-1 --gas auto --gas-adjustment 1.5 \
+  --from <key> --chain-id earth-1 --gas 500000 \
   --gas-prices 0.005uerth --node https://rpc.erth.network:443
 ```
+
+The gas is given, not `--gas auto`: the public RPC does not run a simulation
+(over the RPC it holds the lock block production waits on). 500,000 is ample
+for one proposal; the fee is 0.0025 ERTH. If it ever runs out of gas,
+`query tx <txhash>` (below) shows code 11 (`out of gas`) and the fee is spent;
+resubmit with a higher `--gas`.
 
 The command returns once the node accepts the transaction into its mempool;
 code 0 there does not mean it landed. Confirm with

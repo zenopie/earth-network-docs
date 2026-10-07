@@ -207,16 +207,26 @@ the official privacy indexer reads. You do not need your own full-history node
 to look something up at an old height.
 
 **What the public RPC and LCD serve.** A request filter in front of the
-official node passes what Earth's apps, `earthd --node` and state sync use:
-state sync, `earthd status`, `query block`, `query tx <hash>`, module queries,
-`--gas auto` simulation and `tx` broadcasts (the default sync mode). It refuses
-event searches and subscriptions, so **`earthd query txs`, `query blocks`,
-`query tx --type acc_seq` or `--type signature`, and `query wait-tx` do not
-work against `rpc.erth.network`**: they need your own node (with
-`[tx_index] indexer = "kv"`, the default). Look a transaction up by hash with
-`earthd query tx <hash>` instead. The LCD's search
-(`/cosmos/tx/v1beta1/txs`) answers only `message.sender='…'`,
-`transfer.recipient='…'` and `tx.height=N`, at most 50 per page.
+official node passes what Earth's apps, `earthd --node` and state sync use,
+and only calls whose cost on the validator is bounded: state sync,
+`earthd status`, `query block`, `query tx <hash>`, the module queries the
+apps and runbooks use, and `tx` broadcasts (the default sync mode). It
+refuses event searches and subscriptions, so **`earthd query txs`,
+`query blocks`, `query tx --type acc_seq` or `--type signature`, and
+`query wait-tx` do not work against `rpc.erth.network`**: they need your own
+node (with `[tx_index] indexer = "kv"`, the default, and `index-events`
+empty; the official node indexes no address events). Look a transaction up
+by hash with `earthd query tx <hash>` instead. The LCD's search
+(`/cosmos/tx/v1beta1/txs`) answers only `tx.height=N` (one block's txs), at
+most 50 per page: a search by address scans that address's whole history on
+the validator, and is refused. Paginated LCD queries take
+`pagination.limit` up to 1,000 and no `count_total`.
+
+**Pass `--gas` to `earthd tx … --node https://rpc.erth.network:443`.** The
+public RPC does not run `--gas auto`'s simulation: over the RPC a simulate
+holds the lock that block production waits on. Give the gas yourself (a
+governance proposal or vote fits in `--gas 500000`), or simulate against
+your own node.
 
 **Running your own privacy indexer?** Its node must hold every block and its
 results from genesis. Wallets download every note ever created, so an index

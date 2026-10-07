@@ -437,7 +437,9 @@ full policy, and how each service meets it, is in the deploy repository's
   - **Security Events**, with IP address, path, query and user agent, for
     requests that one of Earth's firewall or rate-limit rules blocks, or that
     Cloudflare's always-on DDoS protection mitigates. Ordinary requests from
-    Earth's apps are not in it. One case comes from ordinary use: Keplr's own send screen
+    Earth's apps are not in it, and neither is a request outside what they
+    send: a filter on Earth's own server refuses those, and it logs nothing.
+    One case comes from ordinary use: Keplr's own send screen
     opens the node's websocket, which Earth's rules block, so each send made
     from Keplr's own screen leaves an event with your IP address and that path
     (not the transaction).

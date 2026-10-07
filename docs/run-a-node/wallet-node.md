@@ -6,7 +6,8 @@ title: Use your own node
 # Use your own node with Earth Wallet
 
 By default Earth Wallet sends your transactions to, and reads the chain from,
-Earth's node at `lcd.erth.network` and `rpc.erth.network`, behind Cloudflare.
+Earth's node at `lcd.erth.network` and `rpc.erth.network`, behind Cloudflare
+and a request filter.
 That node receives your IP address, every transaction you broadcast and the
 address the app asks about. Earth runs it under a no-logs policy, but that is a
 promise you have to trust (see

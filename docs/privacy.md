@@ -135,10 +135,12 @@ needed.
 Registering the passport again while its registration is live is a
 **switch**: to another wallet's next identity, or to a fresh identity in this
 wallet. The old entry is retired, a new one takes its place, and nothing is
-paid twice. A fresh identity in the same wallet answers a leaked identity
-secret. It does not answer a leaked recovery phrase, since the phrase derives
-every identity of the wallet; for that, switch to a new wallet with a new
-phrase. A passport can switch at most once a day.
+paid twice. A fresh identity in the same wallet helps only if the identity's
+secret leaked by itself, outside the phone (in a proof's witness file or a
+log, say). It does not help if the phone may be compromised or the recovery
+phrase may be exposed: the wallet holds the key every identity derives from in
+memory, and that key or the phrase derives them all. For that, switch to a new
+wallet with a new phrase. A passport can switch at most once a day.
 
 Once a switch or renewal has landed, the app can move your handle and your
 Caretaker vote from the previous identity, so neither has to wait. The move is
@@ -150,10 +152,15 @@ every registration proves knowledge of its identity's secret, nobody else's
 identity can become your successor, so a handle or split cannot be sold to
 someone else's identity. The one way around that is to hand over the passport
 itself: its chip data and your current identity's secret would let a buyer
-register your passport to his own identity. That is selling the passport.
+register your passport to his own identity, and register it again each year,
+until the passport expires or you switch it back. That is selling the
+passport.
 Without a move (always the case if the old phrase is lost), the new identity
 waits until anything the old one held has lapsed, because the chain cannot
-tell the two apart from anyone else. See
+tell the two apart from anyone else. A move is possible only while the
+handle's or split's lease runs, and the old identity can no longer renew it, so
+the app shows a date to move by and keeps its suggested time at least 3 days
+before it. See
 [Switching identity](./registering.md#switching-identity) and
 [Renewing](./registering.md#renewing).
 
@@ -326,7 +333,8 @@ Privacy here is strong, not perfect. Know the limits.
   step only when you tap, so the gap is yours to choose. Leave hours or days,
   not seconds, between registering and claiming a handle. For moves, the app
   picks a random time 6 hours to 3 days after the switch or renewal and
-  suggests moving after it; it reminds you then and never moves on its own.
+  suggests moving after it, capped 3 days before the handle's or vote's lease
+  ends; it reminds you then and never moves on its own.
 - **Reusing a transparent address.** Everything a transparent ERTH address does
   is public and linked together. If you shield from and unshield to the same
   address, or post it with your name, it is not private. Use a fresh address
@@ -370,16 +378,19 @@ can withhold data but cannot forge it.
 ## What Earth's servers see
 
 Your phone talks to three kinds of server Earth runs or uses: the backend (gas
-for a first registration, the indexer, the handle directory, circuit
-downloads), Earth's own chain node, and Cloudflare in front of both. The
-backend and the node run as containers on Akash providers, independent
-hosting companies, which matters below.
+for a registration, a renewal or a switch, the indexer, the handle directory,
+circuit downloads), Earth's own chain node, and Cloudflare in front of both.
+The backend and the node run as containers on Akash providers, independent
+hosting companies, which matters below. Earth's web app is served the same
+way.
 
 - **Gas.** The backend sees the registration or switch you are about to send,
   which the chain is about to publish anyway, including its passport
   nullifier and referrer handle, and pays a note it cannot follow. For each
-  grant it stores the passport nullifier, the date, and whether it was a
-  switch, and nothing that names the note or your wallet. It refuses a second
+  grant it stores the passport nullifier, the date, whether it was a switch (a
+  first registration and a renewal are stored alike) and the time, and nothing
+  that names the note or your wallet. The record is a database table on the
+  backend's disk. It refuses a second
   grant to the same passport within any 30 days (a sliding window, not a
   calendar month), and deletes each record after 31 days, once it can no
   longer decide anything.
@@ -417,14 +428,30 @@ grant's record above (nullifier, day, grant kind and time, for 31 days). The
 full policy, and how each service meets it, is in the deploy repository's
 `NO_LOGS.md`. It covers what Earth's servers store. It does not bind:
 
-- **Cloudflare**, a separate company whose records follow its own policy. One
-  of them is visible to Earth too: requests that trip one of Earth's firewall
-  or rate-limit rules are kept in Cloudflare's Security Events log, with IP
-  address and path, for Cloudflare's retention period. Earth does not export
-  it, and requests that trip no rule are not in it.
-- **Hosting providers**, which could read a container's memory while it runs.
-  Earth's services write nothing identifying to disk or logs, so there is
-  nothing stored to read later.
+- **Cloudflare**, a separate company whose records follow its own policy.
+  Earth turns off every Cloudflare log export and analytics feature it can (log
+  push, web analytics, network error reports) and the protections that
+  challenge requests on Cloudflare's own judgement (Browser Integrity Check,
+  Security Level, Bot Fight Mode). What remains, visible to Earth too, for
+  Cloudflare's retention period, and never exported by Earth:
+  - **Security Events**, with IP address, path, query and user agent, for
+    requests that one of Earth's firewall or rate-limit rules blocks, or that
+    Cloudflare's always-on DDoS protection mitigates. Ordinary requests from
+    Earth's apps are not in it. One case comes from ordinary use: Keplr's own send screen
+    opens the node's websocket, which Earth's rules block, so each send made
+    from Keplr's own screen leaves an event with your IP address and that path
+    (not the transaction).
+  - **Analytics**: aggregate traffic, and a sample of individual requests (IP
+    address, path, country, user agent) whether or not a rule matched them.
+- **Hosting providers**, which could read a container's memory, disk and
+  output while it runs. Apart from the gas-grant record above, which is on the
+  backend's disk and so readable by its provider, Earth's services write
+  nothing identifying to disk or to their logs.
+
+**Keplr.** Because the node's websocket is closed, Keplr's own send screen
+does not show its "confirmed" notice (its send button may stay busy until you
+reopen Keplr). The transaction still goes through and lands. Check it in
+Earth's web app or a block explorer.
 
 **That is a promise, not a proof.** The app cannot show you that a server
 keeps no logs. Whoever runs Earth's node and backend, Cloudflare, and the providers
@@ -432,7 +459,9 @@ hosting them could see this traffic if they chose to, and you are trusting them 
 no one with it:
 
 - **Run your own node** and point Earth Wallet at it (Settings → Network). Your
-  transactions and address queries then go only to a machine you control. See
+  transactions and address queries then go only to a machine you control. The
+  wallet rechecks your node at every launch and every 6 hours; if it fails the
+  check, the wallet switches to Earth's node and tells you. See
   [Use your own node](./run-a-node/wallet-node.md). The backend-only features
   still use Earth's backend: the handle directory, the private note streams,
   the gas grant and circuit downloads. All but the gas grant serve everyone

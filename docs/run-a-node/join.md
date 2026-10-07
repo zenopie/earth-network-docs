@@ -89,8 +89,19 @@ cd third_party/barretenberg-go && ./scripts/build-wrapper.sh --platform linux_am
 cd ../.. && make install
 ```
 
-A container image is also available at `ghcr.io/zenopie/earth-network-chain`,
-pinned by digest. See [docker/README.md](https://github.com/zenopie/earth-network-chain/blob/master/docker/README.md).
+A container image is also available at `ghcr.io/zenopie/earth-network-chain`;
+pin it by digest. It is generic: `earthd`, its libraries, the release genesis
+and a minimal entrypoint that installs that genesis on a fresh volume and runs
+`earthd start`. It configures nothing else for you. Every setting on this page
+goes into it as an `EARTHD_*` environment variable (the `app.toml` or
+`config.toml` key, upper-cased, with `.` and `-` as `_`, for example
+`EARTHD_MINIMUM_GAS_PRICES`), as a flag after the image name, or in the files on
+its `/data` volume. It does not import a validator key, run cosmovisor or filter
+requests: a validator brings its own runtime for that, an image built `FROM`
+this one by digest or the binary under its own supervisor (see
+[How to become a validator](#how-to-become-a-validator) and
+[Upgrades](./upgrades.md)). See
+[docker/README.md](https://github.com/zenopie/earth-network-chain/blob/master/docker/README.md).
 
 ---
 
@@ -158,12 +169,15 @@ host and port are assigned by its hosting provider once the launch lease runs.
 Until this page gives the full address, ask in the project's channels for a
 peer.
 
-For the Docker image, use the `SEEDS`, `PERSISTENT_PEERS`, and `EXTERNAL_ADDRESS`
-environment variables. The entrypoint writes them into `config.toml` at each
-start, so a restart applies a change.
+For the Docker image, set `EARTHD_P2P_PERSISTENT_PEERS` (and `EARTHD_P2P_SEEDS`
+once there is a seed) and `EARTHD_P2P_EXTERNAL_ADDRESS`, or the same keys in
+`/data/config/config.toml`. The image's entrypoint writes none of them. Without
+`EARTHD_P2P_EXTERNAL_ADDRESS` a container advertises its private address, and
+no peer can dial it.
 
-**Minimum gas price**, in `~/.earth/config/app.toml`. This value is **required.
-The node does not start without it.** The error message does not name the file:
+**Minimum gas price**, in `~/.earth/config/app.toml` (Docker:
+`EARTHD_MINIMUM_GAS_PRICES`). This value is **required. The node does not start
+without it.** The error message does not name the file:
 
 ```
 set min gas price in app.toml or flag or env variable
@@ -251,13 +265,16 @@ Its disk only grows, so size it well past the Public RPC column under
 a node like this it can fill the disk at an upgrade height.
 
 **Snapshots.** `earthd init` writes `snapshot-interval = 0`, which disables
-them (the Cosmos SDK default). The Docker image sets the values below on every
-start. On a binary install, set them yourself:
+them (the Cosmos SDK default). The Docker image keeps that default too, so set
+them yourself on any install. In `app.toml`, under `[state-sync]`:
 
 ```toml
 snapshot-interval = 1000      # approximately 80 minutes at 5-second blocks
 snapshot-keep-recent = 5
 ```
+
+For the Docker image: `EARTHD_STATE_SYNC_SNAPSHOT_INTERVAL=1000` and
+`EARTHD_STATE_SYNC_SNAPSHOT_KEEP_RECENT=5`.
 
 Snapshots permit *other* operators to state-sync from this node. A value of `0`
 disables them. If all operators disable them, a new node must replay the

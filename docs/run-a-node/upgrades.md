@@ -99,7 +99,7 @@ genesis.
 ## Submitting the proposal
 
 ```bash
-CURRENT=$(earthd query block --type height 0 -o json | jq -r .header.height)
+CURRENT=$(earthd status | jq -r .sync_info.latest_block_height)
 HEIGHT=$(( CURRENT + 130000 ))   # 7-day vote at 5s blocks, plus margin
 GOV=$(earthd query auth module-account gov -o json | jq -r .account.value.address)
 ```

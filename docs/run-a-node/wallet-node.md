@@ -24,7 +24,7 @@ data a plain node does not serve:
 
 - the **private note streams** (the indexer your phone syncs notes from),
 - the **handle directory**,
-- the **gas grant** for a first registration or a switch,
+- the **gas grant** for a registration, a renewal or a switch,
 - **circuit downloads**.
 
 The note streams, the directory and the circuits are the same bytes for every
@@ -98,12 +98,22 @@ Before saving, the wallet checks that the node follows the live chain:
   (`/genesis_chunked`) and compares it with the live chain's. Every node keeps
   its genesis, so a state-synced node passes. A node left over from an earlier
   earth-1 launch, or another network using the same name, is refused.
-- **Same node.** The LCD and the RPC must report the same block at a recent
-  height, so they belong to one node.
+- **Same chain.** The LCD and the RPC must report the same block at a recent
+  height, so they follow the same chain.
 - **Synced.** A node whose latest block is more than 10 minutes old is refused
   until it catches up.
 
-If your node later falls behind or stops, the wallet shows stale balances or
-cannot send until it is back.
+The wallet runs the same check again at every launch and whenever the last
+pass is 6 hours old, and also when the Network screen's quick look at your
+node fails. If your node does not answer at all, the wallet keeps it and tries
+again later; meanwhile balances may be stale and sends fail. If it answers but
+fails the check (another genesis, the LCD and RPC disagreeing, a tip more than
+10 minutes old), the wallet **switches to Earth's node** and says so on Home
+and on the Network screen, until you check your node or save it again in
+Settings → Network. Your saved addresses stay filled in. While it uses Earth's
+node, your chain traffic goes to Earth's node, as without your own.
+
+After an app update, a node saved by an earlier version waits on Earth's node
+until the launch check passes it.
 
 The web app at erth.network always uses Earth's node.

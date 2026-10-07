@@ -98,8 +98,10 @@ them receive her handle or Caretaker split by a move. With it, every identity
 in a passport's chain is one whose secret its holder had when registering it,
 so a handle or split cannot be sold to someone else's identity. The residual
 is selling the passport itself: its DG1 and SOD with the current identity's
-secret let a buyer register it to his own identity and move the handle or
-split there for one lease.
+secret let a buyer register it to his own identity, move the handle or split
+there and renew them while that identity is live, and re-register the passport
+each year (a re-entry needs only passive-authentication data and his own
+`id_secret`), until the passport expires or the seller switches it back.
 
 An idc registers **once**. `x/personhood` keeps the set `UsedIdcs` (genesis
 `used_idcs`) and refuses any idc in it in the ante, before the proof

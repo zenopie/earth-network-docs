@@ -84,6 +84,14 @@ earthd tx gov submit-proposal revoke-dsc.json \
   --gas-prices 0.005uerth --node https://rpc.erth.network:443
 ```
 
+The command returns once the node accepts the transaction into its mempool;
+code 0 there does not mean it landed. Confirm with
+`earthd query tx <txhash> --node https://rpc.erth.network:443`: `code` 0, and
+the proposal id in its `submit_proposal` event. The public RPC serves state
+sync, queries and broadcasts, but not `earthd query txs` (event search) or
+`query wait-tx` (a websocket subscription); use `query tx <hash>`, or your own
+node, for those.
+
 **The deposit is 5 ERTH and must be complete.** A proposal with a partial
 deposit stays in the deposit period and the voting period does not start.
 

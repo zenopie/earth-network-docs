@@ -10,17 +10,18 @@ This page contains the full procedure to sync a node on `earth-1`.
 If you cannot sync a node with this page alone, that is a defect in this page.
 Open an issue.
 
-{/* TODO(relaunch): fill in the launch tag, genesis time, genesis sha256 and
-the validator's node id and P2P address below once the ceremony
-(scripts/ceremony.sh in the chain repo) has produced the final
-networks/genesis.json. The chain id is earth-1. */}
+> **earth-1 relaunched on 2026-10-07 at 13:00 UTC** from a new genesis, with
+> private ERTH, ANML and staking. Nothing from the earlier `earth-1` carries
+> over. It started with one validator, so a node joining syncs from that one
+> peer and adds the second.
 
-> **The network relaunches from a new genesis** with private ERTH, ANML and
-> staking. Nothing from the earlier `earth-1` carries over: no balances, no
-> registrations, no history. The launch tag, the genesis time and the genesis
-> checksum are published in the release notes and on this page before launch.
-> It starts with one validator, so a node joining syncs from that one peer and
-> adds the second.
+| | |
+| --- | --- |
+| Chain id | `earth-1` |
+| Launch tag | `v1.1.0` |
+| Genesis time | `2026-10-07T13:00:00Z` |
+| Genesis sha256 | `26b396b4bcb7660fd17be86e3906f232681dcb0defee611fc151130dcc797c2f` |
+| Validator peer | `6ad7347a1e15cc3a247347e152fee9fdd7ed2440@p2p.erth.network:31614` |
 
 ## Which binary
 
@@ -29,7 +30,7 @@ below halted the chain at its height, and the next binary continued from there.
 
 | Upgrade | Height | Binary from that height |
 | --- | --- | --- |
-| launch | 1 | the launch tag |
+| launch | 1 | `v1.1.0` |
 
 - **State sync** (section 4b) starts near the tip, so you need only the binary
   for the current height: the last row that has already happened.
@@ -44,7 +45,7 @@ below halted the chain at its height, and the next binary continued from there.
 Download from the [latest release](https://github.com/zenopie/earth-network-chain/releases/latest):
 
 ```bash
-VERSION=<launch-tag>    # see "Which binary" above
+VERSION=v1.1.0          # see "Which binary" above
 ARCH=amd64              # or arm64
 
 curl -LO https://github.com/zenopie/earth-network-chain/releases/download/$VERSION/earthd_${VERSION}_linux_${ARCH}.tar.gz
@@ -129,7 +130,7 @@ sha256sum ~/.earth/config/genesis.json
 The output must be:
 
 ```
-<published with the launch release>  genesis.json
+26b396b4bcb7660fd17be86e3906f232681dcb0defee611fc151130dcc797c2f  genesis.json
 ```
 
 A genesis that hashes to anything else is a different chain, whatever its
@@ -151,7 +152,7 @@ earthd genesis validate-genesis
 # persistent_peers, not seeds. A seed is a crawler that hands out addresses and
 # disconnects; this is the network's one node, and you want to hold a connection
 # to it. There is no seed node yet, and seed.erth.network does not resolve.
-persistent_peers = "<validator-node-id>@<host>:<port>"
+persistent_peers = "6ad7347a1e15cc3a247347e152fee9fdd7ed2440@p2p.erth.network:31614"
 # The address that other nodes use to reach this node. Set it if the node is
 # behind NAT, in a container, or at a provider that maps ports. If it is unset,
 # CometBFT advertises the address that it observes on itself and gives that
@@ -163,11 +164,13 @@ Port **26656** must accept inbound connections. A node without inbound
 connectivity can still sync, because it dials out. But no peer can dial it. It
 therefore adds no connectivity to the network and cannot serve state sync.
 
-**The validator's public P2P address is published here at launch.** Its node
-id is what `https://rpc.erth.network/status` reports under `node_info.id`. The
-host and port are assigned by its hosting provider once the launch lease runs.
-Until this page gives the full address, ask in the project's channels for a
-peer.
+**The validator's P2P address** is
+`6ad7347a1e15cc3a247347e152fee9fdd7ed2440@p2p.erth.network:31614`. The node id
+is fixed (it is what `https://rpc.erth.network/status` reports under
+`node_info.id`); the port is assigned by its hosting provider and changes if the
+validator moves to a new lease, in which case this page is updated. The genesis
+gentx memo names port 26656: that value is permanent in the genesis and is not
+the one to dial.
 
 For the Docker image, set `EARTHD_P2P_PERSISTENT_PEERS` (and `EARTHD_P2P_SEEDS`
 once there is a seed) and `EARTHD_P2P_EXTERNAL_ADDRESS`, or the same keys in

@@ -284,12 +284,15 @@ not locked: it keeps earning and you can move or unstake it as before.
 Every stake transaction publishes the tags of the notes it spends, and the
 chain cancels any vote stored under them. When you have chosen a split, each
 stake transaction also votes with the new note, so your vote follows your
-stake. A vote lasts one year from when it was cast or last carried forward,
+stake. Stake you move to another validator votes at once but counts only
+once the old validator can no longer be slashed for it (about 21 days);
+the chain adds it by itself, with no new vote. A vote lasts one year from when it was cast or last carried forward,
 like a Caretaker split; the app reminds you, and you renew it by voting
 again.
 
 What this shows: per vote, the validator, the size (about the note's derth)
-and the split. Not who you are. But each of your stake transactions at a
+and the split. Not who you are. A vote holding moved stake also names the move
+it came from, which the move itself already made public. But each of your stake transactions at a
 validator cancels your previous vote and starts the next, so while you vote,
 your staking at that validator forms **one pseudonymous history with its
 amounts**. If you do not vote, your tags are random-looking values that link

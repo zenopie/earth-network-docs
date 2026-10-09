@@ -40,15 +40,19 @@ from.
     `groundworks_split` stores a `GroundworksVote` (validator, derth = the
     output's unexposed amount, split, lease) under its output's tag, and
     every stake proof publishes its inputs' tags, cancelling the votes
-    stored under them. A vote weighs at least `min_position` (derth x epoch
-    rate). All of one validator's votes form ONE weighted voter, keyed
+    stored under them. Derth a move brought in (still exposed to the old
+    validator's slashes) votes pending: stored on the vote with the move's
+    key and time, not counted, and added to its derth by the chain in
+    BeginBlock once the move's window closes, at what the slash debt tree
+    says it is worth (at most 200 a block; event action `matured`). A vote
+    weighs at least `min_position` ((derth + pending) x epoch rate). All of one validator's votes form ONE weighted voter, keyed
     `"gwpos/" || validator address bytes`, with an absolute weight per
     option: the validator's epoch rate times the sum of `derth x percent`
     over its live votes. Each cast and cancel adjusts those totals exactly,
     so the work per epoch grows with validators, not with votes. Vote weight
     does not depend on the validator's status: it keeps counting while the
     validator is jailed or unbonded, until its lease ends (below). This is
-    intentional; see the operator rule below. (Until v1.2.0 this source was
+    intentional; see the operator rule below. (Until v1.2.1 this source was
     Groundworks positions: derth locked out of a note under an owner tag.)
   - **Operators**: a validator's operator account votes with
     `MsgSetAllocations`, weighted by its self-bond. The weight counts only

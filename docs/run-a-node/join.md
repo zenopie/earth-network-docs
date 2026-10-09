@@ -415,7 +415,7 @@ Ordinary delegation does not exist here. The chain refuses `delegate`,
 account bonding to itself, and it refuses `redelegate` from every account,
 operators included. Everyone else stakes privately through `x/shieldedstaking`,
 which is the only delegator besides validators themselves. A private
-delegation to you is bonded in the block it lands in (since v1.2.0); the
+delegation to you is bonded in the block it lands in (since v1.2.1); the
 module's undelegations from you, and its restaked rewards, change once a
 day, at the end of an epoch.
 

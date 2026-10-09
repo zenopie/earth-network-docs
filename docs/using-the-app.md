@@ -170,9 +170,10 @@ options by percentage. Confirm the vote. You can change it at any time.
   reminds you before it expires, and voting again renews it. **Stop voting**
   removes your votes. An expired vote stops counting until you vote again. If
   governance resets the Groundworks votes, your split counts for nothing until
-  you vote again. Stake moved in by a redelegation starts voting only after
-  its label clears (about 21 days) and a later stake transaction there
-  carries it.
+  you vote again. Stake you move to another validator keeps voting with no
+  new vote: it is counted once the old validator can no longer be slashed
+  for it (about 21 days), and Govern shows "Voting X of Y ERTH" and "Moved
+  stake counts from <date>" meanwhile.
 
 Rewards follow the current vote and accrue continuously. A change of vote does
 not reset the rewards that you have already earned.

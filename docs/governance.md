@@ -87,7 +87,7 @@ If you disagree with your validator, vote yourself and your weight is taken
 out of theirs.
 
 Stake votes on proposals are cast only this way. Groundworks votes (stake
-notes voting in the Groundworks fund) do not vote on proposals; until v1.2.0,
+notes voting in the Groundworks fund) do not vote on proposals; until v1.2.1,
 Groundworks positions could.
 
 A slash during the vote shrinks the votes behind that validator with it, so

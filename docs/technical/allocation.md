@@ -6,7 +6,7 @@ title: The two fund streams
 # x/allocation: the two fund streams
 
 `x/allocation` runs both voted funds on one engine: the Caretaker stream (one
-vote per human) and the Groundworks stream (staked positions, and validator
+vote per human) and the Groundworks stream (stake note votes, and validator
 operators' self-bonds). The only accounts that vote are validator operators,
 in Groundworks, with their public self-bond.
 
@@ -35,15 +35,21 @@ from.
   it lapses; nothing refreshes it automatically.
 - **Groundworks.** Weight has two sources, both registered by
   `x/shieldedstaking` as the stream's weight source.
-  - **Positions**: staked derth locked with a split. All of one validator's
-    positions form ONE weighted voter, keyed `"gwpos/" || validator address
-    bytes`, with an absolute weight per option: the validator's epoch rate
-    times the sum of `derth x percent` over its live positions. Lock, update
-    and unlock adjust those totals exactly, so the work per epoch grows with
-    validators, not with positions. Position weight does not depend on the
-    validator's status: it keeps counting while the validator is jailed or
-    unbonded, until its lease ends (below). This is intentional; see the
-    operator rule below.
+  - **Stake note votes**: a stake note votes in place. Each note has a
+    Groundworks tag `H(TAG_GW, nk, rho)`; a stake msg carrying
+    `groundworks_split` stores a `GroundworksVote` (validator, derth = the
+    output's unexposed amount, split, lease) under its output's tag, and
+    every stake proof publishes its inputs' tags, cancelling the votes
+    stored under them. A vote weighs at least `min_position` (derth x epoch
+    rate). All of one validator's votes form ONE weighted voter, keyed
+    `"gwpos/" || validator address bytes`, with an absolute weight per
+    option: the validator's epoch rate times the sum of `derth x percent`
+    over its live votes. Each cast and cancel adjusts those totals exactly,
+    so the work per epoch grows with validators, not with votes. Vote weight
+    does not depend on the validator's status: it keeps counting while the
+    validator is jailed or unbonded, until its lease ends (below). This is
+    intentional; see the operator rule below. (Until v1.2.0 this source was
+    Groundworks positions: derth locked out of a note under an owner tag.)
   - **Operators**: a validator's operator account votes with
     `MsgSetAllocations`, weighted by its self-bond. The weight counts only
     while the validator is **Bonded**. When it leaves the active set (or is
@@ -55,22 +61,21 @@ from.
     re-weighs the operator at once; the validator bonding, starting to unbond
     or being slashed re-weighs it at that block's EndBlock. Only the
     operator's self-bond is tied to Bonded status: the operator controls
-    whether its validator stays in the active set, while a position's
+    whether its validator stays in the active set, while a stake vote's
     anonymous owner does not.
     `x/shieldedstaking`'s own account carries no weight: its delegations are
-    the private stake, already counted through positions.
-  - **Leases**: every Groundworks split, a position's and an operator's,
+    the private stake, already counted through the stake note votes.
+  - **Leases**: every Groundworks split, a stake note's and an operator's,
     counts for `groundworks_lease_seconds` (x/allocation param 2; 0 means the
     default of 365 days, otherwise 1 day to 2 years) from when it was cast or
-    last renewed. A position's lease is `Position.split_expires_at`, set by
-    `MsgLockPosition` and `MsgUpdatePosition` (an update with the same split
-    renews it); an operator's is `Voter.expires_at`, set by every
+    last renewed. A stake vote's lease is `GroundworksVote.split_expires_at`,
+    set by every stake msg that casts it (a restake of the note onto itself
+    with the same split renews it); an operator's is `Voter.expires_at`, set by every
     `MsgSetAllocations` (a re-weigh keeps it). At the lease end the split
     comes off the stream at that exact time, even if the block lands later: a
-    position's split is cleared (`splits` empty, `split_expires_at` 0) and it
-    stops voting until re-cast; an operator's vote is removed. Events:
-    `shieldedstaking_position` with action `split_lapsed` (every such event carries
-    `split_expires_at`) and `split_lapsed` (`stream`, `voter`, `expires_at`)
+    stake vote is deleted and the note stops voting until re-cast; an
+    operator's vote is removed. Events: `shieldedstaking_groundworks_vote`
+    with action `lapsed` (every such event carries `split_expires_at`) and `split_lapsed` (`stream`, `voter`, `expires_at`)
     for operators. Wallets remind before expiry; renewal is manual, never
     automatic.
 
@@ -98,8 +103,8 @@ A captured Caretaker slate has no on-chain clear. That is a deliberate trade:
 a reset is a mute button on the persons axis, and stake should not hold one.
 
 After a Groundworks reset, a split cast before it counts as zero until its
-owner votes again. Positions record the stream epoch their split was cast in,
-so the reset is honoured lazily, without walking every position.
+owner votes again. Stake votes record the stream epoch their split was cast
+in, so the reset is honoured lazily, without walking every vote.
 
 ## Money: solvency rules
 
@@ -124,7 +129,7 @@ registers into it at wiring time:
 
 | Registry | Registered by |
 | --- | --- |
-| Groundworks weight source | `x/shieldedstaking` (positions, operators' bonded self-bond) |
+| Groundworks weight source | `x/shieldedstaking` (stake note votes, operators' bonded self-bond) |
 | Integrated handler `lp_rewards` | `x/dex` |
 | Integrated handler `registration_rewards` | `x/personhood` |
 | Integrated handler `community_pool` | `app.go`, with x/distribution |

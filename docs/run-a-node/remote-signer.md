@@ -237,8 +237,8 @@ signed Precommit:8E3026E331 at h/r/s 6/0/2 (0 ms)
 
 ## Migration of a running validator
 
-Do this before your validator carries private stake, which reaches it at the
-first epoch end after someone delegates to it. This procedure has a risk of
+Do this before your validator carries private stake, which reaches it in the
+block someone first delegates to it. This procedure has a risk of
 double-signing. The risk exists while both the node and the signer can sign.
 
 1. Stop the validator. Confirm that it produces no blocks.

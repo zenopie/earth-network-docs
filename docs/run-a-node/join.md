@@ -414,8 +414,10 @@ Ordinary delegation does not exist here. The chain refuses `delegate`,
 `unbond` and `cancel-unbond` from any account except a validator's own operator
 account bonding to itself, and it refuses `redelegate` from every account,
 operators included. Everyone else stakes privately through `x/shieldedstaking`,
-which is the only delegator besides validators themselves. Its delegations to
-you change once a day, at the end of an epoch.
+which is the only delegator besides validators themselves. A private
+delegation to you is bonded in the block it lands in (since v1.2.0); the
+module's undelegations from you, and its restaked rewards, change once a
+day, at the end of an epoch.
 
 - To add or remove your own stake, use `earthd tx staking delegate` or
   `unbond` from your operator account, to your own validator. A self-bond

@@ -17,7 +17,7 @@ The short version:
 | Your ANML claims | That someone claimed |
 | Your assembly votes | The running tally |
 | Who cast each Caretaker split | The split itself, and how much each option earns |
-| Who owns each Groundworks position | The position: its size, its validator and its split |
+| Who cast each Groundworks stake vote | The vote: its size, its validator and its split |
 | Who staked, and how much each person holds | The amount entering or leaving each validator |
 | Who holds LP shares (deposited from the shielded balance) | Each pool's reserves and total shares, and the amounts going in and out |
 | Who pays a handle | The handle directory: each handle and the shielded address it names |
@@ -32,7 +32,7 @@ visible. The person making it is not.
   the chip to build a proof and then discards them.
 - Your secrets. Everything private on Earth is derived from your recovery
   phrase: the key that owns your notes, the secret behind each registration
-  (one phrase holds a series of identities), and the tags that prove you own a stake position. The recovery phrase is
+  (one phrase holds a series of identities), and the Groundworks tags of your stake notes. The recovery phrase is
   still the only backup.
 
 ## Shielded and transparent ERTH
@@ -234,8 +234,11 @@ delegate from the pool and are paid back into it.
 - **Exchange rate.** Each validator's derth has an exchange rate into ERTH.
   Rewards are restaked for everyone at once, so the rate rises. You never claim
   rewards: your derth becomes worth more ERTH.
-- **Daily epochs.** Delegations and undelegations reach the validators together
-  once a day, at the end of an epoch. That batches everyone's changes.
+- **Bonded at once.** A delegation is bonded to its validator in the block it
+  lands in, so it earns from then on and shares no reward it did not earn.
+- **Daily epochs.** Undelegations reach the validators together once a day, at
+  the end of an epoch, and rewards are restaked then. That batches everyone's
+  unstaking.
 - **Unbonding** takes 21 days. When it ends the chain pays the ERTH into a
   private note for you by itself: there is nothing to claim. If the validator
   is slashed during unbonding, the payout is smaller, exactly as an ordinary
@@ -270,15 +273,27 @@ exact holdings do not show. The weight and the validator are public. The voter
 is not. A validator's vote also covers any of its stake that did not vote, as
 on other Cosmos chains.
 
-### Groundworks positions
+### Groundworks votes
 
-Voting in the Groundworks fund is a public act weighted by stake, so it uses a
-**position**: derth locked into a public record with a split. The position
-shows its size, its validator and its split. Its owner is proven by a tag that
-only your phone can produce, and nothing links it to you. Locked derth keeps
-earning. Unlock it and it merges back into your note at that validator. Its
-split lasts one year from when it was cast or last renewed, like a Caretaker
-split; the app reminds you, and you renew it by voting again.
+Voting in the Groundworks fund is a public act weighted by stake, so your
+stake note votes in the open. Each stake note has a **Groundworks tag** that
+only your phone can compute. When you vote, the chain stores a public vote
+under the tag: the note's validator, its size and your split. Your stake is
+not locked: it keeps earning and you can move or unstake it as before.
+
+Every stake transaction publishes the tags of the notes it spends, and the
+chain cancels any vote stored under them. When you have chosen a split, each
+stake transaction also votes with the new note, so your vote follows your
+stake. A vote lasts one year from when it was cast or last carried forward,
+like a Caretaker split; the app reminds you, and you renew it by voting
+again.
+
+What this shows: per vote, the validator, the size (about the note's derth)
+and the split. Not who you are. But each of your stake transactions at a
+validator cancels your previous vote and starts the next, so while you vote,
+your staking at that validator forms **one pseudonymous history with its
+amounts**. If you do not vote, your tags are random-looking values that link
+nothing.
 
 ## Fees: paid in ERTH, half burned
 
@@ -317,8 +332,8 @@ Privacy here is strong, not perfect. Know the limits.
 
 - **A small crowd hides you less.** Your actions hide among everyone else's.
   At launch there are few registered humans and few notes, so a claim or a
-  vote is one of only a handful. The privacy grows with the network. Staking
-  changes are batched at epoch ends to help.
+  vote is one of only a handful. The privacy grows with the network.
+  Unstaking is batched at epoch ends to help.
 - **Timing.** If you shield 100 ERTH at noon and someone unshields 100 ERTH at
   12:01, an observer can guess. Wait between moving in and out, and avoid
   round, distinctive amounts.
@@ -340,9 +355,12 @@ Privacy here is strong, not perfect. Know the limits.
   address, or post it with your name, it is not private. Use a fresh address
   for each public purpose.
 - **Amounts at the edges.** Shielding, unshielding, delegating, undelegating,
-  redelegating, swapping, providing liquidity and locking a position each
-  reveal their amount and, where it applies, the pool or validator. Only the
+  redelegating, swapping and providing liquidity each reveal their amount and, where it applies, the pool or validator. Only the
   owner is hidden. An undelegation's payout, 21 days later, is linked to it.
+- **Groundworks voting links your staking.** While your stake votes in
+  Groundworks, your stake transactions at each validator are linked to one
+  another, with their amounts, though not to you
+  ([Groundworks votes](#groundworks-votes)).
 - **Your handle.** A handle names your shielded address publicly. Payments to it
   stay private, but anyone who knows your handle knows that address is yours.
 - **What the registration shows.** A registration shows the passport's country

@@ -86,8 +86,9 @@ covers the stake delegated to it that did not vote, as on other Cosmos chains.
 If you disagree with your validator, vote yourself and your weight is taken
 out of theirs.
 
-Groundworks positions vote too, proven by the position's owner tag, with their
-weight public like the position. A position's vote can be replaced.
+Stake votes on proposals are cast only this way. Groundworks votes (stake
+notes voting in the Groundworks fund) do not vote on proposals; until v1.2.0,
+Groundworks positions could.
 
 A slash during the vote shrinks the votes behind that validator with it, so
 the votes counted never exceed the stake that is actually bonded.

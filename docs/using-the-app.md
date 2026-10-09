@@ -117,11 +117,11 @@ validator adds to the note you have. Rewards are restaked for everyone once a
 day, so each derth is worth more ERTH over time. The app shows the ERTH your
 derth is worth. Stake notes are owner-locked: they cannot be sent or given to
 anyone else. To hand stake over, unstake it and send the ERTH. Staked ERTH
-also lets you vote in governance and, through a position, in the Groundworks
-fund.
+also lets you vote in governance and in the Groundworks fund.
 
-Stake changes take effect at the end of the day's **epoch**, together with
-everyone else's. The amount and the validator are public, you are not.
+New stake is bonded in the block your transaction lands in and earns from
+then on. Unstaking takes effect at the end of the day's **epoch**, together
+with everyone else's. The amount and the validator are public, you are not.
 
 **Unstaking** takes **21 days** from the epoch it is processed in. During this
 period you earn nothing. This delay makes an attack on the chain expensive.
@@ -160,13 +160,19 @@ options by percentage. Confirm the vote. You can change it at any time.
 - **Caretaker**: one vote per registered human, cast anonymously. A split
   counts for a year. The app reminds you to refresh it in the month before it
   lapses; a lapsed split stops counting.
-- **Groundworks**: lock staked derth into a **position** with your split. The
-  position is public; only your phone can prove it is yours. Locked derth keeps
-  earning. Unlock it to merge it back into your note. Your split lasts one
-  year from when you cast or last renewed it; the app reminds you before it
-  expires, and voting again renews it. An expired split stops counting until
-  you vote again. If governance resets the Groundworks votes, your split counts
-  for nothing until you vote again.
+- **Groundworks**: your stake votes. Pick a split once; the app sends one
+  transaction per validator you stake with, and from then on every stake
+  transaction carries your split, so the vote follows your stake. Nothing is
+  locked: your stake keeps earning and moves freely. Each vote is public (its
+  validator, size and split); only your phone can tie it to you, but while you
+  vote your stake transactions at a validator are linked to one another. A
+  vote lasts one year from when it was cast or last carried forward; the app
+  reminds you before it expires, and voting again renews it. **Stop voting**
+  removes your votes. An expired vote stops counting until you vote again. If
+  governance resets the Groundworks votes, your split counts for nothing until
+  you vote again. Stake moved in by a redelegation starts voting only after
+  its label clears (about 21 days) and a later stake transaction there
+  carries it.
 
 Rewards follow the current vote and accrue continuously. A change of vote does
 not reset the rewards that you have already earned.

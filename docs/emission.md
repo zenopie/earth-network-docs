@@ -21,7 +21,7 @@ by rule and one is a fund that voters point.
 | Staking rewards | Capital | Stakers, in proportion to bonded ERTH |
 | ANML buyback and burn | People | Every ANML holder, through a permanent buyer |
 | Caretaker fund | People, one anonymous vote each | Private providers of public goods, competing for those votes |
-| Groundworks fund | Capital, by staked positions | Whatever those positions vote for |
+| Groundworks fund | Capital, by staked ERTH that chooses to vote | Whatever that stake votes for |
 
 A fund that nobody has voted on issues nothing. Emission that nobody chose is
 never created, so before the first human registers the Caretaker fund is silent.
@@ -29,8 +29,9 @@ never created, so before the first human registers the Caretaker fund is silent.
 ### Staking rewards
 
 Proof of stake, held privately. Delegate shielded ERTH to a validator and you
-receive that validator's delegation token, **derth**, as a private note. Each day, at
-the end of an epoch, the chain collects every validator's rewards and stakes
+receive that validator's delegation token, **derth**, as a private note. Your ERTH
+is bonded to the validator in the block your delegation lands in and earns from
+then on. Each day, at the end of an epoch, the chain collects every validator's rewards and stakes
 them again. That raises the validator's **exchange rate**: the ERTH each of its
 tokens is worth. So you earn a share of 1 ERTH a second in proportion to your
 stake, less the validator's commission, without claiming anything and without
@@ -60,13 +61,14 @@ on the chain for anyone to read. Who cast each split is not:
 - A **Caretaker** split is cast with a proof that the voter is a registered
   human, not which one. It counts for a year; the app reminds its owner to
   refresh it, and a split nobody refreshes lapses.
-- A **Groundworks** split belongs to a **position**: derth locked in a public
-  record with its size, validator and split. Only its owner can prove it is
-  theirs, so the owner is anonymous. Its weight is the ERTH its derth is worth,
-  and it keeps earning staking rewards while locked. The chain adds up the
-  positions at each validator into one voter. Private stake that is not in a
-  position does not vote in Groundworks. A position keeps its weight while its
-  validator is jailed or unbonded, until its split's year runs out.
+- A **Groundworks** split is cast by your **stake note** itself. Your stake
+  stays where it is, earning and free to move; the chain records a public vote
+  with the note's validator, size and split, under a tag that only your phone
+  can produce, so the owner is anonymous. Its weight is the ERTH the derth is
+  worth. Every stake transaction you make carries the vote forward to your new
+  note. The chain adds up the votes at each validator into one voter. Private
+  stake that has not voted does not count in Groundworks. A vote keeps its
+  weight while its validator is jailed or unbonded, until its year runs out.
 - A validator's **operator** votes in Groundworks in the open, from its
   operator account, weighted by its public self-bond. That weight counts only
   while the validator is Bonded, in the active set: out of it, the operator's
@@ -74,16 +76,16 @@ on the chain for anyone to read. Who cast each split is not:
   split's year runs out meanwhile it is removed, and the operator casts it
   again once the validator is back.
 
-Every Groundworks split, a position's or an operator's, lasts one year from
+Every Groundworks split, a stake note's or an operator's, lasts one year from
 when it was cast or last renewed. Casting it again renews it for another
-year. When the year runs out the split stops counting: a position's split is
-cleared and the position stops voting until its owner casts one again, and an
-operator's vote is removed. Wallets remind you before a split expires;
+year; so does any stake transaction that carries it. When the year runs out
+the split stops counting: a stake note's vote is removed until its owner votes
+again, and so is an operator's. Wallets remind you before a split expires;
 renewing is manual, never automatic, so no fee is spent without you. The
 length is a governance parameter (`groundworks_lease_seconds`, 365 days by
 default, settable from 1 day to 2 years).
 
-The difference is intentional. A position's owner is anonymous and may not
+The difference is intentional. A stake vote's owner is anonymous and may not
 learn at once that the validator was jailed, so the weight does not vanish
 under them; they can move the stake when they do. The operator runs the
 validator, so its own weight depends on keeping it in the active set.
@@ -93,7 +95,7 @@ The funds differ in who chooses and who may add options:
 - **Caretaker** is one vote per registered human. Anyone can add an option for a
   small fee, because holdings buy no extra votes here. See below for what that
   makes it.
-- **Groundworks** is weighted by staked positions and operators' self-bonds.
+- **Groundworks** is weighted by voting stake and operators' self-bonds.
   Only governance can add an option.
   If anyone could, every staker's best move would be to list their own address
   and vote for it, and the fund would just be a second staking reward. Registered
